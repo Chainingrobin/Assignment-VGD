@@ -112,9 +112,3 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
-Assets/*
-!Assets/Scripts/
-*.meta
-*.meta
-*.meta
-Assets/TutorialInfo/Scripts/Readme.cs.meta
