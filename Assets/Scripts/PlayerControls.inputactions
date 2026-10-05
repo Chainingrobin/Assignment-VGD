@@ -27,9 +27,19 @@
                     "priority": 0
                 },
                 {
-                    "name": "Cast",
+                    "name": "CastProjectile",
                     "type": "Button",
                     "id": "b96b4f03-86b2-483b-a595-66fe5905aadf",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "CastAoE",
+                    "type": "Button",
+                    "id": "2ed7eab8-f4f7-4376-b96f-6528c66e1a11",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -67,7 +77,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Cast",
+                    "action": "CastProjectile",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0ff62c20-0238-49af-be4f-55d41b249b74",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CastAoE",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

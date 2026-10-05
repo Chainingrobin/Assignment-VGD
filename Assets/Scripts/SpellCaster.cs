@@ -1,46 +1,79 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
-// Attach to the Player. Assign one entry per element you have a spell for.
 public class SpellCaster : MonoBehaviour
 {
     [System.Serializable]
     public struct ElementSpell
     {
         public ElementType element;
-        public GameObject spellPrefab; // must have SpellProjectile + a Rigidbody + a trigger collider
+
+        [Header("Projectile")]
+        public GameObject projectilePrefab;
+        public float projectileSpeed;
+        public float projectileDamage;
+        public float projectileSize;
+
+        [Header("AoE")]
+        [FormerlySerializedAs("spellPrefab")] public GameObject aoePrefab;
     }
 
     [SerializeField] private ElementSpell[] spells;
-    [SerializeField] private Transform castPoint; // empty GameObject in front of the player/camera
-    [SerializeField] private float spellSpeed = 20f;
+    [SerializeField] private Transform projectileCastPoint;   // child of camera
+    [FormerlySerializedAs("castPoint")]
+    [SerializeField] private Transform aoeCastPoint;          // your existing feet point
+    [SerializeField] private float projectileSpeed = 20f;
+    [SerializeField] private Camera playerCamera;
+    [SerializeField] private LayerMask aimMask = ~0;   // exclude the Player layer
+    [SerializeField] private float maxAimDistance = 100f;
 
-    public void CastSpell()
+    public void CastProjectile()
     {
-        ElementType active = PlayerMagicAffinity.Instance.ActiveElement;
-        GameObject prefab = GetPrefabForElement(active);
+        var spell = GetSpell(PlayerMagicAffinity.Instance.ActiveElement);
+        if (spell.projectilePrefab == null) return;
 
-        if (prefab == null)
-        {
-            Debug.LogWarning($"No spell prefab assigned for {active}. Did you fill in the Spells list?");
-            return;
-        }
+        Transform camT = playerCamera.transform;
 
-        GameObject spell = Instantiate(prefab, castPoint.position, castPoint.rotation);
+        // Find what the crosshair is pointing at
+        Vector3 aimPoint = camT.position + camT.forward * maxAimDistance;
+        if (Physics.Raycast(camT.position, camT.forward, out RaycastHit hit, maxAimDistance, aimMask, QueryTriggerInteraction.Ignore))
+            aimPoint = hit.point;
 
-        Rigidbody rb = spell.GetComponent<Rigidbody>();
-        if (rb != null)
-            rb.linearVelocity = castPoint.forward * spellSpeed;
+        // Fly from the hand toward that point
+        Vector3 dir = (aimPoint - projectileCastPoint.position).normalized;
+        if (Vector3.Dot(dir, camT.forward) < 0.1f) dir = camT.forward; // wall right in your face
 
-        Debug.Log($"Cast {active} spell from {castPoint.position}");
+        var go = Instantiate(spell.projectilePrefab, projectileCastPoint.position, Quaternion.LookRotation(dir));
+
+        var projectileColliders = go.GetComponentsInChildren<Collider>();
+        
+        foreach (var mine in transform.root.GetComponentsInChildren<Collider>())
+            foreach (var theirs in projectileColliders)
+                Physics.IgnoreCollision(mine, theirs);
+
+        float speed = spell.projectileSpeed > 0 ? spell.projectileSpeed : 20f;
+        float damage = spell.projectileDamage > 0 ? spell.projectileDamage : 25f;
+        float size = spell.projectileSize > 0 ? spell.projectileSize : 1f;
+
+        if (go.TryGetComponent<SpellProjectile>(out var proj))
+            proj.Init(damage, size);
+
+        if (go.TryGetComponent<Rigidbody>(out var rb))
+            rb.linearVelocity = dir * speed;
     }
 
-    private GameObject GetPrefabForElement(ElementType element)
+    public void CastAoE()
     {
-        foreach (var spell in spells)
-        {
-            if (spell.element == element)
-                return spell.spellPrefab;
-        }
-        return null;
+        var spell = GetSpell(PlayerMagicAffinity.Instance.ActiveElement);
+        if (spell.aoePrefab == null) return;
+
+        Instantiate(spell.aoePrefab, aoeCastPoint.position, aoeCastPoint.rotation);
+    }
+
+    private ElementSpell GetSpell(ElementType element)
+    {
+        foreach (var s in spells)
+            if (s.element == element) return s;
+        return default;
     }
 }
