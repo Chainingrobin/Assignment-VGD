@@ -1,44 +1,55 @@
 using UnityEngine;
 using StarterAssets;
 
-// Put this on the Model object (the child that has the Animator).
-// It reads state from FirstPersonController/CharacterController/StarterAssetsInputs
-// on the parent Player object and drives Animator parameters:
-//   "IsMoving" (bool)   - true whenever horizontal speed is above movementThreshold
-//   "Sprinting" (bool)  - direct copy of the real Shift/sprint input state, not inferred
-//   "Grounded" (bool), "FreeFall" (bool), "Jump" (trigger)
+// Put this on the Protagonist object (the child that has the Animator).
+// It reads state from FirstPersonController / CharacterController / StarterAssetsInputs
+// on the parent player object and drives these Animator parameters
+// (names must match the Animator window exactly, including capitalization):
+//   horizontal, vertical (float) - local-space velocity for the 2D blend tree
+//   IsMoving, Sprinting  (bool)
+//   isGrounded, isJumping, isFalling (bool)
 // Make sure Apply Root Motion is OFF on the Animator.
 [RequireComponent(typeof(Animator))]
 public class CharacterAnimationController : MonoBehaviour
 {
-    [Tooltip("The CharacterController on your Player root object")]
+    [Header("References")]
     [SerializeField] private CharacterController controller;
-    [Tooltip("The Starter Assets FirstPersonController on your Player root object")]
     [SerializeField] private FirstPersonController firstPersonController;
-    [Tooltip("The Starter Assets StarterAssetsInputs on your Player root object - reads the real sprint key state")]
     [SerializeField] private StarterAssetsInputs inputs;
     [SerializeField] private Animator animator;
 
-    [Header("Movement Detection")]
-    [Tooltip("Horizontal speed above which we consider the character 'moving'. One tunable number instead of scattered thresholds on transitions.")]
+    [Header("Movement")]
+    [Tooltip("Horizontal speed above which the character counts as moving.")]
     [SerializeField] private float movementThreshold = 0.05f;
+    [Tooltip("Smoothing for the blend tree inputs so the pose doesn't pop between clips.")]
+    [SerializeField] private float blendDamping = 0.1f;
 
-    [Header("Fall Threshold")]
-    [Tooltip("How negative vertical velocity must get before we call it FreeFall rather than a normal landing")]
+    [Header("Air")]
+    [Tooltip("Vertical velocity below which the character counts as falling.")]
     [SerializeField] private float fallThreshold = -2f;
+    [Tooltip("How long a grounded change must hold before the Animator sees it (filters brief collision blips).")]
+    [SerializeField] private float groundedDebounce = 0.08f;
 
+    [Header("Debug")]
+    [SerializeField] private bool warnAboutMissingParameters = true;
+
+    private static readonly string[] ParameterNames =
+    {
+        "horizontal", "vertical", "IsMoving", "Sprinting",
+        "isGrounded", "isJumping", "isFalling"
+    };
+
+    private static readonly int HorizontalHash = Animator.StringToHash("horizontal");
+    private static readonly int VerticalHash = Animator.StringToHash("vertical");
     private static readonly int IsMovingHash = Animator.StringToHash("IsMoving");
     private static readonly int SprintingHash = Animator.StringToHash("Sprinting");
-    private static readonly int GroundedHash = Animator.StringToHash("Grounded");
-    private static readonly int FreeFallHash = Animator.StringToHash("FreeFall");
-    private static readonly int JumpHash = Animator.StringToHash("Jump");
-
-    [Header("Grounded Debounce")]
-    [Tooltip("How long a raw grounded-state change must hold steady before the Animator sees it. Filters out brief mid-air collision blips (e.g. clipping a wall) that would otherwise flicker Grounded true/false and confuse transitions.")]
-    [SerializeField] private float groundedDebounce = 0.08f;
+    private static readonly int IsGroundedHash = Animator.StringToHash("isGrounded");
+    private static readonly int IsJumpingHash = Animator.StringToHash("isJumping");
+    private static readonly int IsFallingHash = Animator.StringToHash("isFalling");
 
     private bool _wasGrounded = true;
     private bool _reportedGrounded = true;
+    private bool _jumping;
     private float _groundedChangeTimer;
 
     private void Reset()
@@ -49,19 +60,46 @@ public class CharacterAnimationController : MonoBehaviour
         inputs = GetComponentInParent<StarterAssetsInputs>();
     }
 
+    private void Awake()
+    {
+        if (animator == null) animator = GetComponent<Animator>();
+        if (!warnAboutMissingParameters || animator == null) return;
+
+        // Tells you in the Console if a parameter name here doesn't match the Animator window.
+        foreach (string paramName in ParameterNames)
+        {
+            bool found = false;
+            foreach (var p in animator.parameters)
+            {
+                if (p.name == paramName) { found = true; break; }
+            }
+            if (!found)
+            {
+                Debug.LogWarning($"[CharacterAnimationController] Animator has no parameter named '{paramName}'. " +
+                                 "Fix the name in the Animator window or in this script.", this);
+            }
+        }
+    }
+
     private void Update()
     {
         if (controller == null || animator == null || firstPersonController == null || inputs == null) return;
 
-        // --- Movement / sprint state, driven by real input rather than a speed guess ---
-        Vector3 flatVelocity = controller.velocity;
-        flatVelocity.y = 0f;
-        bool isMoving = flatVelocity.magnitude > movementThreshold;
+        Vector3 velocity = controller.velocity;
+        Vector3 flatVelocity = new Vector3(velocity.x, 0f, velocity.z);
 
-        animator.SetBool(IsMovingHash, isMoving);
+        // --- Movement: blend tree inputs ---
+        // Local velocity relative to the player's facing, divided by sprint speed,
+        // so sprinting forward = 1 and walking forward = MoveSpeed / SprintSpeed.
+        float sprintSpeed = Mathf.Max(0.01f, firstPersonController.SprintSpeed);
+        Vector3 localVelocity = controller.transform.InverseTransformDirection(flatVelocity) / sprintSpeed;
+
+        animator.SetFloat(HorizontalHash, localVelocity.x, blendDamping, Time.deltaTime);
+        animator.SetFloat(VerticalHash, localVelocity.z, blendDamping, Time.deltaTime);
+        animator.SetBool(IsMovingHash, flatVelocity.magnitude > movementThreshold);
         animator.SetBool(SprintingHash, inputs.sprint);
 
-        // --- Grounded / falling, debounced so a brief mid-air collision can't flicker the animator ---
+        // --- Grounded, debounced so a brief mid-air collision can't flicker the Animator ---
         bool rawGrounded = firstPersonController.Grounded;
         if (rawGrounded != _reportedGrounded)
         {
@@ -77,15 +115,18 @@ public class CharacterAnimationController : MonoBehaviour
             _groundedChangeTimer = 0f;
         }
 
-        animator.SetBool(GroundedHash, _reportedGrounded);
-        animator.SetBool(FreeFallHash, !_reportedGrounded && controller.velocity.y < fallThreshold);
+        bool grounded = _reportedGrounded;
+        bool falling = !grounded && velocity.y < fallThreshold;
 
-        // --- Jump trigger: fires the instant we leave the ground while still moving upward ---
-        if (_wasGrounded && !_reportedGrounded && controller.velocity.y > 0f)
-        {
-            animator.SetTrigger(JumpHash);
-        }
+        // Jump starts when we leave the ground moving upward,
+        // and ends when we land or start descending.
+        if (_wasGrounded && !grounded && velocity.y > 0f) _jumping = true;
+        if (grounded || falling) _jumping = false;
 
-        _wasGrounded = _reportedGrounded;
+        animator.SetBool(IsGroundedHash, grounded);
+        animator.SetBool(IsJumpingHash, _jumping);
+        animator.SetBool(IsFallingHash, falling);
+
+        _wasGrounded = grounded;
     }
 }
