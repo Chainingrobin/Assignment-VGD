@@ -10,6 +10,7 @@ using StarterAssets;
 //   isGrounded, isJumping, isFalling (bool)
 // Make sure Apply Root Motion is OFF on the Animator.
 [RequireComponent(typeof(Animator))]
+[DefaultExecutionOrder(100)]
 public class CharacterAnimationController : MonoBehaviour
 {
     [Header("References")]
@@ -63,6 +64,9 @@ public class CharacterAnimationController : MonoBehaviour
     private void Awake()
     {
         if (animator == null) animator = GetComponent<Animator>();
+        if (controller == null) controller = GetComponentInParent<CharacterController>();
+        if (firstPersonController == null) firstPersonController = GetComponentInParent<FirstPersonController>();
+        if (inputs == null) inputs = GetComponentInParent<StarterAssetsInputs>();
         if (!warnAboutMissingParameters || animator == null) return;
 
         // Tells you in the Console if a parameter name here doesn't match the Animator window.
@@ -100,7 +104,15 @@ public class CharacterAnimationController : MonoBehaviour
         animator.SetBool(SprintingHash, inputs.sprint);
 
         // --- Grounded, debounced so a brief mid-air collision can't flicker the Animator ---
-        bool rawGrounded = firstPersonController.Grounded;
+        bool rising = velocity.y > 0.1f;
+        bool rawGrounded = controller.isGrounded && !rising;
+        // Takeoff must bypass debounce while the ground probe still overlaps the floor.
+        if (rising)
+        {
+            _reportedGrounded = false;
+            _groundedChangeTimer = 0f;
+            _jumping = true;
+        }
         if (rawGrounded != _reportedGrounded)
         {
             _groundedChangeTimer += Time.deltaTime;
@@ -120,7 +132,7 @@ public class CharacterAnimationController : MonoBehaviour
 
         // Jump starts when we leave the ground moving upward,
         // and ends when we land or start descending.
-        if (_wasGrounded && !grounded && velocity.y > 0f) _jumping = true;
+        if (_wasGrounded && !grounded && rising) _jumping = true;
         if (grounded || falling) _jumping = false;
 
         animator.SetBool(IsGroundedHash, grounded);

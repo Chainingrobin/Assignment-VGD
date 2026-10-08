@@ -3,6 +3,7 @@ using UnityEngine;
 public class BookCollect : MonoBehaviour
 {
     [SerializeField] private ElementType element; // set this per-book in the Inspector
+    public ElementType Element => element;
     [SerializeField] private AudioClip pickupSound; // optional
 
     private void OnTriggerEnter(Collider other)

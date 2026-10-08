@@ -18,22 +18,45 @@ public class PlayerInteract : MonoBehaviour
         if (cam == null) Debug.LogError("PlayerInteract: no camera assigned");
         if (interactAction == null) Debug.LogError("PlayerInteract: no Interact action assigned");
         if (promptText == null) Debug.LogError("PlayerInteract: no prompt text assigned");
+
+        if (promptText != null)
+        {
+            promptText.richText = true;
+            promptText.alignment = TextAlignmentOptions.Center;
+            promptText.fontSize = 28f;
+            promptText.raycastTarget = false;
+
+            var promptRect = (RectTransform)promptText.transform;
+            promptRect.anchorMin = promptRect.anchorMax = new Vector2(0.5f, 0.5f);
+            promptRect.pivot = new Vector2(0.5f, 0.5f);
+            promptRect.anchoredPosition = new Vector2(0f, -48f);
+            promptRect.sizeDelta = new Vector2(440f, 56f);
+            promptRect.localPosition = new Vector3(promptRect.localPosition.x, promptRect.localPosition.y, 0f);
+            promptRect.localRotation = Quaternion.identity;
+            promptRect.localScale = Vector3.one;
+        }
     }
 
     void OnEnable()
     {
+        if (interactAction == null || interactAction.action == null) return;
         interactAction.action.Enable();
         interactAction.action.performed += OnInteract;
     }
 
     void OnDisable()
     {
-        interactAction.action.performed -= OnInteract;
+        if (interactAction != null && interactAction.action != null)
+            interactAction.action.performed -= OnInteract;
+        if (current != null) current.SetHighlighted(false);
+        current = null;
+        if (promptText != null) promptText.gameObject.SetActive(false);
     }
 
     void Update()
     {
-        current = null;
+        if (cam == null) return;
+        Interactable target = null;
         Vector3 origin = cam.transform.position;
         Vector3 dir = cam.transform.forward;
         Debug.DrawRay(origin, dir * range, Color.red);
@@ -56,15 +79,24 @@ public class PlayerInteract : MonoBehaviour
                 Debug.Log($"Interactables in scene: {FindObjectsByType<Interactable>(FindObjectsSortMode.None).Length}");
             }
 
-            if (found != null && found.CanInteract) current = found;
+            if (found != null && found.CanInteract) target = found;
         }
         else if (lastHit != null)
         {
             lastHit = null;
         }
 
+        if (target != current)
+        {
+            if (current != null) current.SetHighlighted(false);
+            current = target;
+            if (current != null) current.SetHighlighted(true);
+        }
+
+        if (promptText == null) return;
         promptText.gameObject.SetActive(current != null);
-        if (current != null) promptText.text = current.Prompt;
+        if (current != null)
+            promptText.text = current.Prompt.Replace("F", "<mark=#245A8D><b> F </b></mark>");
     }
 
     void OnInteract(InputAction.CallbackContext ctx)

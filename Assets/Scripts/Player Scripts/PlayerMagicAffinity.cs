@@ -49,6 +49,9 @@ public class PlayerMagicAffinity : MonoBehaviour
         }
         _instance = this;
 
+        if (FindFirstObjectByType<ElementUnlockNotification>() == null)
+            gameObject.AddComponent<ElementUnlockNotification>();
+
         if (startingElement != ElementType.None)
         {
             UnlockElement(startingElement);
