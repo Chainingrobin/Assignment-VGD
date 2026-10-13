@@ -112,8 +112,8 @@ namespace StarterAssets
 
 		private void Update()
 		{
-			JumpAndGravity();
 			GroundedCheck();
+			JumpAndGravity();
 			Move();
 		}
 
@@ -126,7 +126,9 @@ namespace StarterAssets
 		{
 			// set sphere position, with offset
 			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
-			Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+			// The wide probe can still touch a landing while the jump is rising.
+			Grounded = _verticalVelocity <= 0f && (_controller.isGrounded ||
+				Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore));
 		}
 
 		private void CameraRotation()
@@ -216,6 +218,7 @@ namespace StarterAssets
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+					_jumpTimeoutDelta = JumpTimeout;
 				}
 
 				// jump timeout
@@ -235,8 +238,6 @@ namespace StarterAssets
 					_fallTimeoutDelta -= Time.deltaTime;
 				}
 
-				// if we are not grounded, do not jump
-				_input.jump = false;
 			}
 
 			// apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)

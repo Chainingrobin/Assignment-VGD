@@ -14,6 +14,143 @@ public static class LavaCaveBuilder
     static Material cliff, ground, lava;
     static int meshIndex;
 
+    public static string ImproveVolcanic()
+    {
+        const float lavafallZ = 16f;
+        if (Application.isPlaying) throw new System.InvalidOperationException("Leave Play mode before editing the volcano.");
+        root = GameObject.Find("Redwood Lava Cavern")?.transform;
+        var terrain = Terrain.activeTerrain;
+        if (root == null || terrain == null) throw new System.InvalidOperationException("Volcano and terrain are required.");
+        Undo.RegisterFullObjectHierarchyUndo(root.gameObject, "Improve volcanic lava and grounding");
+        foreach (var collider in root.GetComponentsInChildren<Collider>()) collider.gameObject.layer = LayerMask.NameToLayer("Ground");
+        lava = AssetDatabase.LoadAssetAtPath<Material>(Folder + "/Flowing Lava.mat");
+        Undo.RecordObject(lava, "Brighten lava");
+        lava.SetColor("_EmissionColor", new Color(6f, 2.1f, .3f));
+        lava.SetFloat("_Smoothness", .72f);
+        EditorUtility.SetDirty(lava);
+        var apron = root.Find("Grounded volcanic apron").GetComponent<Collider>();
+        float Height(float x, float z)
+        {
+            var world = root.TransformPoint(new Vector3(x, 0, z));
+            float h = terrain.SampleHeight(world) + terrain.transform.position.y;
+            if (apron.Raycast(new Ray(new Vector3(world.x, 100, world.z), Vector3.down), out var hit, 200)) h = Mathf.Max(h, hit.point.y);
+            return root.InverseTransformPoint(new Vector3(world.x, h, world.z)).y;
+        }
+        var vertices = new List<Vector3>(); var uvs = new List<Vector2>(); var triangles = new List<int>();
+        for (int trail = 0; trail < 3; trail++)
+        {
+            vertices.Clear(); uvs.Clear(); triangles.Clear();
+            const int rows = 300, columns = 24;
+            for (int i = 0; i <= rows; i++)
+            {
+                float t = i / (float)rows;
+                float z = trail == 0 ? lavafallZ - t * (lavafallZ + 73) : -38 - t * 50;
+                float x = trail == 0 ? 4 + Mathf.Sin(t * 11) * 2 : (trail == 1 ? -1 : 1) * (22 + t * 38) + Mathf.Sin(t * 15) * 3;
+                float width = (trail == 0 ? 2.5f : 1.45f) * (.7f + .45f * Mathf.PerlinNoise(t * 16, trail + 2));
+                width *= Mathf.SmoothStep(0, 1, (1 - t) * 15);
+                for (int j = 0; j <= columns; j++)
+                {
+                    float side = j / (float)columns * 2 - 1;
+                    float px = x + side * width;
+                    float pz = z + Mathf.Pow(Mathf.Abs(side), 3) * Mathf.Sin(t * 90 + j * .4f) * .3f;
+                    vertices.Add(new Vector3(px, Height(px, pz) + .055f + (1 - side * side) * .035f, pz));
+                    uvs.Add(new Vector2(px / 4, pz / 4));
+                    if (i < rows && j < columns) { int k = i * (columns + 1) + j; Quad(triangles, k, k + 1, k + columns + 2, k + columns + 1, false); }
+                }
+            }
+            LavaSurface("Grounded lava trail " + trail, vertices, uvs, triangles, lava);
+        }
+        // Closed cross-sections give the falling lava depth from every viewing angle.
+        vertices.Clear(); uvs.Clear(); triangles.Clear();
+        const int rings = 80, sides = 32;
+        float bottom = Height(4, lavafallZ) + .09f;
+        for (int i = 0; i <= rings; i++)
+        for (int j = 0; j <= sides; j++)
+        {
+            float t = i / (float)rings, a = j * Mathf.PI * 2 / sides;
+            float ripple = 1 + .08f * Mathf.Sin(t * 42 + a * 3);
+            vertices.Add(new Vector3(4 + Mathf.Cos(a) * (4.2f + .5f * (1 - t)) * ripple,
+                Mathf.Lerp(bottom, 39, t), lavafallZ + Mathf.Sin(a) * 1.8f * ripple + Mathf.Sin(t * 9) * .4f));
+            uvs.Add(new Vector2(j / (float)sides * 3, t * 10));
+            if (i < rings && j < sides) { int k = i * (sides + 1) + j; Quad(triangles, k, k + 1, k + sides + 2, k + sides + 1, true); }
+        }
+        LavaSurface("High volcanic lavafall", vertices, uvs, triangles, lava);
+        var poolMaterials = new Material[3];
+        for (int i = 0; i < poolMaterials.Length; i++)
+        {
+            string path = Folder + "/Lava pool " + i + ".mat";
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (mat == null) { mat = new Material(lava); AssetDatabase.CreateAsset(mat, path); }
+            Undo.RecordObject(mat, "Vary lava pool warmth");
+            mat.SetColor("_EmissionColor", new Color(5 + i, 1.4f + i * .65f, .12f + i * .12f));
+            mat.SetFloat("_Smoothness", .65f + i * .12f); EditorUtility.SetDirty(mat); poolMaterials[i] = mat;
+        }
+        for (int pool = 0; pool < 10; pool++)
+        {
+            float x = pool == 0 || pool == 9 ? 4 : (pool % 2 == 0 ? 1 : -1) * (12 + pool * 4.7f);
+            float z = pool == 0 || pool == 9 ? lavafallZ : -24 - pool * 6.1f;
+            float rx = pool == 0 || pool == 9 ? 6 : 2.4f + pool % 3 * 1.2f, rz = pool == 0 || pool == 9 ? 4 : 2 + pool % 4 * .8f;
+            vertices.Clear(); uvs.Clear(); triangles.Clear();
+            const int radial = 24, segments = 96;
+            for (int r = 0; r <= radial; r++)
+            for (int j = 0; j <= segments; j++)
+            {
+                float a = j * Mathf.PI * 2 / segments, f = r / (float)radial;
+                float edge = 1 + .16f * Mathf.Sin(a * 3 + pool) + .1f * Mathf.Sin(a * 7 + pool * 2);
+                float px = x + Mathf.Cos(a) * rx * f * edge, pz = z + Mathf.Sin(a) * rz * f * edge;
+                float y = pool == 9 ? 39.03f : Height(px, pz) + .06f + (1 - f * f) * .05f;
+                vertices.Add(new Vector3(px, y, pz)); uvs.Add(new Vector2(px / 4, pz / 4));
+                if (r < radial && j < segments) { int k = r * (segments + 1) + j; Quad(triangles, k, k + segments + 1, k + segments + 2, k + 1, true); }
+            }
+            LavaSurface(pool == 9 ? "Lavafall source pool" : "Liquid lava pool " + pool, vertices, uvs, triangles, poolMaterials[pool % 3]);
+            string lightName = "Pool glow " + pool;
+            var glow = root.Find(lightName);
+            if (glow == null) { glow = new GameObject(lightName).transform; glow.SetParent(root, false); Undo.RegisterCreatedObjectUndo(glow.gameObject, "Add pool glow"); glow.gameObject.AddComponent<Light>(); }
+            glow.localPosition = new Vector3(x, pool == 9 ? 41 : Height(x, z) + 1.8f, z);
+            var light = glow.GetComponent<Light>(); light.color = new Color(1, .25f + pool % 3 * .08f, .045f); light.range = 11 + pool % 3 * 2; light.intensity = 28 + pool % 3 * 6;
+        }
+        foreach (var light in root.GetComponentsInChildren<Light>())
+        {
+            if (light.name == "Lava radiance") { light.intensity = 32; light.range = 18; }
+            if (light.name.StartsWith("Lavafall radiance")) { light.intensity = 48; light.range = 26; light.transform.localPosition = new Vector3(4, light.transform.localPosition.y, lavafallZ - 3); }
+        }
+        var smoke = root.Find("Summit smoke");
+        if (smoke == null) { smoke = new GameObject("Summit smoke").transform; smoke.SetParent(root, false); Undo.RegisterCreatedObjectUndo(smoke.gameObject, "Add summit smoke"); smoke.gameObject.AddComponent<ParticleSystem>(); }
+        smoke.localPosition = new Vector3(0, 64, 0);
+        var ps = smoke.GetComponent<ParticleSystem>(); ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        var main = ps.main; main.loop = true; main.duration = 12; main.startLifetime = new ParticleSystem.MinMaxCurve(9, 15); main.startSpeed = new ParticleSystem.MinMaxCurve(2, 4); main.startSize = new ParticleSystem.MinMaxCurve(4, 7); main.startRotation = new ParticleSystem.MinMaxCurve(0, Mathf.PI * 2); main.maxParticles = 250; main.simulationSpace = ParticleSystemSimulationSpace.World;
+        var emission = ps.emission; emission.rateOverTime = 12;
+        var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Cone; shape.radius = 3.5f; shape.angle = 12; shape.rotation = new Vector3(-90, 0, 0);
+        var velocity = ps.velocityOverLifetime; velocity.enabled = true; velocity.space = ParticleSystemSimulationSpace.World; velocity.x = .7f; velocity.y = .6f; velocity.z = .25f;
+        var size = ps.sizeOverLifetime; size.enabled = true; size.size = new ParticleSystem.MinMaxCurve(1, AnimationCurve.Linear(0, .6f, 1, 2.6f));
+        var color = ps.colorOverLifetime; color.enabled = true;
+        var gradient = new Gradient(); gradient.SetKeys(new[] { new GradientColorKey(new Color(.18f,.15f,.14f),0), new GradientColorKey(new Color(.38f,.37f,.36f),1) }, new[] { new GradientAlphaKey(0,0), new GradientAlphaKey(.55f,.15f), new GradientAlphaKey(.3f,.65f), new GradientAlphaKey(0,1) }); color.color = gradient;
+        string smokePath = Folder + "/Summit smoke.mat";
+        var smokeMat = AssetDatabase.LoadAssetAtPath<Material>(smokePath);
+        if (smokeMat == null) { smokeMat = new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit")); AssetDatabase.CreateAsset(smokeMat, smokePath); }
+        smokeMat.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Hovl Studio/AOE Magic spells Vol.1/Textures/Smoke3.png"));
+        smokeMat.SetFloat("_Surface", 1); smokeMat.SetFloat("_Blend", 0); smokeMat.SetFloat("_SrcBlend", 5); smokeMat.SetFloat("_DstBlend", 10); smokeMat.SetFloat("_ZWrite", 0); smokeMat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT"); smokeMat.SetOverrideTag("RenderType", "Transparent"); smokeMat.renderQueue = 3000;
+        EditorUtility.SetDirty(smokeMat); ps.GetComponent<ParticleSystemRenderer>().sharedMaterial = smokeMat;
+        ps.Play();
+        AssetDatabase.SaveAssets(); EditorSceneManager.MarkSceneDirty(root.gameObject.scene); EditorSceneManager.SaveScene(root.gameObject.scene);
+        return "Ground layers fixed; three conforming streams, nine irregular pools, wide tubular lavafall and summit smoke saved.";
+    }
+
+    static void LavaSurface(string name, List<Vector3> vertices, List<Vector2> uvs, List<int> triangles, Material material)
+    {
+        string path = Folder + "/" + name + ".asset";
+        var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+        if (mesh == null) { mesh = new Mesh { name = name }; AssetDatabase.CreateAsset(mesh, path); }
+        else { Undo.RecordObject(mesh, "Reshape lava"); mesh.Clear(); }
+        mesh.SetVertices(vertices); mesh.SetUVs(0, uvs); mesh.SetTriangles(triangles, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+        UnityEngine.Assertions.Assert.IsTrue(mesh.bounds.size.x > 0 && mesh.bounds.size.z > 0, "Lava surface must have width and depth.");
+        EditorUtility.SetDirty(mesh);
+        var surface = root.Find(name);
+        if (surface == null) { surface = new GameObject(name).transform; surface.SetParent(root, false); Undo.RegisterCreatedObjectUndo(surface.gameObject, "Add lava surface"); surface.gameObject.AddComponent<MeshFilter>(); surface.gameObject.AddComponent<MeshRenderer>(); surface.gameObject.AddComponent<LavaFlow>(); }
+        surface.localPosition = Vector3.zero; surface.localRotation = Quaternion.identity; surface.localScale = Vector3.one;
+        surface.GetComponent<MeshFilter>().sharedMesh = mesh; surface.GetComponent<MeshRenderer>().sharedMaterial = material;
+    }
+
     public static string RebuildVolcanic()
     {
         if(Application.isPlaying) throw new System.InvalidOperationException("Leave Play mode before rebuilding.");
@@ -323,10 +460,10 @@ public static class LavaCaveBuilder
         var mesh=new Mesh{name=name};mesh.SetVertices(v);mesh.SetUVs(0,uv);mesh.SetTriangles(t,0);mesh.RecalculateNormals();mesh.RecalculateBounds();
         AssetDatabase.CreateAsset(mesh,Folder+"/CaveMesh"+(meshIndex++)+".asset");
         var g=new GameObject(name);g.transform.SetParent(root,false);g.AddComponent<MeshFilter>().sharedMesh=mesh;g.AddComponent<MeshRenderer>().sharedMaterial=mat;
-        if(solid)g.AddComponent<MeshCollider>().sharedMesh=mesh;return g;
+        if(solid){g.AddComponent<MeshCollider>().sharedMesh=mesh;g.layer=LayerMask.NameToLayer("Ground");}return g;
     }
     static GameObject Box(string name,Vector3 p,Vector3 size,Material mat)
-    {var g=GameObject.CreatePrimitive(PrimitiveType.Cube);g.name=name;g.transform.SetParent(root,false);g.transform.localPosition=p;g.transform.localScale=size;g.GetComponent<Renderer>().sharedMaterial=mat;return g;}
+    {var g=GameObject.CreatePrimitive(PrimitiveType.Cube);g.name=name;g.layer=LayerMask.NameToLayer("Ground");g.transform.SetParent(root,false);g.transform.localPosition=p;g.transform.localScale=size;g.GetComponent<Renderer>().sharedMaterial=mat;return g;}
     static GameObject Rock(string name,string prefab,Vector3 p,Vector3 size,float yaw)
     {
         var g=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Rocks+prefab+".prefab"),root);
@@ -336,6 +473,7 @@ public static class LavaCaveBuilder
         bounds=renderers[0].bounds;foreach(var r in renderers)bounds.Encapsulate(r.bounds);
         g.transform.position+=root.TransformPoint(p)-bounds.center;g.transform.Rotate(0,yaw,0,Space.Self);
         if(g.GetComponentsInChildren<Collider>().Length==0){var mf=g.GetComponentInChildren<MeshFilter>();mf.gameObject.AddComponent<MeshCollider>().sharedMesh=mf.sharedMesh;}
+        foreach(var collider in g.GetComponentsInChildren<Collider>())collider.gameObject.layer=LayerMask.NameToLayer("Ground");
         return g;
     }
 }
