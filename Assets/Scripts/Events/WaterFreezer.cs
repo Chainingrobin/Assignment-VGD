@@ -1,21 +1,47 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class WaterFreezer : MonoBehaviour
 {
     [SerializeField] Transform ice;
     [SerializeField] Collider iceCollider;
-    [SerializeField] float duration = 4f;
+    [SerializeField, Min(0.1f)] float duration = 4f;
     [SerializeField] AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField] Transform freezeOrigin;
+    [SerializeField] UnityEvent onFreezeStarted = new UnityEvent();
+    [SerializeField] UnityEvent onFreezeFinished = new UnityEvent();
 
-    Vector3 fullScale;
+    public UnityEvent OnFreezeStarted => onFreezeStarted;
+    public UnityEvent OnFreezeFinished => onFreezeFinished;
+    public float Progress { get; private set; }
+    public Bounds IceBounds => iceRenderer.bounds;
+    public float EdgeSoftness => iceRenderer.sharedMaterial.GetFloat("_EdgeSoftness");
+
+    Renderer iceRenderer;
+    MaterialPropertyBlock freezeProperties;
+    static readonly int FreezeProgress = Shader.PropertyToID("_FreezeProgress");
     bool started;
 
     void Awake()
     {
         if (ice == null) { Debug.LogError("WaterFreezer: Ice is not assigned"); return; }
-        fullScale = ice.localScale;
-        Debug.Log($"WaterFreezer ready. Ice full scale = {fullScale}");
+        iceRenderer = ice.GetComponent<Renderer>();
+        if (iceRenderer == null || iceRenderer.sharedMaterial == null || !iceRenderer.sharedMaterial.HasProperty(FreezeProgress))
+        {
+            Debug.LogError("WaterFreezer needs an ice renderer with the Game/FreezingIce material.", this);
+            enabled = false;
+            return;
+        }
+        freezeProperties = new MaterialPropertyBlock();
+        iceRenderer.GetPropertyBlock(freezeProperties);
+        var bounds = ice.GetComponent<MeshFilter>().sharedMesh.bounds;
+        var origin = ice.InverseTransformPoint(freezeOrigin != null ? freezeOrigin.position : ice.position);
+        freezeProperties.SetVector("_FreezeOrigin", new Vector4(
+            Mathf.Clamp01((origin.x - bounds.min.x) / bounds.size.x),
+            Mathf.Clamp01((origin.z - bounds.min.z) / bounds.size.z), 0f, 0f));
+        freezeProperties.SetVector("_FreezeSize", new Vector4(iceRenderer.bounds.size.x, iceRenderer.bounds.size.z, 0f, 0f));
+        SetProgress(0f);
         ice.gameObject.SetActive(false);
         if (iceCollider) iceCollider.enabled = false;
     }
@@ -23,7 +49,8 @@ public class WaterFreezer : MonoBehaviour
     public void Freeze()
     {
         Debug.Log("Freeze called");
-        if (started) return;
+        if (started || !enabled) return;
+        if (ice == null) { Debug.LogError("WaterFreezer: Ice is not assigned", this); return; }
         started = true;
         StartCoroutine(Run());
     }
@@ -31,18 +58,27 @@ public class WaterFreezer : MonoBehaviour
     IEnumerator Run()
     {
         Debug.Log("Freeze started");
-        ice.localScale = new Vector3(fullScale.x * 0.01f, fullScale.y, fullScale.z * 0.01f);
+        SetProgress(0f);
         ice.gameObject.SetActive(true);
+        onFreezeStarted.Invoke();
 
         for (float t = 0; t < duration; t += Time.deltaTime)
         {
             float k = curve.Evaluate(t / duration);
-            ice.localScale = new Vector3(fullScale.x * k, fullScale.y, fullScale.z * k);
+            SetProgress(k);
             yield return null;
         }
 
-        ice.localScale = fullScale;
+        SetProgress(1f);
         if (iceCollider) iceCollider.enabled = true;
+        onFreezeFinished.Invoke();
         Debug.Log("Freeze finished");
+    }
+
+    void SetProgress(float value)
+    {
+        Progress = Mathf.Clamp01(value);
+        freezeProperties.SetFloat(FreezeProgress, Progress);
+        iceRenderer.SetPropertyBlock(freezeProperties);
     }
 }
