@@ -1,0 +1,168 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: mat_skybox_DayNightCycle
+  m_Shader: {fileID: -6465566751694194690, guid: 6f543c28bd169ce43964c0f6f392e3d5, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CLOUDS_map:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Clouds_color_gradient_map:
+        m_Texture: {fileID: 2800000, guid: e656fb96b151c4b40a84a5b272813fbc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Clouds_map:
+        m_Texture: {fileID: 2800000, guid: 4b091633ef40085478e31bba13843876, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SKY_gradient_map:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sky_gradient_map:
+        m_Texture: {fileID: 2800000, guid: e656fb96b151c4b40a84a5b272813fbc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Stars_map:
+        m_Texture: {fileID: 2800000, guid: 9e1c7151a6e98c949a94f93f1de955b7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sun_texture:
+        m_Texture: {fileID: 2800000, guid: 7d9196f45c30033409f5006d0f8fb4f4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BUILTIN_QueueControl: 0
+    - _BUILTIN_QueueOffset: 0
+    - _BumpScale: 1
+    - _CLOUDS_gradient_shift: -0.25
+    - _CLOUDS_height_position: 0
+    - _CLOUDS_speed: 0.5
+    - _CLOUDS_spread: 0
+    - _CLOUDS_tiling: 4
+    - _Clouds_Height: 0.11
+    - _Clouds_Size: 0
+    - _Clouds_Spread: 0.084
+    - _Clouds_Tiling: 6
+    - _Clouds_color_gradient_shift: 0.15
+    - _Clouds_gradient_shift: 0.1
+    - _Clouds_position: 0.18
+    - _Clouds_separation: 0.085
+    - _Clouds_speed: 0.2
+    - _Clouds_tiling: 6
+    - _Cutoff: 0.5
+    - _Day_cycle_time: 0
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SKY_day_cycle_time: 0.5
+    - _SUN_size: 1
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _Stars_Tiling: 0.75
+    - _Stars_intensity: 2.5
+    - _Sun_bloom_intensity: 0.1
+    - _Sun_bloom_size: 0.096
+    - _Sun_brightness: 2
+    - _Sun_glare: 0.058
+    - _Sun_glare_intensity: 0.18
+    - _Sun_glare_size: 0.063
+    - _Sun_size: 0.051
+    - _Tiling: 2
+    - _UVSec: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _Clouds_speed_RGBA: {r: 0.05, g: 0.1, b: 0.15, a: 0.2}
+    - _Clouds_speed_multipl: {r: 0, g: 0, b: 0.1, a: 0.2}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_bottom: {r: 0.7264151, g: 0.5493648, b: 0.2706924, a: 0}
+    - _Color_bottom_tint: {r: 1, g: 1, b: 1, a: 0}
+    - _Color_top: {r: 0.19925767, g: 0.018511934, b: 0.3018868, a: 0}
+    - _Color_top_tint: {r: 1, g: 1, b: 1, a: 0}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SKY_bottom_tint: {r: 1, g: 0.063217916, b: 0, a: 0}
+    - _SKY_top_tint: {r: 0, g: 0.7029705, b: 1, a: 0}
+    - _Sky_bottom_tint: {r: 1, g: 1, b: 1, a: 0}
+    - _Sky_top_tint: {r: 1, g: 1, b: 1, a: 0}
+    - _Sun_color: {r: 0.9598376, g: 0.5803922, b: 1, a: 0}
+    - _Sun_dawn_color: {r: 0.7024648, g: 0.75386643, b: 0.7469813, a: 0}
+    - _Sun_direction: {r: 1, g: 1, b: 1, a: 0}
+    - _Sun_zenith_color: {r: 0.23113209, g: 0.6390176, b: 1, a: 0}
+  m_BuildTextureStacks: []
+--- !u!114 &3244088721022648054
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 639247ca83abc874e893eb93af2b5e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 0

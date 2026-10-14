@@ -101,6 +101,9 @@ Shader "Game/FreezingIce"
                 InitializeStandardLitSurfaceData(input.uv, surface);
                 surface.alpha *= coverage;
                 surface.albedo = lerp(surface.albedo, half3(0.8,0.9,1), (1 - smoothstep(0, 0.05, edge)) * 0.3);
+                float activeFront = step(0.001, _FreezeProgress) * (1 - step(0.999, _FreezeProgress));
+                float rim = (1 - smoothstep(0, 0.045, abs(edge))) * activeFront;
+                surface.emission += half3(0.12, 0.38, 0.65) + half3(1.2, 3.2, 5.0) * rim;
                 InputData lighting;
                 InitializeInputData(input, surface.normalTS, lighting);
                 InitializeBakedGIData(input, lighting);

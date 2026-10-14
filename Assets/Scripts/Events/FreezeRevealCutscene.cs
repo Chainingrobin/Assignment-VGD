@@ -26,8 +26,10 @@ public class FreezeRevealCutscene : MonoBehaviour
     private float cameraFieldOfView;
     private bool freezeFinished;
     private float returnElapsed;
+    private bool preview;
 
     public bool IsPlaying => playing;
+    public bool CanPlay => !played && !playing;
 
     private void Awake() => director = GetComponent<PlayableDirector>();
 
@@ -57,10 +59,14 @@ public class FreezeRevealCutscene : MonoBehaviour
         RestorePlayer();
     }
 
-    public void PlayReveal()
+    public void PlayReveal() => StartPlayback(false);
+    public void PlayPreview() => StartPlayback(true);
+
+    private void StartPlayback(bool isPreview)
     {
         if (played || playing) return;
-        if (director.playableAsset == null || playerCamera == null || playerInputs == null || droneCamera == null || freezer == null)
+        if (director == null) director = GetComponent<PlayableDirector>();
+        if (director.playableAsset == null || playerCamera == null || playerInputs == null || droneCamera == null || (!isPreview && freezer == null))
         {
             Debug.LogError("FreezeRevealCutscene needs its Timeline, player camera, inputs, freezer and drone camera assigned.", this);
             return;
@@ -72,6 +78,7 @@ public class FreezeRevealCutscene : MonoBehaviour
         }
 
         played = playing = true;
+        preview = isPreview;
         freezeFinished = false;
         returnElapsed = 0f;
         cameraLocalPosition = playerCamera.transform.localPosition;
@@ -93,7 +100,7 @@ public class FreezeRevealCutscene : MonoBehaviour
         }
         ClearInput();
         director.timeUpdateMode = DirectorUpdateMode.Manual;
-        FollowFreeze();
+        if (!preview) FollowFreeze();
         director.time = 0;
         director.Play();
     }
@@ -103,6 +110,13 @@ public class FreezeRevealCutscene : MonoBehaviour
     private void LateUpdate()
     {
         if (!playing) return;
+        if (preview)
+        {
+            director.time = System.Math.Min(director.duration, director.time + Time.deltaTime);
+            director.Evaluate();
+            if (director.time >= director.duration) director.Stop();
+            return;
+        }
         FollowFreeze();
         double flightEnd = director.duration - returnDuration;
         if (freezeFinished)

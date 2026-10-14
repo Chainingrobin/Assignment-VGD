@@ -9,6 +9,8 @@ public class WaterFreezer : MonoBehaviour
     [SerializeField, Min(0.1f)] float duration = 4f;
     [SerializeField] AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] Transform freezeOrigin;
+    [SerializeField] ParticleSystem freezeParticles;
+    [SerializeField] Light freezeLight;
     [SerializeField] UnityEvent onFreezeStarted = new UnityEvent();
     [SerializeField] UnityEvent onFreezeFinished = new UnityEvent();
 
@@ -44,6 +46,8 @@ public class WaterFreezer : MonoBehaviour
         SetProgress(0f);
         ice.gameObject.SetActive(false);
         if (iceCollider) iceCollider.enabled = false;
+        if (freezeParticles != null) freezeParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        if (freezeLight != null) freezeLight.enabled = false;
     }
 
     public void Freeze()
@@ -60,6 +64,8 @@ public class WaterFreezer : MonoBehaviour
         Debug.Log("Freeze started");
         SetProgress(0f);
         ice.gameObject.SetActive(true);
+        if (freezeParticles != null) freezeParticles.Play();
+        if (freezeLight != null) freezeLight.enabled = true;
         onFreezeStarted.Invoke();
 
         for (float t = 0; t < duration; t += Time.deltaTime)
@@ -71,6 +77,8 @@ public class WaterFreezer : MonoBehaviour
 
         SetProgress(1f);
         if (iceCollider) iceCollider.enabled = true;
+        if (freezeParticles != null) freezeParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        if (freezeLight != null) freezeLight.enabled = false;
         onFreezeFinished.Invoke();
         Debug.Log("Freeze finished");
     }
@@ -80,5 +88,10 @@ public class WaterFreezer : MonoBehaviour
         Progress = Mathf.Clamp01(value);
         freezeProperties.SetFloat(FreezeProgress, Progress);
         iceRenderer.SetPropertyBlock(freezeProperties);
+        var bounds = iceRenderer.bounds;
+        float front = Mathf.Clamp01(Mathf.Lerp(-EdgeSoftness, 1f + EdgeSoftness, Progress));
+        var position = new Vector3(Mathf.Lerp(bounds.max.x, bounds.min.x, front), bounds.center.y + .7f, bounds.center.z);
+        if (freezeParticles != null) freezeParticles.transform.position = position;
+        if (freezeLight != null) freezeLight.transform.position = position + Vector3.up * 3f;
     }
 }

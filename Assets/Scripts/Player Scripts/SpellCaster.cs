@@ -85,6 +85,7 @@ public class SpellCaster : MonoBehaviour
             if (hit.collider.transform.IsChildOf(player)) continue;
             var rotation = Quaternion.Euler(0f, player.eulerAngles.y, 0f);
             var go = Instantiate(spell.aoePrefab, hit.point + Vector3.up * 0.02f, rotation);
+            TerrainAoE.AddTo(go, spell.element, player, aoeGroundMask);
             SpellElementLight.AddTo(go, spell.element, true);
             AoESpellHitbox.Create(go, player, spell.element, aoeRadius, aoeImpulse, aoeDamage);
             return;

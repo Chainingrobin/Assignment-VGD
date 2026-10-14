@@ -79,17 +79,20 @@ public class DayNightCycle : MonoBehaviour
     {
         if (sun == null) return;
         float daylight = Mathf.Clamp01(Mathf.Sin((timeOfDay - 6f) * Mathf.PI / 12f));
+        float solarHeight = Mathf.Sin((timeOfDay - 6f) * Mathf.PI / 12f);
+        float moonWeight = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.18f, 0.18f, solarHeight));
         sun.transform.rotation = Quaternion.Euler(timeOfDay * 15f - 90f, 170f, 0f);
         sun.intensity = Mathf.Lerp(nightIntensity, dayIntensity, daylight);
         sun.color = daylight > 0f ? Color.Lerp(sunsetColor, daylightColor, Mathf.Clamp01(daylight * 3f)) : nightColor;
         if (moon != null)
         {
             float moonHeight = Mathf.Clamp01(-Mathf.Sin((timeOfDay - 6f) * Mathf.PI / 12f));
-            moon.transform.rotation = Quaternion.Euler(timeOfDay * 15f + 90f, 170f, 0f);
-            moon.intensity = moonIntensity * moonHeight;
+            // Keep twilight moonlight above the horizon while it takes over from the sun.
+            moon.transform.rotation = Quaternion.Euler(Mathf.Max(12f, Mathf.Asin(moonHeight) * Mathf.Rad2Deg), 170f, 0f);
+            moon.intensity = moonIntensity * moonWeight;
             moon.color = moonlightColor;
-            RenderSettings.sun = moonHeight > 0f ? moon : sun;
-            if (moonVisual != null) moonVisual.gameObject.SetActive(moonHeight > 0f);
+            RenderSettings.sun = moon.intensity > sun.intensity ? moon : sun;
+            if (moonVisual != null) moonVisual.gameObject.SetActive(moonWeight > 0.05f);
         }
         RenderSettings.ambientLight = Color.Lerp(nightAmbient, dayAmbient, daylight);
         RenderSettings.reflectionIntensity = Mathf.Lerp(nightReflectionIntensity, dayReflectionIntensity, daylight);
@@ -100,6 +103,13 @@ public class DayNightCycle : MonoBehaviour
         RenderSettings.fogColor = Color.Lerp(nightAmbient, originalFog, daylight);
         if (runtimeSky != null && runtimeSky.HasProperty("_Exposure"))
             runtimeSky.SetFloat("_Exposure", Mathf.Lerp(nightSkyExposure, daySkyExposure, daylight));
+        if (runtimeSky != null && runtimeSky.HasProperty("_Day_cycle_time"))
+        {
+            runtimeSky.SetFloat("_Day_cycle_time", timeOfDay / 24f);
+            runtimeSky.SetFloat("_Sun_brightness", daylight * 2f);
+            runtimeSky.SetFloat("_Stars_intensity", moonWeight * 1.5f);
+            Shader.SetGlobalVector("_CartoonSunDirection", -sun.transform.forward);
+        }
     }
 
     private void OnDisable()
@@ -108,6 +118,7 @@ public class DayNightCycle : MonoBehaviour
         sun.transform.rotation = originalSunRotation;
         sun.color = originalSunColor;
         sun.intensity = originalSunIntensity;
+        Shader.SetGlobalVector("_CartoonSunDirection", -sun.transform.forward);
         RenderSettings.sun = originalRenderSun;
         if (moon != null) moon.intensity = 0f;
         if (moonVisual != null) moonVisual.gameObject.SetActive(false);

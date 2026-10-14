@@ -8,9 +8,11 @@ public class PlayerInteract : MonoBehaviour
     [SerializeField] InputActionReference interactAction;
     [SerializeField] TMP_Text promptText;
     [SerializeField] float range = 3f;
+    [SerializeField] BiomePreview[] biomePreviews;
 
     Interactable current;
     Collider lastHit;
+    BiomePreview currentPreview;
 
     void Awake()
     {
@@ -50,6 +52,7 @@ public class PlayerInteract : MonoBehaviour
             interactAction.action.performed -= OnInteract;
         if (current != null) current.SetHighlighted(false);
         current = null;
+        currentPreview = null;
         if (promptText != null) promptText.gameObject.SetActive(false);
     }
 
@@ -94,14 +97,21 @@ public class PlayerInteract : MonoBehaviour
         }
 
         if (promptText == null) return;
-        promptText.gameObject.SetActive(current != null);
+        currentPreview = null;
+        if (current == null && biomePreviews != null)
+            foreach (var preview in biomePreviews)
+                if (preview != null && preview.CanView(cam)) { currentPreview = preview; break; }
+        promptText.gameObject.SetActive(current != null || currentPreview != null);
         if (current != null)
             promptText.text = current.Prompt.Replace("F", "<mark=#245A8D><b> F </b></mark>");
+        else if (currentPreview != null)
+            promptText.text = "Press <mark=#245A8D><b> F </b></mark> to view area";
     }
 
     void OnInteract(InputAction.CallbackContext ctx)
     {
         Debug.Log($"F pressed. Target: {(current != null ? current.name : "none")}");
         if (current != null) current.Interact();
+        else if (currentPreview != null && currentPreview.CanView(cam)) currentPreview.View();
     }
 }
