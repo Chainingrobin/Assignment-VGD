@@ -28,7 +28,7 @@ public class CharacterAnimationController : MonoBehaviour
     [Header("Air")]
     [Tooltip("Vertical velocity below which the character counts as falling.")]
     [SerializeField] private float fallThreshold = -2f;
-    [Tooltip("How long a grounded change must hold before the Animator sees it (filters brief collision blips).")]
+    [Tooltip("Grace time for brief losses of support. Takeoff and landing are immediate.")]
     [SerializeField] private float groundedDebounce = 0.08f;
 
     [Header("Debug")]
@@ -48,7 +48,6 @@ public class CharacterAnimationController : MonoBehaviour
     private static readonly int IsJumpingHash = Animator.StringToHash("isJumping");
     private static readonly int IsFallingHash = Animator.StringToHash("isFalling");
 
-    private bool _wasGrounded = true;
     private bool _reportedGrounded = true;
     private bool _jumping;
     private float _groundedChangeTimer;
@@ -89,7 +88,7 @@ public class CharacterAnimationController : MonoBehaviour
     {
         if (controller == null || animator == null || firstPersonController == null || inputs == null) return;
 
-        Vector3 velocity = controller.velocity;
+        Vector3 velocity = firstPersonController.Velocity;
         Vector3 flatVelocity = new Vector3(velocity.x, 0f, velocity.z);
 
         // --- Movement: blend tree inputs ---
@@ -104,41 +103,40 @@ public class CharacterAnimationController : MonoBehaviour
         animator.SetBool(SprintingHash, inputs.sprint);
 
         // --- Grounded, debounced so a brief mid-air collision can't flicker the Animator ---
-        bool rising = velocity.y > 0.1f;
-        bool rawGrounded = controller.isGrounded && !rising;
+        bool rising = firstPersonController.VerticalVelocity > 0.1f && !firstPersonController.Grounded;
+        bool rawGrounded = firstPersonController.Grounded;
         // Takeoff must bypass debounce while the ground probe still overlaps the floor.
-        if (rising)
+        if (rawGrounded)
+        {
+            _reportedGrounded = true;
+            _groundedChangeTimer = 0f;
+        }
+        else if (rising)
         {
             _reportedGrounded = false;
             _groundedChangeTimer = 0f;
             _jumping = true;
         }
-        if (rawGrounded != _reportedGrounded)
+        else
         {
             _groundedChangeTimer += Time.deltaTime;
             if (_groundedChangeTimer >= groundedDebounce)
             {
                 _reportedGrounded = rawGrounded;
-                _groundedChangeTimer = 0f;
             }
-        }
-        else
-        {
-            _groundedChangeTimer = 0f;
         }
 
         bool grounded = _reportedGrounded;
-        bool falling = !grounded && velocity.y < fallThreshold;
+        bool falling = !grounded && _groundedChangeTimer >= firstPersonController.FallTimeout &&
+            firstPersonController.VerticalVelocity < fallThreshold;
 
         // Jump starts when we leave the ground moving upward,
         // and ends when we land or start descending.
-        if (_wasGrounded && !grounded && rising) _jumping = true;
         if (grounded || falling) _jumping = false;
 
         animator.SetBool(IsGroundedHash, grounded);
         animator.SetBool(IsJumpingHash, _jumping);
         animator.SetBool(IsFallingHash, falling);
 
-        _wasGrounded = grounded;
     }
 }

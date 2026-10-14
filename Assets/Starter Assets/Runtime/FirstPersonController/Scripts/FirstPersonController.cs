@@ -36,12 +36,15 @@ namespace StarterAssets
 		[Header("Player Grounded")]
 		[Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
 		public bool Grounded = true;
-		[Tooltip("Useful for rough ground")]
+		[Tooltip("Vertical adjustment to the ground probe's reach")]
 		public float GroundedOffset = -0.14f;
 		[Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
 		public float GroundedRadius = 0.5f;
 		[Tooltip("What layers the character uses as ground")]
 		public LayerMask GroundLayers;
+
+		public float VerticalVelocity => _verticalVelocity;
+		public Vector3 Velocity { get; private set; }
 
 		[Header("Cinemachine")]
 		[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
@@ -59,6 +62,7 @@ namespace StarterAssets
 		private float _rotationVelocity;
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
+		private RaycastHit _groundHit;
 
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
@@ -124,11 +128,17 @@ namespace StarterAssets
 
 		private void GroundedCheck()
 		{
-			// set sphere position, with offset
-			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
-			// The wide probe can still touch a landing while the jump is rising.
+			float radius = Mathf.Min(GroundedRadius, _controller.radius - _controller.skinWidth);
+			float lift = _controller.stepOffset + _controller.skinWidth;
+			float reach = Mathf.Clamp(GroundedRadius + GroundedOffset, _controller.skinWidth, lift);
+			Vector3 foot = transform.position + Vector3.up * (_controller.center.y - _controller.height * .5f);
+			// A downward probe with a walkable normal cannot mistake a wall for a landing.
+			bool supported = Physics.SphereCast(foot + Vector3.up * (radius + lift), radius, Vector3.down,
+				out _groundHit, lift + reach, GroundLayers, QueryTriggerInteraction.Ignore) &&
+				_groundHit.normal.y >= Mathf.Cos(_controller.slopeLimit * Mathf.Deg2Rad);
+			// Use the longer reach for downhill following; airborne landings require foot contact.
 			Grounded = _verticalVelocity <= 0f && (_controller.isGrounded ||
-				Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore));
+				supported && (Grounded || _groundHit.distance <= lift + _controller.skinWidth));
 		}
 
 		private void CameraRotation()
@@ -165,7 +175,7 @@ namespace StarterAssets
 			if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
 			// a reference to the players current horizontal velocity
-			float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+			float currentHorizontalSpeed = new Vector3(Velocity.x, 0.0f, Velocity.z).magnitude;
 
 			float speedOffset = 0.1f;
 			float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
@@ -197,7 +207,21 @@ namespace StarterAssets
 			}
 
 			// move the player
-			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+			bool wasGrounded = Grounded;
+			Vector3 startPosition = transform.position;
+			var collisions = _controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+			if ((collisions & CollisionFlags.Above) != 0 && _verticalVelocity > 0f) _verticalVelocity = 0f;
+			GroundedCheck();
+			if (wasGrounded && Grounded && !_controller.isGrounded && _groundHit.collider != null)
+			{
+				// Follow walkable downhill ground within the controller's step height.
+				float drop = Mathf.Max(0f, _groundHit.distance - _controller.stepOffset - _controller.skinWidth);
+				_controller.Move(Vector3.down * drop);
+				GroundedCheck();
+			}
+			if (Grounded) _verticalVelocity = -2f;
+			// Include the ground-following move so it cannot erase the frame's walking velocity.
+			Velocity = Time.deltaTime > 0f ? (transform.position - startPosition) / Time.deltaTime : Vector3.zero;
 		}
 
 		private void JumpAndGravity()
@@ -262,8 +286,13 @@ namespace StarterAssets
 			if (Grounded) Gizmos.color = transparentGreen;
 			else Gizmos.color = transparentRed;
 
-			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
-			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
+			var capsule = GetComponent<CharacterController>();
+			float radius = Mathf.Min(GroundedRadius, capsule.radius - capsule.skinWidth);
+			float lift = capsule.stepOffset + capsule.skinWidth;
+			float reach = Mathf.Clamp(GroundedRadius + GroundedOffset, capsule.skinWidth, lift);
+			Vector3 start = transform.position + Vector3.up * (capsule.center.y - capsule.height * .5f + radius + lift);
+			Gizmos.DrawWireSphere(start, radius);
+			Gizmos.DrawWireSphere(start - Vector3.up * (lift + reach), radius);
 		}
 	}
 }
