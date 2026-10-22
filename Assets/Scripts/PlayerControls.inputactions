@@ -7,6 +7,15 @@
             "id": "d6877bb1-b268-4667-b5df-6250efe9e20a",
             "actions": [
                 {
+                    "name": "Reload",
+                    "type": "Button",
+                    "id": "84f48f84-3114-4f14-80b7-a853c12f8ef1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "CyclePrevious",
                     "type": "Button",
                     "id": "9d27018b-d90e-4c03-b914-47049ca46213",
@@ -58,6 +67,17 @@
                 }
             ],
             "bindings": [
+                {
+                    "name": "",
+                    "id": "ea3bf166-9fa1-481b-8c43-0ad2558ad5ab",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reload",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
                 {
                     "name": "",
                     "id": "202260ac-0508-4233-8c17-7c6609f23d86",
