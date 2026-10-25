@@ -28,14 +28,18 @@ public class EnemyOverheadUI : MonoBehaviour
         badge.anchorMin = badge.anchorMax = content.pivot;
         visibility = badge.gameObject.AddComponent<CanvasGroup>();
         visibility.blocksRaycasts = visibility.interactable = false;
+        Image(Rect(badge, "Gilded rim", new Vector2(128, 11), Vector2.zero), new Color(0.06f, 0.035f, 0.015f, 0.95f));
+        Image(Rect(badge, "Gilded line", new Vector2(126, 9), Vector2.zero), FantasyUI.Gold);
         var track = Rect(badge, "Health", new Vector2(124, 7), new Vector2(0, 0));
-        Image(track, new Color(0.16f, 0.1f, 0.045f, 0.95f));
-        var gold = new Color(0.85f, 0.65f, 0.3f);
+        Image(track, FantasyUI.Inset);
         foreach (float side in new[] { -1f, 1f })
         {
-            var gem = Rect(track, "Gilded tip", new Vector2(9, 9), new Vector2(side * 66, 0));
-            gem.localRotation = Quaternion.Euler(0, 0, 45);
-            Image(gem, gold);
+            var rim = Rect(track, "Gilded tip rim", new Vector2(13, 13), new Vector2(side * 66, 0));
+            rim.localRotation = Quaternion.Euler(0, 0, 45);
+            Image(rim, new Color(0.06f, 0.035f, 0.015f, 0.95f));
+            var gem = Rect(rim, "Gilded tip", new Vector2(9, 9), Vector2.zero);
+            Image(gem, FantasyUI.Gold);
+            Image(Rect(gem, "Element gem", new Vector2(4, 4), Vector2.zero), ElementVisuals.ColorFor(target.Affinity));
         }
         var fill = Rect(track, "Fill", Vector2.zero, Vector2.zero);
         fill.anchorMin = Vector2.zero;
@@ -47,6 +51,7 @@ public class EnemyOverheadUI : MonoBehaviour
         alert.fontStyle = FontStyles.Bold;
         alert.color = new Color(1f, 0.8f, 0.15f);
         feedback = Text(badge, "Hit", "", 20, new Vector2(0, 15));
+        feedback.color = FantasyUI.Parchment;
         alert.gameObject.SetActive(false);
     }
 

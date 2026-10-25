@@ -60,18 +60,18 @@ The statue and each landmark preview are single-use per Play session. Stop and r
 
 | Area | Current prototype |
 |---|---|
-| World | Connected lowlands, armory, water crossing, ice region, and volcanic mountain/cavern |
+| World | Connected lowlands, armory, water crossing, ice region, and a volcano biome with lava fields and a boss caldera |
 | Movement | First-person walking, running, jumping, and traversal of reachable slopes |
 | Books and HUD | Four book pickups, affinity unlocking/switching, unlock notification, and active-element display |
 | Currency | Coin collection and wallet display |
 | Spells | Four elemental projectile and area-effect variants, collision/impact effects, local illumination, and area physics impulse |
 | Ice crossing | Statue targeting, outline/prompt, progressive freezing, particles, moving light, and collider activation |
 | Cameras | First-person play, freeze-front tracking, and two regional preview sequences |
-| Lighting | Day/night cycle, spell lighting, freeze lighting, and static volcanic accents |
+| Lighting | Day/night cycle, spell lighting, freeze lighting, and lava-lit volcanic lighting with local heat grading |
 
 Enemy encounters, spawning, elemental resistance/status effects, bosses, health, healing, spell charges, charge pickups, vendor services, and memory playback are planned development milestones. The vampire in the scene is an enemy visual reference. The spells provide damage hooks through `IDamageable`; they do not establish a complete enemy combat system.
 
-The design provisionally starts Wulang with Earth, while this demonstration scene starts with Fire and places all four books beside the armory. Regional boss drops and final book placement come with the progression work. Water drowning and lava damage are design rules awaiting health/hazard integration.
+The design provisionally starts Wulang with Earth, while this demonstration scene starts with Fire and places all four books beside the armory. Regional boss drops and final book placement come with the progression work. Water drowning and lava damage are design rules awaiting health/hazard integration; every lava surface already has a walkable `Lava hazard floor` collider for that system to use.
 
 ## Project map
 
@@ -80,7 +80,9 @@ The design provisionally starts Wulang with Earth, while this demonstration scen
 | `Assets/Scenes/SampleScene.unity` | Main playable scene |
 | `Assets/Scripts/Player Scripts/` | Affinities, books, coins, spells, HUD, and notifications |
 | `Assets/Scripts/Interaction System/` | Raycast targeting, interaction prompts, and outlines |
-| `Assets/Scripts/Events/` | Water freezing, camera playback, regional previews, day/night lighting, and lava flow |
+| `Assets/Scripts/Events/` | Water freezing, camera playback, regional previews, and day/night lighting |
+| `Assets/Shaders/Lava.shader`, `VolcanicRock.shader` | Self-animating molten lava with drifting crust; world-space triplanar volcanic rock |
+| `Assets/Environment/Volcano/` | Volcano materials, generated meshes, terrain layers, heat volumes and the terrain baseline |
 | `Assets/Starter Assets/Runtime/FirstPersonController/` | First-person controller |
 | `Assets/Starter Assets/Runtime/ThirdPersonController/Scripts/CharacterAnimationController.cs` | Character animation support used by the project |
 | `Assets/Scripts/PlayerControls.inputactions` | Element switching, spell casting, and interaction bindings |
@@ -97,7 +99,22 @@ The design provisionally starts Wulang with Earth, while this demonstration scen
 - **Interaction:** `PlayerInteract` checks the camera ray and manages the prompt. `Interactable` creates the blue outline and invokes the statue's configured event. `BiomePreview` checks landmark distance, viewing angle, and visibility.
 - **Spells:** `SpellCastInput` calls `SpellCaster`. `SpellProjectile` handles projectile collision and expiry; `AoESpellHitbox` applies one hit per target and pushes eligible rigidbodies. `TerrainAoE` fits Ice/Earth visuals to ground; `SpellElementLight` supplies illumination.
 - **Freeze reveal:** `WaterFreezer` advances the ice surface and enables its collider at completion. `FreezeRevealCutscene` coordinates the camera sequence, temporarily suspends controls/HUD, and restores them afterward.
-- **Environment:** `DayNightCycle` updates sun, moon, ambient illumination, sky, fog color, and reflections. `LavaFlow` animates volcanic surfaces.
+- **Environment:** `DayNightCycle` updates sun, moon, ambient illumination, sky, fog color, and reflections. The `Game/Lava` shader animates every lava surface itself.
+
+## Volcano biome
+
+The volcano east of the armory is baked editable scene content under `Redwood Lava Cavern`, built by **Wulang > Volcano > Rebuild volcano biome** (`VolcanoBiomeBuilder`).
+
+- **Lava fields:** a heat field of lava-flow lobes spreads from the cone, so the biome has an organic edge rather than a ring. Flat-topped, dark basalt flow tongues with walkable fronts cross lighter ash. Two lava rivers run in carved channels into a crusted lava lake. Three cinder cones stand in the field, the largest with a lava-filled breach, alongside a basalt-columned mesa, glowing fissures, basalt spires, steaming fumaroles, drifting ash and embers.
+- **Burnt forest edge:** the forest thins toward the flows, then turns into charred, leafless trees with faint ember-lit bark, and is gone on the hot ground.
+- **Volcanic highlands:** the needle ranges behind the cone are smoothed into ridged massifs, with two smoking stratovolcanoes whose lava flows run down their gullies. Their cliffs use basalt-column paint.
+- **Volcano:** a 100 m stratovolcano with an open, smoking crater. A lava cascade spills from a rim notch down its south-west flank into the flank river.
+- **Lava tube:** the west entrance is a 50 m tube with a walkway beside the lava that drains out of the caldera and becomes the outer river.
+- **Boss caldera:** a 30 m raised island of cracked stone sits in a lava moat, reached by a causeway from the tube, with four broken basalt pillars for cover. A wide lavafall pours from a vent opposite the entrance, open to the sky above. `Boss caldera/Boss spawn point` faces the entrance and `Boss arena bounds` is a trigger covering the island, both ready for the boss encounter.
+
+Rebuilding is repeatable: the first build stores the untouched terrain region, paint, grass and trees in `Assets/Environment/Volcano/Terrain baseline v2.bytes`, and every build sculpts from it. If you ever re-run `MountainLandscapeBuilder`, run the volcano rebuild afterwards.
+
+**Wulang > Cinematics > Author smooth cinematics** rebuilds both landmark previews as dense, banking drone flights with lens moves and mild handheld noise, checking that neither camera path clips terrain or rock. The freeze reveal is a crane move driven by the freeze's progress: it waits by the statue until the ice reaches the channel, chases the front, then rises for a held wide shot of the frozen river. Run **Wulang > Volcano > Run volcano checks (Edit mode)** with the Editor focused; it walks the route from the lava fields into the arena, checks the player capsule fits, confirms a player can climb out of every lava surface, and repeats the held-jump test on the volcano floors.
 
 ## Dependencies and builds
 
@@ -109,6 +126,7 @@ Imported environment and effects include Idyllic Fantasy Nature, Stylized Fantas
 
 ## Verification and troubleshooting
 
+- **Terrain fails to load after cloning ("Unknown error occurred while loading"):** older commits stored the binary terrain assets as text, and Git stripped bytes from them. `.gitattributes` now marks them binary; commit the intact local copies so the repository holds working terrain.
 - **Missing models, textures, or tiny placeholder files:** run `git lfs pull`, then let Unity finish importing. Preserve `.meta` files so asset references remain intact.
 - **Controls do not respond:** click the Game view. During a cinematic, controls and HUD are intentionally suspended until playback finishes.
 - **No statue prompt:** aim at the unused statue within the configured 3 m raycast range. Restart Play mode if it has already been activated.

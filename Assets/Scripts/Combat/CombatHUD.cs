@@ -17,13 +17,21 @@ public class CombatHUD : MonoBehaviour
 
     private void Start()
     {
-        var gold = new Color(0.88f, 0.7f, 0.38f);
         foreach (var label in GetComponentsInChildren<TMP_Text>(true))
         {
-            label.color = gold;
+            label.font = TMP_Settings.defaultFontAsset;
+            label.color = label == projectileCount || label == areaCount ? FantasyUI.Parchment : FantasyUI.Gold;
             label.characterSpacing = 2f;
+            label.outlineWidth = 0.15f;
+            label.outlineColor = new Color32(12, 7, 4, 255);
         }
-        reloadFill.color = recoveryFill.color = gold;
+        // The cards are scene-authored flat panels; dress them as gilded plaques.
+        for (int i = 0; i < transform.childCount; i++) FantasyUI.Panel((RectTransform)transform.GetChild(i));
+        foreach (var fill in new[] { reloadFill, recoveryFill })
+        {
+            fill.color = FantasyUI.Gold;
+            fill.transform.parent.GetComponent<UnityEngine.UI.Image>().color = FantasyUI.Inset;
+        }
     }
 
     private void Update()

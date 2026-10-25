@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 using UnityEngine.Timeline;
 using Unity.Cinemachine;
 
@@ -65,21 +66,8 @@ public static class BiomeCinematicSetup
         shotObject.transform.position = positions[0]; shotObject.transform.LookAt(targets[0]);
         var animator = shotObject.AddComponent<Animator>(); animator.applyRootMotion = false;
         var clip = new AnimationClip { name = name + " Flight", frameRate = 60 };
-        float[] times = { 0, 2.7f, 5.1f, 7.1f, 8.5f };
-        var positionCurves = new[] { new AnimationCurve(), new AnimationCurve(), new AnimationCurve() };
-        var rotationCurves = new[] { new AnimationCurve(), new AnimationCurve(), new AnimationCurve(), new AnimationCurve() };
-        Quaternion last = Quaternion.identity;
-        for (int i = 0; i < times.Length; i++)
-        {
-            var q = Quaternion.LookRotation(targets[i] - positions[i]);
-            if (i > 0 && Quaternion.Dot(last, q) < 0) q = new Quaternion(-q.x, -q.y, -q.z, -q.w);
-            for (int k = 0; k < 3; k++) positionCurves[k].AddKey(times[i], positions[i][k]);
-            for (int k = 0; k < 4; k++) rotationCurves[k].AddKey(times[i], q[k]);
-            last = q;
-        }
-        for (int k = 0; k < 3; k++) SetCurve(clip, "m_LocalPosition." + "xyz"[k], positionCurves[k]);
-        for (int k = 0; k < 4; k++) SetCurve(clip, "m_LocalRotation." + "xyzw"[k], rotationCurves[k]);
-        clip.EnsureQuaternionContinuity(); AssetDatabase.CreateAsset(clip, Folder + name + " Flight.anim");
+        KeyFlight(clip, new[] { 0, 2.7f, 5.1f, 7.1f, 8.5f }, positions, targets);
+        AssetDatabase.CreateAsset(clip, Folder + name + " Flight.anim");
         var timeline = ScriptableObject.CreateInstance<TimelineAsset>(); AssetDatabase.CreateAsset(timeline, Folder + name + ".playable");
         var animationTrack = timeline.CreateTrack<AnimationTrack>(null, "Drone flight"); animationTrack.trackOffset = TrackOffset.ApplyTransformOffsets;
         var movement = animationTrack.CreateClip(clip); movement.start = 0; movement.duration = 9.5;
@@ -103,10 +91,120 @@ public static class BiomeCinematicSetup
         EditorUtility.SetDirty(timeline); return preview;
     }
 
-    static void SetCurve(AnimationClip clip, string property, AnimationCurve curve)
+    [MenuItem("Wulang/Cinematics/Author smooth cinematics")]
+    public static string Polish()
     {
-        for (int i = 0; i < curve.length; i++) { AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto); AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto); }
-        AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve("", typeof(Transform), property), curve);
+        if (Application.isPlaying) throw new InvalidOperationException("Author cinematics in Edit mode.");
+        Vector3 s = GameObject.Find("Ice statue").transform.position;
+        // High over the snowfield, down into the river channel south of the statue, a skim west along it, then an orbit onto the statue.
+        AuthorFlight("Ice Biome Preview", new[] { 0, 2.4f, 4.6f, 6.8f, 8.6f, 10.6f },
+            new[] { s + new Vector3(170, 80, -150), s + new Vector3(130, 22, -45), s + new Vector3(60, 12, -30), s + new Vector3(15, 7, -28), s + new Vector3(-12, 5, -10), s + new Vector3(4, 3.2f, 8) },
+            new[] { s + new Vector3(0, 5, -30), s + new Vector3(40, 8, -30), s + new Vector3(0, 6, -28), s + new Vector3(0, 2.5f, 0), s + new Vector3(0, 2.2f, 0), s + new Vector3(0, 2, 0) },
+            new[] { 62f, 56f, 52f, 48f, 44f, 42f });
+        VolcanoBiomeBuilder.RetargetPreview();
+        var reveal = new SerializedObject(GameObject.Find("FreezeRevealCutscene").GetComponent<FreezeRevealCutscene>());
+        // Hold the wide frozen-river shot before blending back to the player.
+        reveal.FindProperty("returnDuration").floatValue = 1.5f;
+        reveal.ApplyModifiedProperties();
+        Handheld((CinemachineCamera)reveal.FindProperty("droneCamera").objectReferenceValue, .5f);
+        AssetDatabase.SaveAssets(); EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+        return "Smooth banking flights, lens moves and handheld noise authored for both previews and the freeze reveal.";
+    }
+
+    // Rebuilds a preview's drone flight and timing; asserts the camera never clips terrain or colliders.
+    internal static void AuthorFlight(string name, float[] times, Vector3[] positions, Vector3[] targets, float[] fieldOfView)
+    {
+        var director = GameObject.Find(name).GetComponent<PlayableDirector>();
+        var timeline = (TimelineAsset)director.playableAsset;
+        var drone = (CinemachineCamera)new SerializedObject(director.GetComponent<FreezeRevealCutscene>()).FindProperty("droneCamera").objectReferenceValue;
+        var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(Folder + name + " Flight.anim");
+        var path = Spline(times, positions);
+        for (float t = 0; t <= times[^1]; t += .1f)
+        {
+            var p = Sample(path, t);
+            float ground = Terrain.activeTerrain.SampleHeight(p) + Terrain.activeTerrain.transform.position.y;
+            UnityEngine.Assertions.Assert.IsTrue(p.y - ground > 2f, name + " flies through terrain at " + t.ToString("0.0") + " s, " + p);
+            UnityEngine.Assertions.Assert.IsFalse(Physics.CheckSphere(p, .8f, ~0, QueryTriggerInteraction.Ignore), name + " clips geometry at " + t.ToString("0.0") + " s, " + p);
+        }
+        Undo.RecordObjects(new UnityEngine.Object[] { clip, timeline, drone.transform }, "Author smooth flight");
+        KeyFlight(clip, times, positions, targets, fieldOfView);
+        double end = times[^1] + .4;
+        foreach (var track in timeline.GetOutputTracks())
+            foreach (var timelineClip in track.GetClips())
+            {
+                timelineClip.duration = end;
+                // Short blends: a long one swings the camera across the map between the player and the drone.
+                if (track is CinemachineTrack) { timelineClip.easeInDuration = .5; timelineClip.easeOutDuration = .5; }
+            }
+        drone.transform.position = positions[0];
+        drone.transform.LookAt(targets[0]);
+        Handheld(drone, .6f);
+        EditorUtility.SetDirty(clip); EditorUtility.SetDirty(timeline);
+    }
+
+    // Dense drone flight: unclamped splines through position and aim keys, sampled at 30 Hz, banking into turns.
+    internal static void KeyFlight(AnimationClip clip, float[] times, Vector3[] positions, Vector3[] targets, float[] fieldOfView = null)
+    {
+        clip.ClearCurves();
+        var path = Spline(times, positions);
+        var aim = Spline(times, targets);
+        var fov = fieldOfView == null ? null : Smooth(times, fieldOfView);
+        var position = new[] { new AnimationCurve(), new AnimationCurve(), new AnimationCurve() };
+        var rotation = new[] { new AnimationCurve(), new AnimationCurve(), new AnimationCurve(), new AnimationCurve() };
+        var lens = new AnimationCurve();
+        Quaternion last = Quaternion.identity;
+        float bank = 0;
+        const float step = 1 / 30f;
+        int count = Mathf.CeilToInt(times[^1] / step);
+        for (int i = 0; i <= count; i++)
+        {
+            float t = Mathf.Min(i * step, times[^1]);
+            var p = Sample(path, t);
+            float yawRate = Mathf.DeltaAngle(Heading(path, aim, t - .15f), Heading(path, aim, t + .15f)) / .3f;
+            // Roll into turns like a drone, eased so it never snaps.
+            bank = Mathf.Lerp(bank, Mathf.Clamp(-yawRate * .08f, -9f, 9f), .12f);
+            var q = Quaternion.LookRotation(Sample(aim, t) - p) * Quaternion.Euler(0, 0, bank);
+            if (i > 0 && Quaternion.Dot(last, q) < 0) q = new Quaternion(-q.x, -q.y, -q.z, -q.w);
+            last = q;
+            for (int k = 0; k < 3; k++) position[k].AddKey(t, p[k]);
+            for (int k = 0; k < 4; k++) rotation[k].AddKey(t, q[k]);
+            if (fov != null) lens.AddKey(t, fov.Evaluate(t));
+        }
+        for (int k = 0; k < 3; k++) AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve("", typeof(Transform), "m_LocalPosition." + "xyz"[k]), position[k]);
+        for (int k = 0; k < 4; k++) AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve("", typeof(Transform), "m_LocalRotation." + "xyzw"[k]), rotation[k]);
+        if (fov != null) AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve("", typeof(CinemachineCamera), "Lens.FieldOfView"), lens);
+        clip.EnsureQuaternionContinuity();
+    }
+
+    internal static void Handheld(CinemachineCamera drone, float amplitude)
+    {
+        var noise = drone.GetComponent<CinemachineBasicMultiChannelPerlin>();
+        if (noise == null) noise = Undo.AddComponent<CinemachineBasicMultiChannelPerlin>(drone.gameObject);
+        noise.NoiseProfile = AssetDatabase.LoadAssetAtPath<NoiseSettings>("Packages/com.unity.cinemachine/Presets/Noise/Handheld_wideangle_mild.asset");
+        noise.AmplitudeGain = amplitude;
+        noise.FrequencyGain = .6f;
+        EditorUtility.SetDirty(noise);
+    }
+
+    static AnimationCurve Smooth(float[] times, float[] values)
+    {
+        var curve = new AnimationCurve();
+        for (int i = 0; i < times.Length; i++) curve.AddKey(times[i], values[i]);
+        // Auto, not ClampedAuto: velocity carries through keys instead of stopping at every turn.
+        for (int i = 0; i < curve.length; i++)
+        {
+            AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.Auto);
+            AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.Auto);
+        }
+        return curve;
+    }
+
+    static AnimationCurve[] Spline(float[] times, Vector3[] points) => new[] { 0, 1, 2 }.Select(k => Smooth(times, points.Select(p => p[k]).ToArray())).ToArray();
+    static Vector3 Sample(AnimationCurve[] spline, float t) => new(spline[0].Evaluate(t), spline[1].Evaluate(t), spline[2].Evaluate(t));
+    static float Heading(AnimationCurve[] path, AnimationCurve[] aim, float t)
+    {
+        var d = Sample(aim, t) - Sample(path, t);
+        return Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg;
     }
 
     static void SetupFreezeEffects(SerializedObject source)

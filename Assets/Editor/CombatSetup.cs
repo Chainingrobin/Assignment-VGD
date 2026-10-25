@@ -51,6 +51,7 @@ public static class CombatSetup
         casterSettings.FindProperty("chainMaterial").objectReferenceValue = arc;
         casterSettings.ApplyModifiedProperties();
         BuildHUD(caster, hud);
+        LayoutHUD(hud);
         var reticle = Rect(hud.Content, "Combat reticle", new Vector2(14, 14), Vector2.zero);
         reticle.anchorMin = reticle.anchorMax = reticle.pivot = Vector2.one * 0.5f;
         Panel(Rect(reticle, "Horizontal", new Vector2(14, 2), new Vector2(0, -6)), new Color(1, 1, 1, 0.85f));
@@ -386,24 +387,36 @@ public static class CombatSetup
         var hud = Object.FindFirstObjectByType<ResponsiveHUD>();
         var oldTarget = hud.Content.Find("Target info");
         if (oldTarget != null) Undo.DestroyObjectImmediate(oldTarget.gameObject);
-        var rootHUD = hud.Content.Find("CombatHUD") as RectTransform;
-        rootHUD.sizeDelta = new Vector2(296, 74);
-        for (int i = 0; i < rootHUD.childCount; i++)
-        {
-            var card = (RectTransform)rootHUD.GetChild(i);
-            card.sizeDelta = new Vector2(144, 74);
-            card.anchoredPosition = new Vector2(i * 152, 0);
-            SetText(card.Find("Caption"), i == 0 ? "LMB" : "RMB", 16, new Vector2(12, -8), new Vector2(46, 22));
-            SetText(card.Find("Count"), i == 0 ? "15/15" : "5/5", 24, new Vector2(58, -5), new Vector2(80, 30));
-            SetText(card.Find("Recovery"), i == 0 ? "R" : "", 16, new Vector2(12, -38), new Vector2(110, 22));
-            var progress = (RectTransform)card.Find("Progress");
-            progress.anchoredPosition = new Vector2(12, -65);
-            progress.sizeDelta = new Vector2(120, 3);
-            ((RectTransform)progress.GetChild(0)).sizeDelta = progress.sizeDelta;
-        }
+        LayoutHUD(hud);
         AssetDatabase.SaveAssets();
         EditorSceneManager.MarkSceneDirty(hud.gameObject.scene);
         EditorSceneManager.SaveScene(hud.gameObject.scene);
+    }
+
+    // Margins clear the gilded frame's border and corner studs (FantasyUI.Frame).
+    [MenuItem("Wulang/Combat/Lay out combat HUD")]
+    public static void LayoutHUD() => LayoutHUD(Object.FindFirstObjectByType<ResponsiveHUD>());
+
+    private static void LayoutHUD(ResponsiveHUD hud)
+    {
+        var rootHUD = hud.Content.Find("CombatHUD") as RectTransform;
+        Undo.RecordObject(rootHUD, "Lay out combat HUD");
+        rootHUD.sizeDelta = new Vector2(322, 84);
+        for (int i = 0; i < rootHUD.childCount; i++)
+        {
+            var card = (RectTransform)rootHUD.GetChild(i);
+            Undo.RecordObjects(card.GetComponentsInChildren<Component>(true), "Lay out combat HUD");
+            card.sizeDelta = new Vector2(156, 84);
+            card.anchoredPosition = new Vector2(i * 166, 0);
+            SetText(card.Find("Caption"), i == 0 ? "LMB" : "RMB", 14, new Vector2(18, -14), new Vector2(50, 20));
+            SetText(card.Find("Count"), i == 0 ? "15/15" : "5/5", 26, new Vector2(66, -10), new Vector2(80, 32));
+            SetText(card.Find("Recovery"), i == 0 ? "R" : "", 14, new Vector2(18, -44), new Vector2(120, 20));
+            var progress = (RectTransform)card.Find("Progress");
+            progress.anchoredPosition = new Vector2(18, -66);
+            progress.sizeDelta = new Vector2(120, 4);
+            ((RectTransform)progress.GetChild(0)).sizeDelta = progress.sizeDelta;
+        }
+        EditorSceneManager.MarkSceneDirty(hud.gameObject.scene);
     }
 
     private static void SetText(Transform transform, string text, float fontSize, Vector2 position, Vector2 dimensions)

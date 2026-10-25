@@ -19,6 +19,7 @@ public class WaterFreezer : MonoBehaviour
     public float Progress { get; private set; }
     public Bounds IceBounds => iceRenderer.bounds;
     public float EdgeSoftness => iceRenderer.sharedMaterial.GetFloat("_EdgeSoftness");
+    public Vector3 Origin => freezeOrigin != null ? freezeOrigin.position : ice.position;
 
     Renderer iceRenderer;
     MaterialPropertyBlock freezeProperties;

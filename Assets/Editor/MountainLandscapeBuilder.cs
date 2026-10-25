@@ -15,7 +15,7 @@ public static class MountainLandscapeBuilder
     const string LavaTextures = "Assets/Blink/Art/Textures/StylizedLavaTextures/";
     static float Smooth(float low, float high, float value) => Mathf.SmoothStep(0, 1, Mathf.InverseLerp(low, high, value));
     static float IceWeight(float x, float z) => 1 - Smooth(.72f, 1.16f, new Vector2((x - 650) / 365, (z - 210) / 290).magnitude);
-    static float VolcanoWeight(float x, float z) => 1 - Smooth(.62f, 1.05f, new Vector2((x - 845) / 285, (z - 675) / 275).magnitude);
+    internal static float VolcanoWeight(float x, float z) => 1 - Smooth(.62f, 1.05f, new Vector2((x - 845) / 285, (z - 675) / 275).magnitude);
 
     public static string Build()
     {
@@ -256,8 +256,8 @@ public static class MountainLandscapeBuilder
         mesh.Clear(); mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetTriangles(triangles, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds(); EditorUtility.SetDirty(mesh);
         var go = new GameObject("Molten mountain fissure " + index); go.transform.SetParent(root, false);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
-        go.AddComponent<MeshRenderer>().sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Environment/LavaCave/Flowing Lava.mat");
-        go.AddComponent<LavaFlow>();
+        // Shares the volcano's self-animating lava (VolcanoBiomeBuilder creates it).
+        go.AddComponent<MeshRenderer>().sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Environment/Volcano/River lava.mat");
         var lightGo = new GameObject("Fissure glow"); lightGo.transform.SetParent(go.transform, false);
         lightGo.transform.position = new Vector3(x, data.GetInterpolatedHeight(x / data.size.x, z / data.size.z) + 3, z);
         var light = lightGo.AddComponent<Light>(); light.type = LightType.Point; light.color = new Color(1,.22f,.025f); light.range = 34; light.intensity = 5; light.shadows = LightShadows.None;

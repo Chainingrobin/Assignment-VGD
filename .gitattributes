@@ -169,3 +169,11 @@ Packages/packages-lock.json linguist-generated
 
 # Exceptions for .asset files such as lightning pre-baking
 LightingData.asset     binary
+
+# Terrain data is always binary-serialized; eol=lf normalization strips CR bytes and corrupts it.
+Assets/New[[:space:]]Terrain.asset                                       binary
+Assets/TerrainData_*.asset                                               binary
+Assets/Environment/Mountains/Refined[[:space:]]mountain[[:space:]]terrain.asset binary
+Assets/ProceduralTerrainPainter/_Demo/TerrainData/*.asset                binary
+Assets/Idyllic[[:space:]]Fantasy[[:space:]]Nature/Demo/Settings/*_Terrain.asset binary
+Assets/Environment/Volcano/*.bytes                                       binary

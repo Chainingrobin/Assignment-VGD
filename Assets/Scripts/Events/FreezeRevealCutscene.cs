@@ -27,6 +27,7 @@ public class FreezeRevealCutscene : MonoBehaviour
     private bool freezeFinished;
     private float returnElapsed;
     private bool preview;
+    private Vector3 droneVelocity;
 
     public bool IsPlaying => playing;
     public bool CanPlay => !played && !playing;
@@ -100,7 +101,7 @@ public class FreezeRevealCutscene : MonoBehaviour
         }
         ClearInput();
         director.timeUpdateMode = DirectorUpdateMode.Manual;
-        if (!preview) FollowFreeze();
+        if (!preview) FollowFreeze(true);
         director.time = 0;
         director.Play();
     }
@@ -117,7 +118,7 @@ public class FreezeRevealCutscene : MonoBehaviour
             if (director.time >= director.duration) director.Stop();
             return;
         }
-        FollowFreeze();
+        FollowFreeze(false);
         double flightEnd = director.duration - returnDuration;
         if (freezeFinished)
         {
@@ -129,15 +130,32 @@ public class FreezeRevealCutscene : MonoBehaviour
         if (freezeFinished && returnElapsed >= returnDuration) director.Stop();
     }
 
-    private void FollowFreeze()
+    private void FollowFreeze(bool snap)
     {
         // shortcut: follows the current unrotated Plane's X axis; update the path and UV mapping if the river is rotated.
         var bounds = freezer.IceBounds;
         float softness = freezer.EdgeSoftness;
         float front = Mathf.Clamp01(Mathf.Lerp(-softness, 1f + softness, freezer.Progress));
-        float x = Mathf.Lerp(bounds.max.x, bounds.min.x, front);
-        droneCamera.transform.position = new Vector3(Mathf.Min(x + 65f, bounds.max.x), bounds.center.y + 35f, bounds.max.z - 25f);
-        droneCamera.transform.rotation = Quaternion.LookRotation(new Vector3(-65f, -35f, 0f), Vector3.up);
+        // shortcut: the visible channel runs 28 m south of the statue; derive it from the terrain if the river is reshaped.
+        var channel = freezer.Origin + new Vector3(0f, 0f, -28f);
+        channel.y = bounds.center.y + 2f;
+        // Wait near the statue, looking east, until the ice front rushes into the visible channel, then chase it.
+        var lead = new Vector3(Mathf.Min(Mathf.Lerp(bounds.max.x, bounds.min.x, front) - 15f, channel.x + 100f), channel.y, channel.z);
+        // A crane move: low and ahead of the ice, swinging over the north bank, then rising for a wide reveal of the frozen channel.
+        float arc = Mathf.SmoothStep(0f, 1f, freezer.Progress);
+        float distance = Mathf.Lerp(28f, 115f, arc * arc), height = Mathf.Lerp(5f, 70f, arc * arc);
+        var position = lead + Quaternion.Euler(0f, Mathf.Lerp(80f, 250f, arc), 0f) * new Vector3(0f, 0f, -distance) + Vector3.up * height;
+        var look = Vector3.Lerp(lead, channel, arc * arc * .6f);
+        var rotation = Quaternion.LookRotation(look - position);
+        var drone = droneCamera.transform;
+        if (snap)
+        {
+            droneVelocity = Vector3.zero;
+            drone.SetPositionAndRotation(position, rotation);
+            return;
+        }
+        drone.SetPositionAndRotation(Vector3.SmoothDamp(drone.position, position, ref droneVelocity, .25f),
+            Quaternion.Slerp(drone.rotation, rotation, 1f - Mathf.Exp(-6f * Time.deltaTime)));
     }
 
     private void OnStopped(PlayableDirector stoppedDirector) => RestorePlayer();

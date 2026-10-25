@@ -15,7 +15,8 @@ public static class MountainLandscapeChecks
         var source = AssetDatabase.LoadAssetAtPath<TerrainData>("Assets/New Terrain.asset");
         Assert.AreEqual(MountainLandscapeBuilder.Folder + "/Refined mountain terrain.asset", AssetDatabase.GetAssetPath(data));
         Assert.AreNotEqual(source, data); Assert.AreEqual(data, terrain.GetComponent<TerrainCollider>().terrainData);
-        Assert.AreEqual(15, data.terrainLayers.Length);
+        // VolcanoBiomeBuilder appends its own layers after these fifteen.
+        Assert.IsTrue(data.terrainLayers.Length >= 15);
         foreach (var texture in data.alphamapTextures)
             Assert.AreEqual(MountainLandscapeBuilder.Folder + "/Refined mountain terrain.asset", AssetDatabase.GetAssetPath(texture), "Terrain paint textures must be owned by the working asset.");
         int n = source.heightmapResolution, changed = 0, preserved = 0;
@@ -23,6 +24,7 @@ public static class MountainLandscapeChecks
         for (int z = 0; z < n; z++) for (int x = 0; x < n; x++)
         {
             Assert.IsTrue(actual[z,x] >= 0 && actual[z,x] <= 1);
+            if (VolcanoBiomeBuilder.Sculpts(x * source.size.x / (n - 1), z * source.size.z / (n - 1))) continue;
             if (old[z,x] * source.size.y <= 38) { Assert.IsTrue(Mathf.Abs(old[z,x] - actual[z,x]) < .000001f, "Preserve valley and gameplay ground heights."); preserved++; }
             else if (Mathf.Abs(old[z,x] - actual[z,x]) > .000001f) changed++;
         }
@@ -31,13 +33,14 @@ public static class MountainLandscapeChecks
         int ice = 0, snow = 0, basalt = 0;
         for (int z = 0; z < data.alphamapHeight; z++) for (int x = 0; x < data.alphamapWidth; x++)
         {
-            float sum = 0; for (int i = 0; i < 15; i++) sum += paint[z,x,i];
+            float sum = 0; for (int i = 0; i < data.alphamapLayers; i++) sum += paint[z,x,i];
             Assert.IsTrue(Mathf.Abs(sum - 1) < .025f, "Terrain painting must stay normalized within 8-bit texture rounding.");
             if (paint[z,x,12] > .25f) ice++; if (paint[z,x,5] > .35f) snow++; if (paint[z,x,14] > .5f) basalt++;
         }
         Assert.IsTrue(ice > 1000 && snow > 1000 && basalt > 1000);
-        foreach (var point in new[] { new Vector3(591,0,575),new Vector3(646,0,382),new Vector3(620,0,253),new Vector3(795,0,642) })
-            Assert.IsTrue(Mathf.Abs(data.GetInterpolatedHeight(point.x/1000,point.z/1000) - source.GetInterpolatedHeight(point.x/1000,point.z/1000)) < .01f, "Keep player spawn, statue, river and volcano ground intact.");
+        // The volcano and its lava fields are VolcanoBiomeBuilder's ground; VolcanoChecks covers them.
+        foreach (var point in new[] { new Vector3(591,0,575),new Vector3(646,0,382),new Vector3(620,0,253) })
+            Assert.IsTrue(Mathf.Abs(data.GetInterpolatedHeight(point.x/1000,point.z/1000) - source.GetInterpolatedHeight(point.x/1000,point.z/1000)) < .01f, "Keep player spawn, statue and river ground intact.");
         var root = GameObject.Find("Background mountain outcrops"); Assert.IsNotNull(root);
         Assert.IsTrue(root.GetComponentsInChildren<LODGroup>().Length > 20);
         foreach (var renderer in root.GetComponentsInChildren<Renderer>()) Assert.IsTrue(renderer.sharedMaterial != null && renderer.sharedMaterial.shader.isSupported);
@@ -66,7 +69,8 @@ public static class MountainLandscapeChecks
                 Assert.IsTrue(child.GetComponentInChildren<Light>().enabled);
             }
         }
-        Assert.IsTrue(caps > 0 && fissures > 3);
+        // Fissures on the volcanic ranges are replaced by VolcanoBiomeBuilder's mountain lava flows.
+        Assert.IsTrue(caps > 0);
         // Check the authored flight clips without playing their timelines or consuming the one-time previews.
         foreach (var preview in UnityEngine.Object.FindObjectsByType<BiomePreview>(FindObjectsSortMode.None))
         {
@@ -86,6 +90,6 @@ public static class MountainLandscapeChecks
             }
             finally { UnityEngine.Object.DestroyImmediate(dummy); }
         }
-        return "PASS: " + changed + " sharpened height samples, " + preserved + " preserved low-ground samples; normalized ice/snow/basalt painting; " + caps + " fitted snow caps, " + fissures + " grounded fissures; spawn/statue/river/volcano and both preview flights preserved.";
+        return "PASS: " + changed + " sharpened height samples, " + preserved + " preserved low-ground samples; normalized ice/snow/basalt painting; " + caps + " fitted snow caps, " + fissures + " grounded fissures; spawn/statue/river and both preview flights preserved.";
     }
 }
