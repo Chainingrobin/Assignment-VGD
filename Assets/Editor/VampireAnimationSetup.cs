@@ -132,6 +132,7 @@ public static class VampireAnimationSetup
         if (targets.Length == 0) throw new InvalidOperationException("No vampires in scene.");
         foreach (var target in targets)
         {
+            if (target.GetComponent<BossBrain>() != null) continue; // bosses have their own wiring check
             var animator = target.GetComponentInChildren<Animator>(true);
             if (target.GetComponent<VampireMelee>() == null || animator == null || !animator.isHuman || !animator.avatar.isValid)
                 throw new InvalidOperationException("Invalid vampire wiring: " + target.name);

@@ -66,18 +66,23 @@ public static class CombatSetup
         Selection.activeGameObject = training;
     }
 
-    private static GameObject Target(ElementType element, RuntimeAnimatorController controller, GameObject steam)
+    public const string VampireFbx = "Assets/Characters/Vampire/Vampire A Lusth.fbx";
+
+    // Builds an elemental combat target prefab around a Humanoid model. Vampires use the
+    // defaults; BossSetup passes its own model, prefab path and a lighter element tint.
+    internal static GameObject Target(ElementType element, RuntimeAnimatorController controller, GameObject steam,
+        string fbxPath = VampireFbx, string prefabPath = null, string label = "vampire", float tintAmount = 0.45f)
     {
-        var root = new GameObject(element + " vampire target");
-        var model = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Characters/Vampire/Vampire A Lusth.fbx"), root.transform);
-        model.name = "Vampire model";
+        var root = new GameObject(element + " " + label + " target");
+        var model = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath), root.transform);
+        model.name = label == "vampire" ? "Vampire model" : "Model";
         var animator = model.GetComponent<Animator>();
         animator.runtimeAnimatorController = controller;
         animator.applyRootMotion = false;
         var skin = model.GetComponentInChildren<SkinnedMeshRenderer>();
         var materials = skin.sharedMaterials;
-        var tint = Color.Lerp(Color.white, ElementVisuals.ColorFor(element), 0.45f);
-        var material = new Material(materials[0]) { name = element + " vampire skin" };
+        var tint = Color.Lerp(Color.white, ElementVisuals.ColorFor(element), tintAmount);
+        var material = new Material(materials[0]) { name = element + " " + label + " skin" };
         material.SetColor("_BaseColor", tint);
         material.EnableKeyword("_EMISSION");
         material.SetColor("_EmissionColor", ElementVisuals.ColorFor(element) * 0.7f);
@@ -146,7 +151,7 @@ public static class CombatSetup
         visualSettings.FindProperty("affinityEffect").objectReferenceValue = aura.gameObject;
         visualSettings.ApplyModifiedPropertiesWithoutUndo();
         ConfigureFeedback(root);
-        var prefab = PrefabUtility.SaveAsPrefabAsset(root, Folder + "/" + element + " vampire.prefab");
+        var prefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath ?? Folder + "/" + element + " vampire.prefab");
         Object.DestroyImmediate(root);
         return prefab;
     }

@@ -120,6 +120,11 @@ public class SpellCaster : MonoBehaviour
         return false;
     }
 
+    // Bosses cast the same elemental effects the player does, scaled up.
+    public GameObject ProjectilePrefab(ElementType element) => GetSpell(element).projectilePrefab;
+    public GameObject AreaPrefab(ElementType element) => GetSpell(element).aoePrefab;
+    public LayerMask GroundMask => aoeGroundMask;
+
     private ElementSpell GetSpell(ElementType element)
     {
         foreach (var s in spells)

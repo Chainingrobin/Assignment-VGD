@@ -17,29 +17,42 @@ public static class ElementalEffectsSetup
         if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Stop Play mode first.");
         if (!AssetDatabase.IsValidFolder(Folder)) AssetDatabase.CreateFolder("Assets/Combat", "Effects");
         foreach (var element in new[] { ElementType.Fire, ElementType.Ice, ElementType.Earth, ElementType.Lightning })
-        {
-            string path = "Assets/Combat/" + element + " vampire.prefab";
-            var root = PrefabUtility.LoadPrefabContents(path);
-            try
-            {
-                var visuals = new SerializedObject(root.GetComponent<CombatTargetVisuals>());
-                var skin = (SkinnedMeshRenderer)visuals.FindProperty("skin").objectReferenceValue;
-                Replace(visuals, "affinityEffect", Aura(element, root.transform, skin));
-                Replace(visuals, "frozenEffect", Frozen(root.transform, skin));
-                Replace(visuals, "groundedEffect", Grounded(root.transform));
-                Replace(visuals, "chargedEffect", Charged(root.transform, skin));
-                Replace(visuals, "stunEffect", Stars(root.transform));
-                visuals.FindProperty("arcMaterial").objectReferenceValue = Mat("Spark", "Spark5", true, 3f);
-                var burn = (GameObject)visuals.FindProperty("burnEffect").objectReferenceValue;
-                var oldEmbers = burn.transform.Find("Burn embers");
-                if (oldEmbers != null) Object.DestroyImmediate(oldEmbers.gameObject);
-                Embers(burn.transform, "Burn embers", skin, 30f, 1f);
-                visuals.ApplyModifiedPropertiesWithoutUndo();
-                PrefabUtility.SaveAsPrefabAsset(root, path);
-            }
-            finally { PrefabUtility.UnloadPrefabContents(root); }
-        }
+            ApplyTo("Assets/Combat/" + element + " vampire.prefab", element);
         AssetDatabase.SaveAssets();
+    }
+
+    // Upgrades one combat prefab's aura and status effects; also used for the bosses.
+    public static void ApplyTo(string path, ElementType element)
+    {
+        if (!AssetDatabase.IsValidFolder(Folder)) AssetDatabase.CreateFolder("Assets/Combat", "Effects");
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var visuals = new SerializedObject(root.GetComponent<CombatTargetVisuals>());
+            var skin = (SkinnedMeshRenderer)visuals.FindProperty("skin").objectReferenceValue;
+            Replace(visuals, "affinityEffect", Aura(element, root.transform, skin));
+            Replace(visuals, "frozenEffect", Frozen(root.transform, skin));
+            Replace(visuals, "groundedEffect", Grounded(root.transform));
+            Replace(visuals, "chargedEffect", Charged(root.transform, skin));
+            Replace(visuals, "stunEffect", Stars(root.transform));
+            visuals.FindProperty("arcMaterial").objectReferenceValue = Mat("Spark", "Spark5", true, 3f);
+            var burn = (GameObject)visuals.FindProperty("burnEffect").objectReferenceValue;
+            var oldEmbers = burn.transform.Find("Burn embers");
+            if (oldEmbers != null) Object.DestroyImmediate(oldEmbers.gameObject);
+            Embers(burn.transform, "Burn embers", skin, 30f, 1f);
+            visuals.ApplyModifiedPropertiesWithoutUndo();
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+
+    // An extra aura for a target that changes element (the final boss); starts hidden.
+    internal static GameObject ExtraAura(ElementType element, Transform root, SkinnedMeshRenderer skin)
+    {
+        var aura = Aura(element, root, skin);
+        aura.name = element + " phase aura";
+        aura.SetActive(false);
+        return aura;
     }
 
     private static void Replace(SerializedObject visuals, string field, GameObject effect)

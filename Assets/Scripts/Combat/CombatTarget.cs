@@ -39,6 +39,8 @@ public class CombatTarget : MonoBehaviour, IDamageable
     public bool IsStaggered => staggerRemaining > 0f;
     // Bosses resist ordinary stuns; combos still stagger them.
     public bool ResistsStatus => statusScale < 1f;
+    // Set by scripted moments (e.g. the final boss changing element); hits are ignored.
+    public bool Invulnerable { get; set; }
 
     public ElementType Affinity => affinity;
     public float Health { get; private set; }
@@ -97,6 +99,13 @@ public class CombatTarget : MonoBehaviour, IDamageable
 
     public void SetAffinity(ElementType element) => affinity = element;
 
+    // New Game+ bosses are tougher.
+    public void SetMaxHealthScale(float scale)
+    {
+        maxHealth *= scale;
+        Health = maxHealth;
+    }
+
     // A combo stagger ignores statusScale: it's the reliable way to interrupt a boss.
     public void Stagger(float seconds)
     {
@@ -124,7 +133,7 @@ public class CombatTarget : MonoBehaviour, IDamageable
 
     public void ReceiveSpell(float amount, ElementType element, Vector3 origin)
     {
-        if (IsDead || !float.IsFinite(amount) || amount <= 0f) return;
+        if (IsDead || Invulnerable || !float.IsFinite(amount) || amount <= 0f) return;
         float multiplier = Multiplier(element, affinity);
         float damage = amount * multiplier;
         bool resisted = multiplier < 1.5f && nonWeaknessMultiplier < 1f;
