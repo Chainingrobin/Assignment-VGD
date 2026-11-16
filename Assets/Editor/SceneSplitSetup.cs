@@ -157,6 +157,31 @@ public static class SceneSplitSetup
         return Ground(best);
     }
 
+    // An open, flat patch for a boss arena: no terrain trees within clearRadius and the gentlest
+    // slope around its edge, preferring spots near the requested centre.
+    public static Vector3 ClearSpot(Vector2 center, float searchRadius, float clearRadius)
+    {
+        var data = Terrain.activeTerrain.terrainData;
+        var trees = data.treeInstances.Select(t => new Vector2(t.position.x * data.size.x, t.position.z * data.size.z)).ToArray();
+        Vector2 best = center;
+        float bestScore = float.MaxValue;
+        for (float x = -searchRadius; x <= searchRadius; x += 5f)
+            for (float z = -searchRadius; z <= searchRadius; z += 5f)
+            {
+                var p = center + new Vector2(x, z);
+                int crowd = trees.Count(t => (t - p).sqrMagnitude < clearRadius * clearRadius);
+                float slope = 0f;
+                for (int i = 0; i < 12; i++)
+                {
+                    var q = p + new Vector2(Mathf.Cos(i * Mathf.PI / 6f), Mathf.Sin(i * Mathf.PI / 6f)) * clearRadius * 0.75f;
+                    slope = Mathf.Max(slope, data.GetSteepness(q.x / data.size.x, q.y / data.size.z));
+                }
+                float score = crowd * 5f + slope + (p - center).magnitude * 0.02f;
+                if (score < bestScore) { bestScore = score; best = p; }
+            }
+        return Ground(best);
+    }
+
     public static Vector3 Ground(Vector2 xz)
     {
         var terrain = Terrain.activeTerrain;

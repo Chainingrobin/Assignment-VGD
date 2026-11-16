@@ -14,6 +14,8 @@ public class HazardZone : MonoBehaviour
     [Tooltip("Drowning: after this many seconds inside, return the player to safe ground. 0 = never.")]
     [SerializeField, Min(0f)] private float returnAfter;
     [SerializeField] private string firstTimeLine;
+    [Tooltip("Lava: the molten surface mesh. When set, the player is 'inside' only while standing at or below it.")]
+    [SerializeField] private MeshCollider surface;
 
     private static Vector3 lastSafe;
     private static float lastSafeTime;
@@ -31,6 +33,16 @@ public class HazardZone : MonoBehaviour
         box.isTrigger = true;
     }
 
+    private void Start()
+    {
+        // The player wades into lava rather than walking on top of it.
+        var body = FindFirstObjectByType<CharacterController>();
+        if (surface != null && body != null) Physics.IgnoreCollision(body, surface);
+    }
+
+    private bool BelowSurface() =>
+        surface == null || surface.Raycast(new Ray(player.position + Vector3.up * 4f, Vector3.down), out _, 4.6f);
+
     private void Update()
     {
         if (player == null)
@@ -39,7 +51,7 @@ public class HazardZone : MonoBehaviour
             if (controller == null) return;
             player = controller.transform;
         }
-        bool isInside = box.bounds.Contains(player.position);
+        bool isInside = box.bounds.Contains(player.position) && BelowSurface();
         if (!isInside)
         {
             if (inside > 0f) occupied--;

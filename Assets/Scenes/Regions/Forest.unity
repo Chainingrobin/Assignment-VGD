@@ -322,6 +322,72 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1626821380}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &329603814
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1282928403}
+    m_Modifications:
+    - target: {fileID: 118430314104494507, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_Name
+      value: Lightning vampire
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 541
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 508
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7490712
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.6624896
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4004907956621703812, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+      propertyPath: trainingRespawnDelay
+      value: 90
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+--- !u!4 &329603815 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
+  m_PrefabInstance: {fileID: 329603814}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &414161842 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5952053335739452615, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
@@ -559,6 +625,72 @@ Transform:
   - {fileID: 745374271}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1182317239
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1282928403}
+    m_Modifications:
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 530
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 516
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.54833055
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.8362617
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2495833197411238131, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: trainingRespawnDelay
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4170316046134953792, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+      propertyPath: m_Name
+      value: Earth vampire
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+--- !u!4 &1182317240 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
+  m_PrefabInstance: {fileID: 1182317239}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1208299878 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1567854332233518056, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
@@ -593,6 +725,97 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &1282928402
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1282928403}
+  m_Layer: 0
+  m_Name: Region content
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1282928403
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1282928402}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1339640106}
+  - {fileID: 2082352135}
+  - {fileID: 1182317240}
+  - {fileID: 329603815}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1339640105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1339640106}
+  - component: {fileID: 1339640107}
+  m_Layer: 0
+  m_Name: Earth Guardian arena
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1339640106
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1339640105}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 450, y: 0.1, z: 822}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1966930234}
+  m_Father: {fileID: 1282928403}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1339640107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1339640105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c21b0d488ccba694c8146d0dc1b04ad3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossEncounter
+  boss: {fileID: 1966930235}
+  displayName: '[The Earth Guardian]'
+  defeatFlag: bossEarthDefeated
+  rewardPrefab: {fileID: 3830133275098272597, guid: 20b2793d4ae9cca4e9bd93990c669a4f, type: 3}
+  engageRadius: 20
+  autoEngage: 1
+  disguise: {fileID: 0}
+  revealEffect: {fileID: 0}
+  introLine: '[Earth Guardian: Another book-bearer, sent to take what is mine...]'
+  dyingLine: '[Earth Guardian (dying): You carry us... to him? Then you are already
+    lost...]'
 --- !u!1 &1626821378
 GameObject:
   m_ObjectHideFlags: 0
@@ -706,6 +929,83 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5557953483482567726, guid: e799705074ce62b409fe66d257fb55fb, type: 3}
   m_PrefabInstance: {fileID: 1692795659}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1966930233
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1339640106}
+    m_Modifications:
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7315323
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.6818068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4301360590806900851, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: m_Name
+      value: Earth Guardian (Maw)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949498259159006894, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+      propertyPath: arenaRadius
+      value: 26
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+--- !u!4 &1966930234 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2428875288222901962, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+  m_PrefabInstance: {fileID: 1966930233}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1966930235 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6949498259159006894, guid: 04dbf23c7aa0910438e30d52a5189c9e, type: 3}
+  m_PrefabInstance: {fileID: 1966930233}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c178a2257ad82546937c3f64019846e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossBrain
 --- !u!1001 &1974028430
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -805,6 +1105,73 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1001 &2082352134
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1282928403}
+    m_Modifications:
+    - target: {fileID: 335601954216747780, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_Name
+      value: Helper (Abe)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1550390771398671439, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: greeting
+      value: '[Abe: Wulang! You''re awake. Strike the beast with Lightning; earth
+        fears the storm.]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 566
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 596
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+--- !u!4 &2082352135 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8195405073995800562, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+  m_PrefabInstance: {fileID: 2082352134}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -812,3 +1179,4 @@ SceneRoots:
   - {fileID: 890587256}
   - {fileID: 96564725}
   - {fileID: 1626821380}
+  - {fileID: 1282928403}
