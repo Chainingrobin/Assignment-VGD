@@ -157,7 +157,7 @@ public static class CombatChecks
         Assert.IsTrue(target.IsGrounded, "Earth leaves enough time to follow up after 3.5 seconds");
         target.ReceiveSpell(1, ElementType.Lightning, target.transform.position);
         Equal(3, target.StunRemaining, "Earth then Lightning stuns for three seconds");
-        Assert.IsTrue(target.LastFeedback.Contains("SEISMIC"));
+        Assert.IsTrue(target.LastFeedback.Contains("STORM QUAKE"), "The Earth + Lightning combo is the Storm Quake");
         Assert.IsFalse(target.IsGrounded || target.IsCharged, "Seismic stun consumes the combination marks");
         Tick(target, 3.1f);
         Assert.IsFalse(target.IsStunned, "Stun expires");
@@ -337,7 +337,7 @@ public static class CombatChecks
         Assert.IsTrue(caster.CastProjectile());
         yield return new WaitForSeconds(0.7f);
         Assert.IsTrue(enemy.IsStunned && enemy.StunRemaining > 1f, "A real Lightning follow-up must produce seismic stun.");
-        Assert.AreEqual("SEISMIC STUN", enemy.LastFeedback);
+        Assert.AreEqual("STORM QUAKE", enemy.LastFeedback);
         Assert.AreEqual(0f, enemy.GetComponentInChildren<Animator>().speed);
         SeismicResult = "PASS: real Earth then Lightning projectiles pushed, marked and stunned the enemy and stopped its animation.";
         Debug.Log(SeismicResult);

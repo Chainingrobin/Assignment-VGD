@@ -85,10 +85,14 @@ public class NarrativeTrigger : MonoBehaviour
         if (!string.IsNullOrEmpty(captionTitle))
         {
             PlayerLock.Push();
+            // The HUD steps aside for chapter captions so the letterbox reads cleanly.
+            var hud = UIKit.HUDRoot() != null ? UIKit.HUDRoot().GetComponentInParent<Canvas>() : null;
+            if (hud != null) hud.enabled = false;
             var overlay = TransitionOverlay.Instance;
             yield return overlay.ShowCaption(captionTitle, captionBody);
             yield return new WaitForSecondsRealtime(Mathf.Clamp(captionBody.Length * 0.05f, 2.5f, 7f));
             yield return overlay.HideCaption();
+            if (hud != null) hud.enabled = true;
             PlayerLock.Pop();
         }
         if (memory != null) yield return memory.Play();

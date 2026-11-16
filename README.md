@@ -8,6 +8,8 @@ Wulang explores a world damaged by elemental corruption. Collectible books unloc
 **Repository:** https://github.com/Chainingrobin/Assignment-VGD  
 **Gameplay video:** Link to be added after recording.
 
+This branch is the **Assignment 3** prototype: the open world is split into a persistent World scene plus streamed story regions, with boss fights, a dialogue/objective/memory story layer, a final choice and two endings. All story text is a `[placeholder]` for the narrative pass.
+
 ## Quick start
 
 1. Install **Unity 6000.3.24f1** through Unity Hub. The exact version is recorded in `ProjectSettings/ProjectVersion.txt`.
@@ -20,86 +22,73 @@ Wulang explores a world damaged by elemental corruption. Collectible books unloc
    git lfs pull
    ```
 
-3. In Unity Hub, choose **Add project from disk** and select the repository root containing `Assets`, `Packages`, and `ProjectSettings`.
-4. Open it with the specified editor and allow the initial asset import and Package Manager resolution to finish.
-5. Open **`Assets/Scenes/SampleScene.unity`** and press **Play**. Click the Game view to control the player.
+3. In Unity Hub, choose **Add project from disk**, select the repository root, and open it with the specified editor.
+4. Open **`Assets/Scenes/MainMenu.unity`** and press **Play**, then choose **New Game** (or **Chapters** to start at any region).
 
-The repository contains imported asset demonstration scenes. `Assets/Scenes/SampleScene.unity` is the game scene and the enabled scene in Build Settings.
+Any region scene in `Assets/Scenes/Regions/` can also be played directly: it loads the shared World scene underneath and grants the story progress that region assumes (elements, defeated guardians).
+
+## Scenes and level streaming
+
+| Build order | Scene | Contents |
+|---|---|---|
+| 0 | `Scenes/MainMenu.unity` | New Game, chapter select in story order, New Game+ (after an ending), Quit |
+| 1 | `Scenes/World.unity` | The whole terrain, sky, day/night, player, HUD, statue/lake freeze and landmark cinematics |
+| 2 | `Scenes/Regions/Forest.unity` | Chapter I: Abe's armory camp, training and field vampires, Earth Guardian (Maw J Laygo) |
+| 3 | `Scenes/Regions/Ice.unity` | Chapter II: Ice Guardian (Mutant), Ice vampires, mountain-pass waystone |
+| 4 | `Scenes/Regions/Volcano.unity` | Chapter III: Fire Guardian (Warrok) in the caldera, Fire vampires, rift |
+| 5 | `Scenes/Regions/FinalArena.unity` | Chapter IV: floating sanctum, Abe/Ganfaul, the offer and both endings |
+
+The World stays loaded, so every region remains visible on the horizon. `RegionManager` streams region scenes additively: walking into the next region (only once its story flag is set) plays a landmark flight with the chapter title and recap while the region really loads and the previous one unloads. Locked regions push the player back with an elemental seal instead of a UI border; the unfrozen lake drowns (damage, then back to shore) and lava burns.
+
+## Story progression
+
+1. **Forest:** wake with Lightning, meet Abe, defeat the **Earth Guardian** (weak to Lightning) and claim Earth. The ice statue then freezes the lake.
+2. **Ice:** cross the frozen lake, defeat the **Ice Guardian** with the Earth + Lightning **Storm Quake** combo, claim Ice, take the mountain-pass waystone.
+3. **Volcano:** enter the caldera through the lava tube, defeat the **Fire Guardian** (weak to Ice), claim Fire, step into the rift.
+4. **Final arena:** Abe offers Wulang her past in exchange for the elements. **Kneel** for the Submission ending, or **refuse** to fight **Ganfaul**, whose element changes every quarter of his health (only the current weakness hurts him), for the Truth ending.
+
+Each element claim replays a **memory echo** (the world desaturates and ghosts of Wulang and Abe act it out). Vampires drop Wubucks; Abe sells healing potions at a camp in every region.
 
 ## Controls
 
-| Input | Current behavior |
+| Input | Behaviour |
 |---|---|
-| WASD | Move |
-| Mouse | Look and aim |
-| Left Shift | Run |
-| Space | Jump |
-| Q / E | Select the previous / next unlocked element |
-| Left mouse | Cast the selected elemental projectile |
-| Right mouse | Cast the selected elemental area spell on valid ground |
-| F | Activate the outlined statue or request an eligible landmark preview |
-| Touch a book | Collect it and unlock its element |
-| Touch a coin | Collect it and increase the wallet |
+| WASD / Mouse / Left Shift / Space | Move, look, run, jump |
+| Q / E | Previous / next unlocked element |
+| Left mouse / Right mouse | Element projectile / element area spell |
+| R | Reload projectile charges |
+| F | Interact: Abe's shop, statue, waystone, rift, lore notes, landmark previews |
+| H | Drink a healing potion |
+| Tab | Satchel and journal (items, memories and lore) |
+| Esc | Pause: Resume, Restart Region, Main Menu, Quit |
+| Space / Enter / F / click | Advance dialogue; 1-9 or click to pick a choice |
 
-`R` reload, potion use, and trading belong to the planned resource systems and currently have no gameplay binding. Casting is currently unrestricted by charges.
+## Systems (Assignment 3)
 
-## Suggested demonstration
-
-1. Explore the lowlands and armory. The prototype begins with **Fire** available.
-2. Collect the books beside the armory. Watch the unlock notification, then use Q/E to change the active element shown on the HUD.
-3. Collect the nearby Yeopjeon coin; the wallet increases by one.
-4. Try both spell modes. Projectiles travel and produce impact effects; area spells create elemental effects and an impulse on eligible physical objects. Ice and Earth area effects follow uneven ground.
-5. Approach the statue at the water crossing. Aim at it within interaction range until the **blue outline** and **Press F** prompt appear, then press F.
-6. Watch the freeze-front camera sequence. After the six-second freeze completes and control returns, walk across the enabled ice surface.
-7. Look toward the ice-region or volcanic landmark from a valid position. Press F when the area-preview prompt appears to play its Cinemachine/Timeline sequence.
-8. Observe spell illumination, the moving freeze light, and the changing sun/moon lighting. The current scene's full day/night cycle lasts **three real minutes**.
-
-The statue and each landmark preview are single-use per Play session. Stop and restart Play mode to repeat them and reset collected books and coins.
-
-## Development status
-
-| Area | Current prototype |
+| Area | Scripts |
 |---|---|
-| World | Connected lowlands, armory, water crossing, ice region, and a volcano biome with lava fields and a boss caldera |
-| Movement | First-person walking, running, jumping, and traversal of reachable slopes |
-| Books and HUD | Four book pickups, affinity unlocking/switching, unlock notification, and active-element display |
-| Currency | Coin collection and wallet display |
-| Spells | Four elemental projectile and area-effect variants, collision/impact effects, local illumination, and area physics impulse |
-| Ice crossing | Statue targeting, outline/prompt, progressive freezing, particles, moving light, and collider activation |
-| Cameras | First-person play, freeze-front tracking, and two regional preview sequences |
-| Lighting | Day/night cycle, spell lighting, freeze lighting, and lava-lit volcanic lighting with local heat grading |
+| Story state | `Progress/StoryStateManager` (flags, persists across scenes), `FlagGate`, `RegionStart` |
+| Level streaming | `Progress/RegionManager`, `RegionTravel`, `UI/TransitionOverlay` |
+| Dialogue | `Story/DialogueData` (ScriptableObject per conversation), `DialogueManager` (logic, typewriter, choices), `DialogueUI` (view) |
+| Objectives | `Story/ObjectiveManager` (HUD tracker), `RegionObjectives` (per-region list derived from flags) |
+| Narrative beats | `Story/NarrativeTrigger` (zone / interact / start / flag, fires once), `MemoryEcho`, `EndingController` |
+| Bosses | `Bosses/BossBrain` (attack lists: melee, element projectiles, element ground attacks with warnings), `BossEncounter`, `BossProjectile`, `ElementPhases`, `UI/BossHealthBar` |
+| Combat additions | `Combat/StormQuake` (Earth + Lightning combo), `CombatTarget` death event, stagger, status scaling, resistance |
+| Player | `PlayerHealth` (HP, death and respawn), `Items/PlayerInventory` (potions on H, tomes), `ItemData`, `LootDrop`, `Merchant`, `World/HazardZone` |
+| UI | `UI/MainMenu`, `PauseMenu`, `InventoryUI`, `ShopUI`, `Subtitle`, `UIKit` |
 
-Enemy encounters, spawning, elemental resistance/status effects, bosses, health, healing, spell charges, charge pickups, vendor services, and memory playback are planned development milestones. The vampire in the scene is an enemy visual reference. The spells provide damage hooks through `IDamageable`; they do not establish a complete enemy combat system.
+### Rebuilding content (Editor menus)
 
-The design provisionally starts Wulang with Earth, while this demonstration scene starts with Fire and places all four books beside the armory. Regional boss drops and final book placement come with the progression work. Water drowning and lava damage are design rules awaiting health/hazard integration; every lava surface already has a walkable `Lava hazard floor` collider for that system to use.
-
-## Project map
-
-| Location | Purpose |
+| Menu | Builds |
 |---|---|
-| `Assets/Scenes/SampleScene.unity` | Main playable scene |
-| `Assets/Scripts/Player Scripts/` | Affinities, books, coins, spells, HUD, and notifications |
-| `Assets/Scripts/Interaction System/` | Raycast targeting, interaction prompts, and outlines |
-| `Assets/Scripts/Events/` | Water freezing, camera playback, regional previews, and day/night lighting |
-| `Assets/Shaders/Lava.shader`, `VolcanicRock.shader` | Self-animating molten lava with drifting crust; world-space triplanar volcanic rock |
-| `Assets/Environment/Volcano/` | Volcano materials, generated meshes, terrain layers, heat volumes and the terrain baseline |
-| `Assets/Starter Assets/Runtime/FirstPersonController/` | First-person controller |
-| `Assets/Starter Assets/Runtime/ThirdPersonController/Scripts/CharacterAnimationController.cs` | Character animation support used by the project |
-| `Assets/Scripts/PlayerControls.inputactions` | Element switching, spell casting, and interaction bindings |
-| `Assets/Starter Assets/Runtime/InputSystem/StarterAssets.inputactions` | Movement and look bindings |
-| `Assets/Cutscenes/` | Cinematic assets |
-| `Assets/Resources/` and `Assets/Shaders/` | Runtime-loaded resources and custom shaders, including interaction/freezing support |
-| `Assets/Editor/` | Scene setup, preview, and targeted verification helpers |
-| `Packages/manifest.json` | Unity package dependencies |
-| `ProjectSettings/` | Editor, input, rendering, and build configuration |
+| **Wulang > Scenes > Split world into regions** | One-off: turned `SampleScene` into `World` + region scenes + `MainMenu` and set the build order |
+| **Wulang > Setup > Items, loot and hazards** | Item data, player inventory, vampire Wubucks drops, lake drowning |
+| **Wulang > Bosses > Build bosses** | Imports Maw, Mutant, Warrok, Ganfaul and Abe as Humanoid, builds their animator controllers and boss prefabs in `Assets/Bosses` |
+| **Wulang > Scenes > Populate regions** | Guardian arenas, Abe camps, field vampires, waystone and rift, lava hazards |
+| **Wulang > Scenes > Build final arena** | The floating sanctum, element pillars and final encounter |
+| **Wulang > Story > Lay placeholder story onto regions** | Dialogue, portraits, objectives, triggers, lore notes, memory echoes, endings (run after the arena builder) |
 
-### Main systems
-
-- **Collection and affinity:** `BookCollect` unlocks elements through `PlayerMagicAffinity`. `ElementSwitchInput` selects an unlocked element; HUD/notification components respond to its events. `CoinCollect` updates `PlayerCoins`.
-- **Interaction:** `PlayerInteract` checks the camera ray and manages the prompt. `Interactable` creates the blue outline and invokes the statue's configured event. `BiomePreview` checks landmark distance, viewing angle, and visibility.
-- **Spells:** `SpellCastInput` calls `SpellCaster`. `SpellProjectile` handles projectile collision and expiry; `AoESpellHitbox` applies one hit per target and pushes eligible rigidbodies. `TerrainAoE` fits Ice/Earth visuals to ground; `SpellElementLight` supplies illumination.
-- **Freeze reveal:** `WaterFreezer` advances the ice surface and enables its collider at completion. `FreezeRevealCutscene` coordinates the camera sequence, temporarily suspends controls/HUD, and restores them afterward.
-- **Environment:** `DayNightCycle` updates sun, moon, ambient illumination, sky, fog color, and reflections. The `Game/Lava` shader animates every lava surface itself.
+Boss animations come from the Mixamo Creature Pack (via the Paramnesia project) and the Mixamo Pro Magic Pack; Abe's talk clip is Kevin Iglesias' Human Basic Motions.
 
 ## Volcano biome
 
@@ -120,7 +109,7 @@ Rebuilding is repeatable: the first build stores the untouched terrain region, p
 
 The project uses **URP 17.3.0**, **Cinemachine 3.1.7**, **Input System 1.20.0**, **Timeline 1.8.13**, and Starter Assets. Package Manager resolves the complete dependency list from `Packages/manifest.json` and `Packages/packages-lock.json`.
 
-For a local build, open **File → Build Profiles**, select the target platform with its editor module installed, confirm that `Assets/Scenes/SampleScene.unity` is enabled, and build into `Builds/`. Keyboard and mouse are the documented controls; other control schemes and target platforms need their own validation.
+For a local build, open **File → Build Profiles**, select the target platform with its editor module installed, confirm the six scenes listed above are enabled in that order, and build into `Builds/`. Keyboard and mouse are the documented controls; other control schemes and target platforms need their own validation.
 
 Imported environment and effects include Idyllic Fantasy Nature, Stylized Fantasy Armory, Stylized Magic Books, PBR Statues, Yeopjeon, Stylized Rock Pack, Unique Projectiles Volume 1, AOE Magic Spells Vol.1, and Cartoon Sky. Third-party assets retain their respective licenses and attribution files; this README does not assign them a new license.
 
@@ -129,11 +118,14 @@ Imported environment and effects include Idyllic Fantasy Nature, Stylized Fantas
 - **Terrain fails to load after cloning ("Unknown error occurred while loading"):** older commits stored the binary terrain assets as text, and Git stripped bytes from them. `.gitattributes` now marks them binary; commit the intact local copies so the repository holds working terrain.
 - **Missing models, textures, or tiny placeholder files:** run `git lfs pull`, then let Unity finish importing. Preserve `.meta` files so asset references remain intact.
 - **Controls do not respond:** click the Game view. During a cinematic, controls and HUD are intentionally suspended until playback finishes.
-- **No statue prompt:** aim at the unused statue within the configured 3 m raycast range. Restart Play mode if it has already been activated.
+- **No statue prompt:** the statue only answers after the Earth Guardian is defeated; then aim at it within 3 m.
 - **No landmark prompt:** move within range, face the landmark, and check that unrelated geometry is not blocking the view. Each preview plays once per session.
 - **No visible time progression while working in another app:** focus the Game view; the project is not configured to run in the background.
 - **Import or compilation errors:** check the Console, editor version, and Package Manager resolution before testing the scene.
 
-`Assets/Editor/` contains targeted checks for area visuals, cinematic wiring/playback, terrain, volcanic traversal, and character animation. These are Editor helper methods with individual Edit/Play mode requirements, rather than a single automated acceptance suite. Read each method's preconditions before invoking it. A complete verification pass should also include the demonstration route above and a launch test of the selected build target.
+Run **Wulang > Checks > Prototype structure (edit mode)** and, in Play mode, **Wulang > Checks > Combat and story rules (Play mode)** for the Assignment 3 systems. `Assets/Editor/` also contains targeted checks for area visuals, cinematic wiring/playback, terrain, volcanic traversal, and character animation. These are Editor helper methods with individual Edit/Play mode requirements, rather than a single automated acceptance suite. Read each method's preconditions before invoking it. A complete verification pass should also include the demonstration route above and a launch test of the selected build target.
 
 Keep `Assets`, `Packages`, `ProjectSettings`, and their `.meta` files in source control. Generated folders such as `Library`, `Temp`, `Logs`, and `Builds` are ignored. Large binary asset types use Git LFS through `.gitattributes`.
+
+
+Known issue: **Wulang > Volcano > Run volcano checks** reports that the walking route crosses lava at (774, 8.7, 644.4), just past the lava-tube walkway. This predates the Assignment 3 branch (it fails on the original `SampleScene` too).
