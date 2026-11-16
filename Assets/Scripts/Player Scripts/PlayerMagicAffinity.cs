@@ -97,6 +97,17 @@ public class PlayerMagicAffinity : MonoBehaviour
         }
     }
 
+    // The submission ending: Ganfaul takes the elements back one by one.
+    public void Revoke(ElementType element)
+    {
+        if (!unlockedElements.Remove(element)) return;
+        if (activeElement == element)
+        {
+            activeElement = unlockedElements.Count > 0 ? unlockedElements.First() : ElementType.None;
+            OnActiveElementChanged?.Invoke(activeElement);
+        }
+    }
+
     public void SetActiveElement(ElementType element)
     {
         if (!unlockedElements.Contains(element))

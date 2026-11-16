@@ -182,6 +182,30 @@ public class RegionManager : MonoBehaviour
         Busy = false;
     }
 
+    // Pause menu "Restart Region": reload the current region scene from its start.
+    public void RestartRegion()
+    {
+        if (!Busy && !string.IsNullOrEmpty(Current)) StartCoroutine(Reload());
+    }
+
+    private IEnumerator Reload()
+    {
+        Busy = true;
+        PlayerLock.Push();
+        var overlay = TransitionOverlay.Instance;
+        yield return overlay.FadeTo(1f, 0.6f, Color.black);
+        BossHealthBar.Hide();
+        if (SceneManager.GetSceneByName(Current).isLoaded) yield return SceneManager.UnloadSceneAsync(Current);
+        yield return SceneManager.LoadSceneAsync(Current, LoadSceneMode.Additive);
+        yield return null;
+        MoveToSpawn(Current);
+        if (PlayerHealth.Instance != null) PlayerHealth.Instance.HealFull();
+        RegionEntered?.Invoke(Current);
+        yield return overlay.FadeTo(0f, 0.8f);
+        PlayerLock.Pop();
+        Busy = false;
+    }
+
     // Placeholder recap built from story flags; the narrative pass replaces the wording.
     private static string RecapFor(Region region) => region.recap;
 

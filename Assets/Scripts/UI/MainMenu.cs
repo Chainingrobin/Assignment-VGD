@@ -22,6 +22,9 @@ public class MainMenu : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        // Arriving from an ending or the pause menu: clear any fade left on the persistent overlay.
+        var overlay = TransitionOverlay.Instance;
+        overlay.StartCoroutine(overlay.FadeTo(0f, 1f));
         if (FindFirstObjectByType<EventSystem>() == null)
             new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
 
