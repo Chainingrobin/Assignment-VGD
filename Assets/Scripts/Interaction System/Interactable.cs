@@ -15,7 +15,9 @@ public class Interactable : MonoBehaviour
     readonly List<GameObject> outlineObjects = new();
 
     public string Prompt => prompt;
-    public bool CanInteract => !(singleUse && used);
+    // A disabled Interactable (e.g. switched off by a FlagGate) can't be used.
+    public bool CanInteract => isActiveAndEnabled && !(singleUse && used);
+    public UnityEvent OnInteract => onInteract;
 
     public void SetHighlighted(bool highlighted)
     {

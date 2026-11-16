@@ -51,6 +51,17 @@ public class WaterFreezer : MonoBehaviour
         if (freezeLight != null) freezeLight.enabled = false;
     }
 
+    // A lake frozen earlier in this playthrough (or required by the region being played)
+    // starts frozen, skipping the reveal.
+    void Start()
+    {
+        if (!enabled || !StoryStateManager.Instance.HasFlag(Flags.LakeFrozen)) return;
+        started = true;
+        ice.gameObject.SetActive(true);
+        SetProgress(1f);
+        if (iceCollider) iceCollider.enabled = true;
+    }
+
     public void Freeze()
     {
         Debug.Log("Freeze called");
@@ -80,6 +91,7 @@ public class WaterFreezer : MonoBehaviour
         if (iceCollider) iceCollider.enabled = true;
         if (freezeParticles != null) freezeParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         if (freezeLight != null) freezeLight.enabled = false;
+        StoryStateManager.Instance.SetFlag(Flags.LakeFrozen);
         onFreezeFinished.Invoke();
         Debug.Log("Freeze finished");
     }

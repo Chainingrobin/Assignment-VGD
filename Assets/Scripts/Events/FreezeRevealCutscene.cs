@@ -63,6 +63,14 @@ public class FreezeRevealCutscene : MonoBehaviour
     public void PlayReveal() => StartPlayback(false);
     public void PlayPreview() => StartPlayback(true);
 
+    // Region transitions replay the landmark flight even if the player already viewed it.
+    public void PlayTransition()
+    {
+        if (playing) return;
+        played = false;
+        StartPlayback(true);
+    }
+
     private void StartPlayback(bool isPreview)
     {
         if (played || playing) return;

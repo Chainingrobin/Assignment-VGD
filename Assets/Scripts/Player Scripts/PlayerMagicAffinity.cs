@@ -26,7 +26,7 @@ public class PlayerMagicAffinity : MonoBehaviour
         }
     }
 
-    [SerializeField] private ElementType startingElement = ElementType.None;
+    [SerializeField] private ElementType startingElement = ElementType.Lightning;
 
     private readonly HashSet<ElementType> unlockedElements = new HashSet<ElementType>();
     private ElementType activeElement = ElementType.None;
@@ -57,6 +57,25 @@ public class PlayerMagicAffinity : MonoBehaviour
             UnlockElement(startingElement);
             SetActiveElement(startingElement);
         }
+
+        // Elements earned earlier in this playthrough (or required by the region being
+        // played) are story flags, so they survive scene loads and chapter select.
+        var story = StoryStateManager.Instance;
+        foreach (ElementType element in Enum.GetValues(typeof(ElementType)))
+            if (element != ElementType.None && story.HasFlag(Flags.Has(element))) UnlockElement(element);
+        story.OnFlagSet += OnFlagSet;
+    }
+
+    private void OnDestroy()
+    {
+        var story = StoryStateManager.Instance;
+        if (story != null) story.OnFlagSet -= OnFlagSet;
+    }
+
+    private void OnFlagSet(string flag)
+    {
+        foreach (ElementType element in Enum.GetValues(typeof(ElementType)))
+            if (element != ElementType.None && flag == Flags.Has(element)) UnlockElement(element);
     }
 
     public bool HasElement(ElementType element) => unlockedElements.Contains(element);
@@ -68,6 +87,7 @@ public class PlayerMagicAffinity : MonoBehaviour
         bool isNew = unlockedElements.Add(element);
         if (isNew)
         {
+            StoryStateManager.Instance.SetFlag(Flags.Has(element));
             OnElementUnlocked?.Invoke(element);
 
             // First book you ever pick up auto-equips, so the player

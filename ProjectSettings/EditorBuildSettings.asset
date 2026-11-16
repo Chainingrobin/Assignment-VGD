@@ -6,8 +6,23 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/MainMenu.unity
+    guid: 8a2b3fbeb9391e046984ffcfedf56d9d
+  - enabled: 1
+    path: Assets/Scenes/World.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Regions/Forest.unity
+    guid: 4eddf624674334045b3e869903dace5f
+  - enabled: 1
+    path: Assets/Scenes/Regions/Ice.unity
+    guid: 81df46d67182cfc4890c40677a18b75d
+  - enabled: 1
+    path: Assets/Scenes/Regions/Volcano.unity
+    guid: 09a8550cb71f611479bc01ea40125774
+  - enabled: 1
+    path: Assets/Scenes/Regions/FinalArena.unity
+    guid: 4ab5edae3d5daf24d864f692db0a0cfe
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
