@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -9,6 +10,10 @@ public class CombatTarget : MonoBehaviour, IDamageable
     [SerializeField] private Transform model;
     [SerializeField] private GameObject steamPrefab;
     [SerializeField] private GameObject seismicPrefab;
+    [Tooltip("Scales freeze, stun, grounded and charged durations. Bosses use ~0.3 so they can't be stun-locked.")]
+    [SerializeField, Min(0f)] private float statusScale = 1f;
+    [Tooltip("Damage multiplier for hits that aren't this target's weakness (1 = normal). The final boss uses this to force element switching.")]
+    [SerializeField, Range(0f, 1f)] private float nonWeaknessMultiplier = 1f;
 
     private Rigidbody body;
     private Animator animator;
@@ -23,6 +28,17 @@ public class CombatTarget : MonoBehaviour, IDamageable
     private float stunRemaining;
     private float groundedRemaining;
     private float chargedRemaining;
+    private float staggerRemaining;
+    private Collider bodyCollider;
+
+    // Fired once each time this target's health reaches zero (loot drops, boss rewards).
+    public event Action Died;
+    // Fired on every hit that landed, with the element and the damage actually dealt.
+    public event Action<ElementType, float> Hit;
+    // A combo can stagger even status-resistant bosses; while staggered they take bonus damage.
+    public bool IsStaggered => staggerRemaining > 0f;
+    // Bosses resist ordinary stuns; combos still stagger them.
+    public bool ResistsStatus => statusScale < 1f;
 
     public ElementType Affinity => affinity;
     public float Health { get; private set; }
@@ -37,7 +53,8 @@ public class CombatTarget : MonoBehaviour, IDamageable
     public bool IsCharged => chargedRemaining > 0f;
     public string LastFeedback { get; private set; }
     public float LastHitTime { get; private set; } = float.NegativeInfinity;
-    public Vector3 AimPoint => transform.position + Vector3.up;
+    // Collider centre, so scaled-up bosses are aimed at their body rather than their knees.
+    public Vector3 AimPoint => bodyCollider != null ? bodyCollider.bounds.center : transform.position + Vector3.up;
     public Vector3 HeadPosition => head != null ? head.position : transform.position + Vector3.up * 1.8f;
 
     private void Awake()
@@ -47,6 +64,7 @@ public class CombatTarget : MonoBehaviour, IDamageable
         animatorSpeed = animator != null ? animator.speed : 1f;
         if (animator != null && animator.isHuman) head = animator.GetBoneTransform(HumanBodyBones.Head);
         hitboxes = GetComponentsInChildren<Collider>();
+        bodyCollider = GetComponent<Collider>();
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
         Health = maxHealth;
@@ -67,13 +85,25 @@ public class CombatTarget : MonoBehaviour, IDamageable
         stunRemaining = Mathf.Max(0f, stunRemaining - seconds);
         groundedRemaining = Mathf.Max(0f, groundedRemaining - seconds);
         chargedRemaining = Mathf.Max(0f, chargedRemaining - seconds);
+        staggerRemaining = Mathf.Max(0f, staggerRemaining - seconds);
         if (burnRemaining > 0f)
         {
             float burningTime = Mathf.Min(seconds, burnRemaining);
             burnRemaining = Mathf.Max(0f, burnRemaining - seconds);
             LoseHealth(4f * burningTime);
         }
-        if (animator != null) animator.speed = IsFrozen || IsStunned ? 0f : animatorSpeed;
+        if (animator != null) animator.speed = IsFrozen || IsStunned || IsStaggered ? 0f : animatorSpeed;
+    }
+
+    public void SetAffinity(ElementType element) => affinity = element;
+
+    // A combo stagger ignores statusScale: it's the reliable way to interrupt a boss.
+    public void Stagger(float seconds)
+    {
+        if (IsDead) return;
+        staggerRemaining = Mathf.Max(staggerRemaining, seconds);
+        stunRemaining = Mathf.Max(stunRemaining, seconds);
+        if (animator != null) animator.speed = 0f;
     }
 
     public static float Multiplier(ElementType attack, ElementType target)
@@ -95,7 +125,11 @@ public class CombatTarget : MonoBehaviour, IDamageable
     public void ReceiveSpell(float amount, ElementType element, Vector3 origin)
     {
         if (IsDead || !float.IsFinite(amount) || amount <= 0f) return;
-        float damage = amount * Multiplier(element, affinity);
+        float multiplier = Multiplier(element, affinity);
+        float damage = amount * multiplier;
+        bool resisted = multiplier < 1.5f && nonWeaknessMultiplier < 1f;
+        if (resisted) damage *= nonWeaknessMultiplier;
+        if (IsStaggered) damage *= 1.5f;
         string reaction = "";
         bool slippery = element == ElementType.Earth && IsFrozen;
         bool seismic = (element == ElementType.Lightning && IsGrounded) || (element == ElementType.Earth && IsCharged);
@@ -115,28 +149,30 @@ public class CombatTarget : MonoBehaviour, IDamageable
         if (element == ElementType.Earth)
         {
             groundedRemaining = 4.5f;
-            stunRemaining = Mathf.Max(stunRemaining, 0.65f);
+            stunRemaining = Mathf.Max(stunRemaining, 0.65f * statusScale);
         }
         if (element == ElementType.Lightning)
         {
             chargedRemaining = 4.5f;
-            stunRemaining = Mathf.Max(stunRemaining, 1.25f);
+            stunRemaining = Mathf.Max(stunRemaining, 1.25f * statusScale);
         }
         if (seismic)
         {
             groundedRemaining = chargedRemaining = 0f;
-            stunRemaining = 3f;
-            reaction = "SEISMIC STUN";
+            reaction = "STORM QUAKE";
             if (seismicPrefab != null) Instantiate(seismicPrefab, AimPoint, Quaternion.identity);
+            StormQuake.Spawn(this, AimPoint);
         }
-        if (element == ElementType.Ice) frozenRemaining = 3f;
+        if (element == ElementType.Ice) frozenRemaining = 3f * statusScale;
         if (element == ElementType.Fire) burnRemaining = 4f;
 
+        if (resisted && string.IsNullOrEmpty(reaction)) reaction = $"RESISTED {damage:0.#}";
         LastFeedback = string.IsNullOrEmpty(reaction) ? $"{damage:0.#}" : reaction;
         LastHitTime = Time.time;
         LoseHealth(damage);
+        Hit?.Invoke(element, damage);
         if (!IsDead && element == ElementType.Earth) PushFrom(origin, slippery ? 27f : 18f);
-        if (animator != null) animator.speed = IsFrozen || IsStunned ? 0f : animatorSpeed;
+        if (animator != null) animator.speed = IsFrozen || IsStunned || IsStaggered ? 0f : animatorSpeed;
     }
 
     public void TransferBurn(float remaining)
@@ -157,9 +193,10 @@ public class CombatTarget : MonoBehaviour, IDamageable
 
     private void LoseHealth(float amount)
     {
+        if (IsDead) return;
         Health = Mathf.Max(0f, Health - amount);
         if (!IsDead) return;
-        frozenRemaining = burnRemaining = stunRemaining = groundedRemaining = chargedRemaining = 0f;
+        frozenRemaining = burnRemaining = stunRemaining = groundedRemaining = chargedRemaining = staggerRemaining = 0f;
         respawnRemaining = trainingRespawnDelay;
         body.linearVelocity = body.angularVelocity = Vector3.zero;
         body.isKinematic = true;
@@ -170,7 +207,9 @@ public class CombatTarget : MonoBehaviour, IDamageable
             animator.CrossFadeInFixedTime("Death", 0.12f, 0);
         }
         else if (model != null) model.gameObject.SetActive(false);
+        Died?.Invoke();
     }
+
 
     public void ResetTarget()
     {
@@ -180,7 +219,7 @@ public class CombatTarget : MonoBehaviour, IDamageable
         body.isKinematic = false;
         body.linearVelocity = body.angularVelocity = Vector3.zero;
         Health = maxHealth;
-        frozenRemaining = burnRemaining = stunRemaining = groundedRemaining = chargedRemaining = 0f;
+        frozenRemaining = burnRemaining = stunRemaining = groundedRemaining = chargedRemaining = staggerRemaining = 0f;
         LastFeedback = "";
         LastHitTime = float.NegativeInfinity;
         foreach (var hitbox in hitboxes) hitbox.enabled = true;

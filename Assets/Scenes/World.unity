@@ -195150,6 +195150,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
+--- !u!114 &1223496413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472278201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 674ee59c875f6eb43ad1390a6593c445, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
+  inputActions: {fileID: -944628639613478452, guid: d11c88abef902d845a57bb4ea81b5888, type: 3}
+  healingPotion: {fileID: 11400000, guid: e23cdac06a8c93143b4026d683868d08, type: 2}
+  tomes:
+  - {fileID: 11400000, guid: c155678366dc3844383904b829ffde6c, type: 2}
+  - {fileID: 11400000, guid: 11d9fac4d0110db44a546743d3c7995e, type: 2}
+  - {fileID: 11400000, guid: 172f07868d716fb44978f3c545beae81, type: 2}
+  - {fileID: 11400000, guid: 0c84590ce3af6664fabc3ee0357d75b7, type: 2}
 --- !u!1001 &1229163404
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -291584,6 +291603,76 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1781486937
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1781486940}
+  - component: {fileID: 1781486939}
+  - component: {fileID: 1781486938}
+  m_Layer: 2
+  m_Name: Lake drowning hazard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1781486938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781486937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e77ab4a2f48de0349a73e0d635a8de33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardZone
+  damagePerSecond: 12
+  element: 1
+  returnAfter: 1.5
+  firstTimeLine: '[The water is freezing. I can''t swim this.]'
+--- !u!65 &1781486939
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781486937}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 548, y: 34.9, z: 259}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &1781486940
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781486937}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 619.56464, y: -2.5499997, z: 253.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1781768570
 GameObject:
   m_ObjectHideFlags: 0
@@ -375854,6 +375943,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8616685848737228372, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1223496412}
+    - targetCorrespondingSourceObject: {fileID: 8616685848737228372, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1223496413}
   m_SourcePrefab: {fileID: 100100000, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
 --- !u!1001 &2063282813
 PrefabInstance:
@@ -383505,3 +383597,4 @@ SceneRoots:
   - {fileID: 1572733055}
   - {fileID: 477648939}
   - {fileID: 172129004}
+  - {fileID: 1781486940}

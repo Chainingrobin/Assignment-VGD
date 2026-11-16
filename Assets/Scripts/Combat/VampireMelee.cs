@@ -5,6 +5,7 @@ public class VampireMelee : MonoBehaviour
 {
     [SerializeField, Min(2f)] private float territoryRadius = 8f;
     [SerializeField, Min(8f)] private float pursuitRadius = 40f;
+    [SerializeField, Min(0f)] private float swipeDamage = 10f;
     private CombatTarget target;
     private EnemyDetection sight;
     private Rigidbody body;
@@ -12,6 +13,7 @@ public class VampireMelee : MonoBehaviour
     private Camera player;
     private float attackRemaining;
     private bool interrupted;
+    private bool swipeLanded;
     private float attackDuration = 3.1f;
     private float displayDuration = 3f;
     private Vector3 home;
@@ -104,6 +106,13 @@ public class VampireMelee : MonoBehaviour
             float elapsed = attackDuration - attackRemaining;
             if (elapsed >= 0.95f && elapsed < 1.4f && distance > 1.05f)
                 speed = Mathf.Min(1.5f, (distance - 1.05f) / Time.fixedDeltaTime);
+            // One damage check per swipe, when the claws come through (~1.2 s into the clip).
+            if (!swipeLanded && elapsed >= 1.2f)
+            {
+                swipeLanded = true;
+                if (distance <= 2.2f && Vector3.Angle(transform.forward, direction) < 60f && PlayerHealth.Instance != null)
+                    PlayerHealth.Instance.TakeDamage(swipeDamage, target.Affinity);
+            }
         }
         else if (sees)
         {
@@ -113,6 +122,7 @@ public class VampireMelee : MonoBehaviour
                 animator.SetFloat("Speed", 0f);
                 animator.CrossFadeInFixedTime("Melee swipe", 0.18f, 0);
                 attackRemaining = attackDuration;
+                swipeLanded = false;
             }
             else if (distance > 1.8f) speed = distance > 5f ? 3.6f : 1.6f;
         }

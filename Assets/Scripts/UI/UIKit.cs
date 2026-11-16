@@ -66,6 +66,7 @@ public static class UIKit
         text.color = color;
         text.alignment = alignment;
         text.raycastTarget = false;
+        text.textWrappingMode = TextWrappingModes.NoWrap; // callers opt in to wrapping for paragraphs
         text.text = content;
         return text;
     }

@@ -13,6 +13,7 @@ public class CombatTargetVisuals : MonoBehaviour
     [SerializeField] private Transform stunEffect;
     [SerializeField] private Transform model;
     [SerializeField] private Material arcMaterial;
+    public Material ArcMaterial => arcMaterial;
     private Quaternion restingRotation;
     private CombatTarget target;
     private MaterialPropertyBlock properties;

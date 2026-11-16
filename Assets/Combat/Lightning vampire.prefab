@@ -80,6 +80,7 @@ GameObject:
   - component: {fileID: 6864118432088288638}
   - component: {fileID: 4188429867534546950}
   - component: {fileID: 3013630668775217421}
+  - component: {fileID: 4096765076792878319}
   m_Layer: 0
   m_Name: Lightning vampire
   m_TagString: Untagged
@@ -177,6 +178,8 @@ MonoBehaviour:
   model: {fileID: 7611124551888259113}
   steamPrefab: {fileID: 7101566516798517484, guid: d8ef4a3881d6640419f321ea825ba4e0, type: 3}
   seismicPrefab: {fileID: 1250223451436690590, guid: c7a2e3f543dff2c41a11f9cb2cbddc00, type: 3}
+  statusScale: 1
+  nonWeaknessMultiplier: 1
 --- !u!114 &274154111870190597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -239,6 +242,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VampireMelee
   territoryRadius: 8
   pursuitRadius: 40
+  swipeDamage: 10
+--- !u!114 &4096765076792878319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118430314104494507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 037eb2a910341ab4b8fc0a08051f8ba7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LootDrop
+  coinPrefab: {fileID: 4867067573493635552, guid: db30f63999cd0374bb25a63867fadfb9, type: 3}
+  minCoins: 1
+  maxCoins: 3
 --- !u!1 &388222560535658544
 GameObject:
   m_ObjectHideFlags: 0
