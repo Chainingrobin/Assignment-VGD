@@ -47,11 +47,12 @@ public static class BossSetup
             ("HitLarge", Clip(Clips, "Standing React Large From Front")));
 
         var steam = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Combat/Steam burst.prefab");
-        Boss(EarthBoss, $"{Characters}/Maw/Maw.fbx", ElementType.Earth, brute, steam, 1.8f, 500f, 2.6f, EarthMoves(brute));
-        Boss(IceBoss, $"{Characters}/Mutant/Mutant.fbx", ElementType.Ice, brute, steam, 2f, 1000f, 3.2f, IceMoves(brute));
-        Boss(FireBoss, $"{Characters}/Warrok/Warrok.fbx", ElementType.Fire, brute, steam, 2f, 1200f, 3.2f, FireMoves(brute));
-        Boss(FinalBoss, $"{Characters}/Ganfaul/Ganfaul.fbx", ElementType.Lightning, caster, steam, 2f, 1600f, 3.4f, FinalMoves(caster));
+        Boss(EarthBoss, $"{Characters}/Maw/Maw.fbx", ElementType.Earth, brute, steam, 1.8f, 500f, EarthMoves(brute));
+        Boss(IceBoss, $"{Characters}/Mutant/Mutant.fbx", ElementType.Ice, brute, steam, 2f, 1000f, IceMoves(brute));
+        Boss(FireBoss, $"{Characters}/Warrok/Warrok.fbx", ElementType.Fire, brute, steam, 2f, 1200f, FireMoves(brute));
+        Boss(FinalBoss, $"{Characters}/Ganfaul/Ganfaul.fbx", ElementType.Lightning, caster, steam, 2f, 1600f, FinalMoves(caster));
         FinalBossPhases();
+        foreach (var boss in new[] { EarthBoss, IceBoss, FireBoss, FinalBoss }) RootMotionSetup.AddBody(boss);
         Abe();
         AssetDatabase.SaveAssets();
         Debug.Log("BossSetup: 4 bosses and Abe built in " + Output);
@@ -146,9 +147,9 @@ public static class BossSetup
         var machine = controller.layers[0].stateMachine;
         var locomotion = controller.CreateBlendTreeInController("Locomotion", out var tree, 0);
         tree.blendParameter = "Speed";
-        tree.AddChild(idle, 0f);
-        tree.AddChild(walk, 1.6f);
-        tree.AddChild(run, 4f);
+        tree.AddChild(idle);
+        tree.AddChild(walk);
+        tree.AddChild(run);
         machine.defaultState = locomotion;
         foreach (var (state, clip) in actions)
         {
@@ -160,19 +161,20 @@ public static class BossSetup
             back.duration = 0.2f;
         }
         machine.AddState("Death").motion = death;
+        RootMotionSetup.Configure(controller);
         return controller;
     }
 
     private static BossBrain.BossAttack Move(string name, BossBrain.AttackKind kind, string state, AnimatorController controller,
         float hitAt, float minRange, float maxRange, float damage, float radius, float cooldown, ElementType element = ElementType.None,
-        int count = 1, bool atSelf = false, bool line = false, bool lobbed = false, float lunge = 0f, bool phaseTwo = false)
+        int count = 1, bool atSelf = false, bool line = false, bool lobbed = false, bool phaseTwo = false)
     {
         var clip = controller.layers[0].stateMachine.states.First(s => s.state.name == state).state.motion as AnimationClip;
         return new BossBrain.BossAttack
         {
-            name = name, kind = kind, state = state, element = element, windup = clip.length * hitAt, duration = clip.length * 0.95f,
+            name = name, kind = kind, state = state, element = element, windup = clip.length * hitAt, duration = clip.length * 0.9f,
             minRange = minRange, maxRange = maxRange, damage = damage, radius = radius, cooldown = cooldown, count = count,
-            atSelf = atSelf, line = line, lobbed = lobbed, lunge = lunge, phaseTwoOnly = phaseTwo,
+            atSelf = atSelf, line = line, lobbed = lobbed, phaseTwoOnly = phaseTwo,
         };
     }
 
@@ -182,14 +184,14 @@ public static class BossSetup
         Move("Swipe", BossBrain.AttackKind.Melee, "Swipe", c, 0.45f, 0f, 4.5f, 14f, 3f, 3f),
         Move("Spike Line", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 5f, 22f, 18f, 2.2f, 6f, ElementType.Earth, count: 5, line: true),
         Move("Boulder Throw", BossBrain.AttackKind.Projectile, "Attack2H", c, 0.5f, 8f, 30f, 16f, 2.5f, 5f, ElementType.Earth, lobbed: true),
-        Move("Quake Leap", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 4f, 14f, 22f, 5f, 8f, ElementType.Earth, atSelf: true, lunge: 5f, phaseTwo: true),
+        Move("Quake Leap", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 4f, 14f, 22f, 5f, 8f, ElementType.Earth, atSelf: true, phaseTwo: true),
     };
 
     private static BossBrain.BossAttack[] IceMoves(AnimatorController c) => new[]
     {
         Move("Punch", BossBrain.AttackKind.Melee, "Punch", c, 0.45f, 0f, 4f, 18f, 3f, 2.5f),
         Move("Swipe", BossBrain.AttackKind.Melee, "Swipe", c, 0.45f, 0f, 4.5f, 16f, 3.2f, 3.5f),
-        Move("Glacial Slam", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 3f, 12f, 24f, 5.5f, 7f, ElementType.Ice, atSelf: true, lunge: 6f),
+        Move("Glacial Slam", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 3f, 12f, 24f, 5.5f, 7f, ElementType.Ice, atSelf: true),
         Move("Shard Volley", BossBrain.AttackKind.Projectile, "Attack2H", c, 0.5f, 7f, 30f, 12f, 1.5f, 5f, ElementType.Ice, count: 3),
         Move("Ice Rain", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 6f, 30f, 18f, 3f, 8f, ElementType.Ice, count: 4, phaseTwo: true),
     };
@@ -200,7 +202,7 @@ public static class BossSetup
         Move("Swipe", BossBrain.AttackKind.Melee, "Swipe", c, 0.45f, 0f, 4.5f, 18f, 3.2f, 3.5f),
         Move("Fireball Volley", BossBrain.AttackKind.Projectile, "Attack2H", c, 0.5f, 7f, 30f, 15f, 2.5f, 5f, ElementType.Fire, count: 3, lobbed: true),
         Move("Meteor Rain", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 5f, 30f, 20f, 3f, 7f, ElementType.Fire, count: 5),
-        Move("Eruption Slam", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 3f, 12f, 28f, 6f, 8f, ElementType.Fire, atSelf: true, lunge: 6f, phaseTwo: true),
+        Move("Eruption Slam", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 3f, 12f, 28f, 6f, 8f, ElementType.Fire, atSelf: true, phaseTwo: true),
     };
 
     // Ganfaul: the same three kinds of attack, always in his current phase's element.
@@ -211,11 +213,11 @@ public static class BossSetup
         Move("Barrage", BossBrain.AttackKind.Projectile, "Attack2HB", c, 0.5f, 6f, 35f, 16f, 2.5f, 5f, count: 3, lobbed: true),
         Move("Element Storm", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 4f, 35f, 20f, 3.5f, 6f, count: 3),
         Move("Fault Line", BossBrain.AttackKind.Ground, "Cast", c, 0.6f, 6f, 30f, 20f, 2f, 7f, count: 6, line: true, phaseTwo: true),
-        Move("Crashing Leap", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 3f, 14f, 26f, 5.5f, 8f, atSelf: true, lunge: 6f, phaseTwo: true),
+        Move("Crashing Leap", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 3f, 14f, 26f, 5.5f, 8f, atSelf: true, phaseTwo: true),
     };
 
     private static void Boss(string path, string fbx, ElementType element, AnimatorController controller, GameObject steam,
-        float scale, float health, float speed, BossBrain.BossAttack[] moves)
+        float scale, float health, BossBrain.BossAttack[] moves)
     {
         string label = Path.GetFileNameWithoutExtension(path);
         CombatSetup.Target(element, controller, steam, fbx, path, label, 0.2f);
@@ -237,7 +239,7 @@ public static class BossSetup
             target.FindProperty("statusScale").floatValue = 0.3f;
             target.ApplyModifiedPropertiesWithoutUndo();
             var brain = root.GetComponent<BossBrain>() ?? root.AddComponent<BossBrain>();
-            brain.Configure(moves, speed, 30f, "Roar", "HitLarge");
+            brain.Configure(moves, 30f, "Roar", "HitLarge");
             PrefabUtility.SaveAsPrefabAsset(root, path);
         }
         finally { PrefabUtility.UnloadPrefabContents(root); }

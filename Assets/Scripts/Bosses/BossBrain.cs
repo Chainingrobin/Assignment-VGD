@@ -5,9 +5,10 @@ using UnityEngine;
 // The shared brain for every guardian and the final boss. Each boss is just a different
 // attack list: melee swipes, element projectiles (fireballs, ice shards, boulders) and
 // element ground attacks (spikes, ice slams, meteors) that show a warning ring before they
-// land. Movement is the same physics chase the vampires use (VampireMelee), tied to the
-// boss's arena. At half health it roars and fights faster. All damage goes through
-// PlayerHealth, and every effect is the player's own spell effect, scaled up.
+// land. The brain only picks a gait (idle, walk, run) and a facing; the animations' own root
+// motion moves the body (RootMotionBody), so strides, leaps and swipes keep the feet planted.
+// The boss stays tied to its arena. At half health it roars and attacks more often. All damage
+// goes through PlayerHealth, and every effect is the player's own spell effect, scaled up.
 [RequireComponent(typeof(CombatTarget), typeof(Rigidbody))]
 public class BossBrain : MonoBehaviour
 {
@@ -39,15 +40,12 @@ public class BossBrain : MonoBehaviour
         public bool line;
         [Tooltip("Projectile: lob in an arc instead of flying straight.")]
         public bool lobbed;
-        [Tooltip("Speed the boss lunges toward the player during the windup (leap slams).")]
-        public float lunge;
         public float cooldown = 4f;
         public bool phaseTwoOnly;
         [NonSerialized] public float readyAt;
     }
 
     [SerializeField] private BossAttack[] attacks;
-    [SerializeField, Min(0.5f)] private float moveSpeed = 3.2f;
     [SerializeField, Min(10f)] private float turnSpeed = 160f;
     [SerializeField, Min(5f)] private float arenaRadius = 30f;
     [SerializeField, Min(0f)] private float recover = 0.8f;
@@ -75,10 +73,9 @@ public class BossBrain : MonoBehaviour
     public bool Engaged => engaged;
 
     // Used by the BossSetup editor tool to author each boss's move list.
-    public void Configure(BossAttack[] moves, float speed, float arena, string roar, string hit)
+    public void Configure(BossAttack[] moves, float arena, string roar, string hit)
     {
         attacks = moves;
-        moveSpeed = speed;
         arenaRadius = arena;
         roarState = roar;
         hitState = hit;
@@ -138,7 +135,7 @@ public class BossBrain : MonoBehaviour
         {
             // Interrupted: a stagger cancels the attack in progress (the combo payoff).
             if (current != null) { current = null; ClearTelegraphs(); busyUntil = Time.time + 0.3f; }
-            SetVelocity(0f);
+            SetGait(0f);
             return;
         }
         if (!phaseTwo && target.Health <= target.MaxHealth * 0.5f) EnterPhaseTwo();
@@ -147,11 +144,12 @@ public class BossBrain : MonoBehaviour
         float distance = toPlayer.magnitude;
 
         if (current != null) { RunAttack(toPlayer, distance); return; }
-        if (Time.time < busyUntil) { SetVelocity(0f); return; }
+        if (Time.time < busyUntil) { SetGait(0f); return; }
 
         Face(toPlayer);
         var next = Choose(distance);
-        if (next != null) { StartAttack(next); return; }
+        // Melee only once squared up, so the swing lands where the animation aims it.
+        if (next != null && (next.kind != AttackKind.Melee || Vector3.Angle(transform.forward, toPlayer) < 35f)) { StartAttack(next); return; }
 
         // Chase, but never beyond the arena; return home if the player leaves it.
         float homeDistance = Vector3.ProjectOnPlane(transform.position - home, Vector3.up).magnitude;
@@ -159,11 +157,13 @@ public class BossBrain : MonoBehaviour
         if (playerHome > arenaRadius + 5f)
         {
             var back = Vector3.ProjectOnPlane(home - transform.position, Vector3.up);
-            if (back.magnitude > 1.5f) { Face(back); SetVelocity(moveSpeed * speedScale); }
-            else SetVelocity(0f);
+            if (back.magnitude > 1.5f) { Face(back); SetGait(Walk); }
+            else SetGait(0f);
             return;
         }
-        SetVelocity(distance > 3f && homeDistance < arenaRadius ? moveSpeed * speedScale : 0f);
+        // Walk in close, run from afar; stop at melee range or the arena edge.
+        float gait = distance <= 3.5f || homeDistance >= arenaRadius ? 0f : distance > 10f ? Run : Walk;
+        SetGait(gait);
     }
 
     private void EnterPhaseTwo()
@@ -196,8 +196,8 @@ public class BossBrain : MonoBehaviour
         current = attack;
         actionStarted = Time.time;
         actionFired = false;
-        Play(attack.state, 0.15f);
-        SetVelocity(0f);
+        Play(attack.state, 0.2f);
+        SetGait(0f);
         pendingBlasts.Clear();
         if (attack.kind != AttackKind.Ground) return;
         // Ground attacks mark where they'll land straight away, so the player can dodge.
@@ -223,25 +223,25 @@ public class BossBrain : MonoBehaviour
     private void RunAttack(Vector3 toPlayer, float distance)
     {
         float elapsed = Time.time - actionStarted;
+        SetGait(0f);
         if (!actionFired)
         {
-            Face(toPlayer);
-            SetVelocity(current.lunge > 0f && distance > 2f ? current.lunge * speedScale : 0f);
+            // Track the player through the wind-up only; the swing itself follows the animation.
+            if (elapsed < current.windup * 0.7f) Face(toPlayer);
             // The slam follows the boss as it leaps.
             if (current.kind == AttackKind.Ground && current.atSelf && pendingBlasts.Count > 0)
             {
                 pendingBlasts[0] = Ground(transform.position + transform.forward * 2f);
                 if (telegraphs.Count > 0 && telegraphs[0] != null) telegraphs[0].transform.position = pendingBlasts[0] + Vector3.up * 0.1f;
             }
-            if (elapsed >= current.windup / speedScale) { actionFired = true; Fire(current, toPlayer, distance); }
+            if (elapsed >= current.windup) { actionFired = true; Fire(current, toPlayer, distance); }
         }
-        else SetVelocity(0f);
-        if (elapsed >= current.duration / speedScale)
+        // The attack state blends back to Locomotion by itself near its end.
+        if (elapsed >= current.duration)
         {
             current.readyAt = Time.time + current.cooldown / speedScale;
             current = null;
             busyUntil = Time.time + recover / speedScale;
-            Play("Locomotion", 0.25f);
         }
     }
 
@@ -343,12 +343,10 @@ public class BossBrain : MonoBehaviour
             body.MoveRotation(Quaternion.RotateTowards(body.rotation, Quaternion.LookRotation(direction.normalized), turnSpeed * speedScale * Time.fixedDeltaTime));
     }
 
-    private void SetVelocity(float speed)
-    {
-        var horizontal = transform.forward * speed;
-        body.linearVelocity = new Vector3(horizontal.x, body.linearVelocity.y, horizontal.z);
-        animator.SetFloat("Speed", speed, 0.25f, Time.fixedDeltaTime);
-    }
+    private const float Walk = 1f, Run = 2f;
+
+    // Gait for the Locomotion blend (0 idle, 1 walk, 2 run); root motion turns it into movement.
+    private void SetGait(float gait) => animator.SetFloat("Speed", gait, 0.3f, Time.fixedDeltaTime);
 
     private void Play(string state, float blend)
     {

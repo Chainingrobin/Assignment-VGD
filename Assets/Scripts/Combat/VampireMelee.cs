@@ -23,7 +23,6 @@ public class VampireMelee : MonoBehaviour
     private float displayRemaining;
     private bool sawPlayer;
     private bool returning;
-    private float movementSpeed;
     public bool IsAttacking => attackRemaining > 0f;
     public bool IsPursuing => sawPlayer;
     public float PursuitRadius => Mathf.Max(territoryRadius, pursuitRadius);
@@ -68,7 +67,6 @@ public class VampireMelee : MonoBehaviour
             interrupted = true;
             attackRemaining = 0f;
             displayRemaining = 0f;
-            movementSpeed = 0f;
             animator.SetFloat("Speed", 0f);
             return;
         }
@@ -79,6 +77,7 @@ public class VampireMelee : MonoBehaviour
         }
         Vector3 direction = Vector3.ProjectOnPlane(player.transform.position - transform.position, Vector3.up);
         float distance = direction.magnitude;
+        // Gait for the Locomotion blend: 0 idle, 1 walk, 2 run. Root motion (RootMotionBody) moves the body.
         float speed = 0f;
         float homeDistance = Vector3.ProjectOnPlane(transform.position - home, Vector3.up).magnitude;
         float playerHomeDistance = Vector3.ProjectOnPlane(player.transform.position - home, Vector3.up).magnitude;
@@ -104,8 +103,6 @@ public class VampireMelee : MonoBehaviour
         {
             attackRemaining -= Time.fixedDeltaTime;
             float elapsed = attackDuration - attackRemaining;
-            if (elapsed >= 0.95f && elapsed < 1.4f && distance > 1.05f)
-                speed = Mathf.Min(1.5f, (distance - 1.05f) / Time.fixedDeltaTime);
             // One damage check per swipe, when the claws come through (~1.2 s into the clip).
             if (!swipeLanded && elapsed >= 1.2f)
             {
@@ -124,13 +121,13 @@ public class VampireMelee : MonoBehaviour
                 attackRemaining = attackDuration;
                 swipeLanded = false;
             }
-            else if (distance > 1.8f) speed = distance > 5f ? 3.6f : 1.6f;
+            else if (distance > 1.8f) speed = distance > 5f ? 2f : 1f;
         }
         else if (pauseRemaining > 0f) pauseRemaining -= Time.fixedDeltaTime;
         else if (returning)
         {
             Turn(Vector3.ProjectOnPlane(home - transform.position, Vector3.up));
-            speed = 1.6f;
+            speed = 1f;
         }
         else if (displayRemaining > 0f) displayRemaining -= Time.fixedDeltaTime;
         else
@@ -151,18 +148,15 @@ public class VampireMelee : MonoBehaviour
             else
             {
                 Turn(toGoal);
-                speed = 1.2f;
+                speed = 1f;
                 foreach (var obstacle in Physics.SphereCastAll(transform.position + Vector3.up * 0.7f, 0.35f, transform.forward, 0.8f, ~0, QueryTriggerInteraction.Ignore))
                     if (!obstacle.transform.IsChildOf(transform) && Vector3.Dot(obstacle.normal, Vector3.up) < 0.7f)
                     { speed = 0f; PickRoamGoal(); break; }
             }
         }
-        // Chase only along visible routes; physics keeps the vampire against solid obstacles.
-        Vector3 velocity = body.linearVelocity;
-        // Accumulate commanded speed independently of velocity lost to ground friction.
-        movementSpeed = IsAttacking ? speed : displayRemaining > 0f || pauseRemaining > 0f ? 0f : Mathf.MoveTowards(movementSpeed, speed, 4f * Time.fixedDeltaTime);
-        Vector3 horizontal = transform.forward * movementSpeed;
-        body.linearVelocity = new Vector3(horizontal.x, velocity.y, horizontal.z);
-        animator.SetFloat("Speed", IsAttacking ? 0f : movementSpeed, 0.35f, Time.fixedDeltaTime);
+        // Chase only along visible routes; the animation's root motion carries the body, and
+        // physics keeps it against solid obstacles.
+        bool still = IsAttacking || displayRemaining > 0f || pauseRemaining > 0f;
+        animator.SetFloat("Speed", still ? 0f : speed, 0.35f, Time.fixedDeltaTime);
     }
 }

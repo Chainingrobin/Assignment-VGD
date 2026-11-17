@@ -46,7 +46,7 @@ public static class CombatChecks
             Assert.IsTrue(displacement>15f,$"Extended chase stopped: only {displacement:0.00} m in seven seconds");
             Assert.IsTrue(behavior.IsPursuing,"Visible player inside pursuit domain must retain priority");
             Assert.IsTrue((float)typeof(VampireMelee).GetField("displayRemaining",Private).GetValue(behavior)<=0,"No flex while pursuing");
-            Assert.IsTrue(animator.GetFloat("Speed")>2.5f,"Chase must reach the run blend");
+            Assert.IsTrue(animator.GetFloat("Speed")>1.8f,"Chase must reach the run gait (2)");
             ChasePhysicsResult = $"PASS: moved {displacement:0.00} m in 350 physics steps past the 8 m roaming boundary; retained pursuit without flex; run blend speed {animator.GetFloat("Speed"):0.00}.";
             Debug.Log(ChasePhysicsResult);
         }

@@ -23,20 +23,19 @@ public static class VampireAnimationSetup
             typeof(VampireMelee).GetField("player",flags).SetValue(behavior,camera);
             typeof(VampireMelee).GetField("pauseRemaining",flags).SetValue(behavior,4f);
             typeof(EnemyDetection).GetField("<CanSeePlayer>k__BackingField",flags).SetValue(sight,true);
-            behavior.SendMessage("FixedUpdate");
-            var body = instance.GetComponent<Rigidbody>();
-            if (body.linearVelocity.z <= 0 || (float)typeof(VampireMelee).GetField("pauseRemaining",flags).GetValue(behavior) != 0)
+            var animator = instance.GetComponentInChildren<Animator>();
+            for (int i = 0; i < 20; i++) behavior.SendMessage("FixedUpdate");
+            if (animator.GetFloat("Speed") <= 0.1f || (float)typeof(VampireMelee).GetField("pauseRemaining",flags).GetValue(behavior) != 0)
                 throw new InvalidOperationException("Reacquisition leaves chase paused.");
+            // Movement now comes from root motion, so a swipe must hold the gait at idle.
             float duration = (float)typeof(VampireMelee).GetField("attackDuration",flags).GetValue(behavior);
             typeof(VampireMelee).GetField("attackRemaining",flags).SetValue(behavior,duration-1.1f);
-            behavior.SendMessage("FixedUpdate");
-            if (body.linearVelocity.z < 1f || Mathf.Abs(body.linearVelocity.x)>0.01f)
-                throw new InvalidOperationException("Swipe lunge must move forward.");
-            typeof(VampireMelee).GetField("attackRemaining",flags).SetValue(behavior,duration-1.8f);
-            behavior.SendMessage("FixedUpdate");
-            if (Vector3.ProjectOnPlane(body.linearVelocity,Vector3.up).sqrMagnitude>0.001f)
-                throw new InvalidOperationException("Lunge continues after strike.");
-            Debug.Log("Chase reacquisition, forward lunge and recovery stop PASS.");
+            for (int i = 0; i < 40; i++) behavior.SendMessage("FixedUpdate");
+            if (animator.GetFloat("Speed") > 0.5f)
+                throw new InvalidOperationException("Swipe must stop the locomotion gait.");
+            if (instance.GetComponentInChildren<RootMotionBody>() == null)
+                throw new InvalidOperationException("Vampire model needs RootMotionBody to move with its animations.");
+            Debug.Log("Chase reacquisition, swipe gait stop and root motion wiring PASS.");
         }
         finally { UnityEngine.Object.DestroyImmediate(instance); UnityEngine.Object.DestroyImmediate(cameraObject); }
     }
@@ -209,8 +208,8 @@ public static class VampireAnimationSetup
             var blend = new BlendTree { name = "Idle walk run", blendParameter = "Speed", useAutomaticThresholds = false };
             AssetDatabase.AddObjectToAsset(blend, controller);
             blend.AddChild(AssetDatabase.LoadAssetAtPath<AnimationClip>(Folder + "/Idle.anim"), 0);
-            blend.AddChild(AssetDatabase.LoadAssetAtPath<AnimationClip>(Folder + "/Walk forward.anim"), 1.6f);
-            blend.AddChild(AssetDatabase.LoadAssetAtPath<AnimationClip>(Folder + "/Run forward.anim"), 3.6f);
+            blend.AddChild(AssetDatabase.LoadAssetAtPath<AnimationClip>(Folder + "/Walk forward.anim"), 1f);
+            blend.AddChild(AssetDatabase.LoadAssetAtPath<AnimationClip>(Folder + "/Run forward.anim"), 2f);
             locomotion.motion = blend;
             machine.defaultState = locomotion;
             var attack = machine.AddState("Melee swipe");

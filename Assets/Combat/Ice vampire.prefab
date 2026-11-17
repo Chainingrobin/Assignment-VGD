@@ -61718,6 +61718,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1936250048447523271}
   - component: {fileID: 2539119683547068622}
+  - component: {fileID: 8799983249058231877}
   m_Layer: 0
   m_Name: Vampire model
   m_TagString: Untagged
@@ -61754,8 +61755,8 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: 77b24d991ee2c09458519ba4146e483a, type: 3}
   m_Controller: {fileID: 9100000, guid: 1aedd81739d544b4f841bd69a57d1f36, type: 2}
   m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_UpdateMode: 1
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -61764,6 +61765,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8799983249058231877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7181489429015896645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070dc84936225264183b8c57afc42c32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RootMotionBody
+  footWeight: 1
+  footReach: 0.6
 --- !u!1 &7205032686124580435
 GameObject:
   m_ObjectHideFlags: 0
