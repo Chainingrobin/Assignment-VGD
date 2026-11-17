@@ -112,6 +112,7 @@ public class FreezeRevealCutscene : MonoBehaviour
         if (!preview) FollowFreeze(true);
         director.time = 0;
         director.Play();
+        TransitionOverlay.Instance.ShowSkipHint(true);
     }
 
     private void OnFreezeFinished() => freezeFinished = true;
@@ -119,6 +120,13 @@ public class FreezeRevealCutscene : MonoBehaviour
     private void LateUpdate()
     {
         if (!playing) return;
+        if (TransitionOverlay.SkipPressed)
+        {
+            // The freeze still has to finish, so the crossing exists after a skip.
+            if (!preview && freezer != null) freezer.FinishNow();
+            director.Stop();
+            return;
+        }
         if (preview)
         {
             director.time = System.Math.Min(director.duration, director.time + Time.deltaTime);
@@ -172,6 +180,7 @@ public class FreezeRevealCutscene : MonoBehaviour
     {
         if (!playing) return;
         playing = false;
+        TransitionOverlay.Instance.ShowSkipHint(false);
         if (playerCamera != null)
         {
             playerCamera.transform.localPosition = cameraLocalPosition;

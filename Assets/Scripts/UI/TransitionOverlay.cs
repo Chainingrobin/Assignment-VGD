@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // Full-screen layer above the HUD used by every transition: a fade (black or white),
 // cinematic letterbox bars, and a chapter caption (title, recap line, progress) shown like
@@ -12,7 +13,18 @@ public class TransitionOverlay : MonoBehaviour
     private UnityEngine.UI.Image fade;
     private CanvasGroup captionGroup;
     private RectTransform topBar, bottomBar;
-    private TMP_Text title, recap, progress;
+    private TMP_Text title, recap, progress, skipHint;
+    private int skipHolders;
+
+    // Space skips any cutscene, caption or ending card (the assignment guide: always let the player skip).
+    public static bool SkipPressed => Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+
+    // Cutscenes call this while they play; the hint shows while anyone needs it.
+    public void ShowSkipHint(bool show)
+    {
+        skipHolders = Mathf.Max(0, skipHolders + (show ? 1 : -1));
+        skipHint.gameObject.SetActive(skipHolders > 0);
+    }
 
     public static TransitionOverlay Instance
     {
@@ -56,6 +68,9 @@ public class TransitionOverlay : MonoBehaviour
         overlay.recap.textWrappingMode = TextWrappingModes.Normal;
         overlay.progress = UIKit.Text(captionRoot, "Progress", "", 18f, new Vector2(400f, 30f), new Vector2(0f, 30f), center,
             FantasyUI.Muted, TextAlignmentOptions.Center);
+        overlay.skipHint = UIKit.Text(root, "SkipHint", "<color=#E8C77F>Space</color>   Skip", 20f, new Vector2(300f, 30f),
+            new Vector2(-40f, 40f), new Vector2(1f, 0f), FantasyUI.Parchment, TextAlignmentOptions.BottomRight);
+        overlay.skipHint.gameObject.SetActive(false);
         overlay.SetBars(0f);
         return overlay;
     }

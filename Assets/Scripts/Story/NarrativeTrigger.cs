@@ -90,7 +90,11 @@ public class NarrativeTrigger : MonoBehaviour
             if (hud != null) hud.enabled = false;
             var overlay = TransitionOverlay.Instance;
             yield return overlay.ShowCaption(captionTitle, captionBody);
-            yield return new WaitForSecondsRealtime(Mathf.Clamp(captionBody.Length * 0.05f, 2.5f, 7f));
+            overlay.ShowSkipHint(true);
+            float until = Time.unscaledTime + Mathf.Clamp(captionBody.Length * 0.05f, 2.5f, 7f);
+            yield return null;
+            while (Time.unscaledTime < until && !TransitionOverlay.SkipPressed) yield return null;
+            overlay.ShowSkipHint(false);
             yield return overlay.HideCaption();
             if (hud != null) hud.enabled = true;
             PlayerLock.Pop();

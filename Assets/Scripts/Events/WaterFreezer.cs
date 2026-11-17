@@ -25,6 +25,10 @@ public class WaterFreezer : MonoBehaviour
     MaterialPropertyBlock freezeProperties;
     static readonly int FreezeProgress = Shader.PropertyToID("_FreezeProgress");
     bool started;
+    bool finishNow;
+
+    // Skipping the freeze reveal completes the ice immediately.
+    public void FinishNow() => finishNow = true;
 
     void Awake()
     {
@@ -80,7 +84,7 @@ public class WaterFreezer : MonoBehaviour
         if (freezeLight != null) freezeLight.enabled = true;
         onFreezeStarted.Invoke();
 
-        for (float t = 0; t < duration; t += Time.deltaTime)
+        for (float t = 0; t < duration && !finishNow; t += Time.deltaTime)
         {
             float k = curve.Evaluate(t / duration);
             SetProgress(k);

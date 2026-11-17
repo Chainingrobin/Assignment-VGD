@@ -126,7 +126,11 @@ public class EndingController : MonoBehaviour
         yield return overlay.FadeTo(1f, 2f, fade);
         yield return overlay.ShowCaption(title, text + "\n\n[Credits placeholder: Youssef Yasser, GUC DMET 909]");
         StoryStateManager.NewGamePlusUnlocked = true;
-        yield return new WaitForSecondsRealtime(7f);
+        overlay.ShowSkipHint(true);
+        float until = Time.unscaledTime + 7f;
+        yield return null;
+        while (Time.unscaledTime < until && !TransitionOverlay.SkipPressed) yield return null;
+        overlay.ShowSkipHint(false);
         yield return overlay.HideCaption();
         RegionManager.LoadMenu(); // the menu fades the overlay back in
     }

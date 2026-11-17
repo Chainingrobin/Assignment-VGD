@@ -174,7 +174,10 @@ public class RegionManager : MonoBehaviour
         RegionEntered?.Invoke(Current);
 
         while (flight && region.cutscene.IsPlaying) yield return null;
-        while (Time.unscaledTime - started < minimumCaptionTime) yield return null;
+        // Hold the caption long enough to read, unless the player skips.
+        overlay.ShowSkipHint(true);
+        while (Time.unscaledTime - started < minimumCaptionTime && !TransitionOverlay.SkipPressed) yield return null;
+        overlay.ShowSkipHint(false);
         if (!flight) StartCoroutine(overlay.FadeTo(0f, 0.8f));
         yield return overlay.HideCaption();
         RefreshSeals();
