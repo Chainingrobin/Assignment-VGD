@@ -24,11 +24,13 @@ public static class MountainLandscapeChecks
         for (int z = 0; z < n; z++) for (int x = 0; x < n; x++)
         {
             Assert.IsTrue(actual[z,x] >= 0 && actual[z,x] <= 1);
-            if (VolcanoBiomeBuilder.Sculpts(x * source.size.x / (n - 1), z * source.size.z / (n - 1))) continue;
+            float wx = x * source.size.x / (n - 1), wz = z * source.size.z / (n - 1);
+            if (VolcanoBiomeBuilder.Sculpts(wx, wz) || ForestBiomeBuilder.Sculpts(wx, wz) || SnowBiomeBuilder.Sculpts(wx, wz)) continue;
             if (old[z,x] * source.size.y <= 38) { Assert.IsTrue(Mathf.Abs(old[z,x] - actual[z,x]) < .000001f, "Preserve valley and gameplay ground heights."); preserved++; }
             else if (Mathf.Abs(old[z,x] - actual[z,x]) > .000001f) changed++;
         }
-        Assert.IsTrue(changed > 10000 && preserved > 100000);
+        // The forest and snow biome builders now own much of the valley, so fewer samples remain here.
+        Assert.IsTrue(changed > 10000 && preserved > 40000);
         var paint = data.GetAlphamaps(0,0,data.alphamapWidth,data.alphamapHeight);
         int ice = 0, snow = 0, basalt = 0;
         for (int z = 0; z < data.alphamapHeight; z++) for (int x = 0; x < data.alphamapWidth; x++)
@@ -39,7 +41,8 @@ public static class MountainLandscapeChecks
         }
         Assert.IsTrue(ice > 1000 && snow > 1000 && basalt > 1000);
         // The volcano and its lava fields are VolcanoBiomeBuilder's ground; VolcanoChecks covers them.
-        foreach (var point in new[] { new Vector3(591,0,575),new Vector3(646,0,382),new Vector3(620,0,253) })
+        // Spawn, statue and the lake channel the freeze crosses (the island centre is the snow biome's ground).
+        foreach (var point in new[] { new Vector3(591,0,575),new Vector3(646,0,382),new Vector3(620,0,355) })
             Assert.IsTrue(Mathf.Abs(data.GetInterpolatedHeight(point.x/1000,point.z/1000) - source.GetInterpolatedHeight(point.x/1000,point.z/1000)) < .01f, "Keep player spawn, statue and river ground intact.");
         var root = GameObject.Find("Background mountain outcrops"); Assert.IsNotNull(root);
         Assert.IsTrue(root.GetComponentsInChildren<LODGroup>().Length > 20);

@@ -23,27 +23,30 @@ public static class RegionContentSetup
 
         var forest = Open("Forest", out var forestRoot);
         // A tree-free meadow at the forest's north edge: a short trek from the armory.
-        var forestArena = SceneSplitSetup.ClearSpot(new Vector2(450f, 822f), 15f, 20f);
+        // The Blossom Glade built by ForestBiomeBuilder: between the armory and the lake statue.
+        var forestArena = SceneSplitSetup.Ground(ForestBiomeBuilder.ArenaCenter);
         Encounter(forestRoot, "Earth Guardian arena", forestArena, BossSetup.EarthBoss, "[The Earth Guardian]", Flags.BossEarth,
-            "Earth Book", 20f, 26f,
+            "Earth Book", 20f, 24f,
             "[Earth Guardian: Another book-bearer, sent to take what is mine...]",
             "[Earth Guardian (dying): You carry us... to him? Then you are already lost...]");
         Abe(forestRoot, Ground(566f, 596f), Ground(566f, 604.6f), "[Abe: Wulang! You're awake. Strike the beast with Lightning; earth fears the storm.]");
-        Vampire(forestRoot, "Earth", SceneSplitSetup.Flattest(new Vector2(525f, 520f), 10f));
-        Vampire(forestRoot, "Lightning", SceneSplitSetup.Flattest(new Vector2(545f, 500f), 10f));
+        // Two vampires guard the trail from the armory to the glade: the tutorial's first fights.
+        Vampire(forestRoot, "Earth", SceneSplitSetup.Flattest(new Vector2(546f, 530f), 6f));
+        Vampire(forestRoot, "Lightning", SceneSplitSetup.Flattest(new Vector2(520f, 490f), 6f));
         Save(forest);
 
         var ice = Open("Ice", out var iceRoot);
         var iceSpawn = RegionStartSpawn(ice);
-        var iceArena = SceneSplitSetup.ClearSpot(new Vector2(650f, 250f), 60f, 20f);
+        // The Frozen Amphitheater built by SnowBiomeBuilder.
+        var iceArena = SceneSplitSetup.Ground(SnowBiomeBuilder.ArenaCenter);
         FaceSpawn(ice, iceArena);
         Encounter(iceRoot, "Ice Guardian arena", iceArena, BossSetup.IceBoss,
-            "[The Ice Guardian]", Flags.BossIce, "Ice Book", 20f, 28f,
+            "[The Ice Guardian]", Flags.BossIce, "Ice Book", 18f, 22f,
             "[Ice Guardian: The cold remembers your face, thief.]",
             "[Ice Guardian (dying): He wears a kind face. He always has...]");
         Abe(iceRoot, iceSpawn + new Vector3(6f, 0f, -4f), iceSpawn,
             "[Abe: Fire would melt it, but you have none. Ground it with Earth, then call the storm.]");
-        foreach (var p in new[] { new Vector2(580f, 290f), new Vector2(720f, 290f), new Vector2(700f, 190f) })
+        foreach (var p in new[] { new Vector2(600f, 262f), new Vector2(712f, 252f), new Vector2(770f, 300f) })
             Vampire(iceRoot, "Ice", SceneSplitSetup.Flattest(p, 12f));
         Travel(iceRoot, "Mountain pass waystone", iceSpawn + new Vector3(-6f, 0f, -3f), "Volcano", Flags.BossIce,
             "Press F to cross the mountain pass");

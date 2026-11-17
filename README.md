@@ -42,8 +42,8 @@ The World stays loaded, so every region remains visible on the horizon. `RegionM
 
 ## Story progression
 
-1. **Forest:** wake with Lightning, meet Abe, defeat the **Earth Guardian** (weak to Lightning) and claim Earth. The ice statue then freezes the lake.
-2. **Ice:** cross the frozen lake, defeat the **Ice Guardian** with the Earth + Lightning **Storm Quake** combo, claim Ice, take the mountain-pass waystone.
+1. **Forest:** wake with Lightning, meet Abe, follow the trail past two vampires to the **Blossom Glade**, defeat the **Earth Guardian** (weak to Lightning) and claim Earth. The ice statue then freezes the lake.
+2. **Ice:** cross the frozen lake to the **Frozen Reach**, defeat the **Ice Guardian** in the **Frozen Amphitheater** with the Earth + Lightning **Storm Quake** combo, claim Ice, take the mountain-pass waystone.
 3. **Volcano:** enter the caldera through the lava tube, defeat the **Fire Guardian** (weak to Ice), claim Fire, step into the rift.
 4. **Final arena:** Abe offers Wulang her past in exchange for the elements. **Kneel** for the Submission ending, or **refuse** to fight **Ganfaul**, whose element changes every quarter of his health (only the current weakness hurts him), for the Truth ending.
 
@@ -62,6 +62,7 @@ Each element claim replays a **memory echo** (the world desaturates and ghosts o
 | Tab | Satchel and journal (items, memories and lore) |
 | Esc | Pause: Resume, Restart Region, Main Menu, Quit |
 | Space / Enter / F / click | Advance dialogue; 1-9 or click to pick a choice |
+| Space (during cutscenes) | Skip the flight, freeze reveal, chapter caption or ending card |
 
 ## Systems (Assignment 3)
 
@@ -84,9 +85,16 @@ Each element claim replays a **memory echo** (the world desaturates and ghosts o
 | **Wulang > Scenes > Split world into regions** | One-off: turned `SampleScene` into `World` + region scenes + `MainMenu` and set the build order |
 | **Wulang > Setup > Items, loot and hazards** | Item data, player inventory, vampire Wubucks drops, lake drowning |
 | **Wulang > Bosses > Build bosses** | Imports Maw, Mutant, Warrok, Ganfaul and Abe as Humanoid, builds their animator controllers and boss prefabs in `Assets/Bosses` |
+| **Wulang > Forest > Rebuild forest biome** | Hills, creek, pond, trails, zoned trees and the Blossom Glade arena (stone ring, cover rocks, shrine) |
+| **Wulang > Snow > Rebuild snow biome** | Glacier ridges, terraces, frozen ponds, ice spires and the Frozen Amphitheater (ice pillars as cover) |
+| **Wulang > Combat > Apply root motion and foot IK** | Gait-based locomotion, foot IK and smooth attack blends for vampires and bosses |
 | **Wulang > Scenes > Populate regions** | Guardian arenas, Abe camps, field vampires, waystone and rift, lava hazards |
 | **Wulang > Scenes > Build final arena** | The floating sanctum, element pillars and final encounter |
 | **Wulang > Story > Lay placeholder story onto regions** | Dialogue, portraits, objectives, triggers, lore notes, memory echoes, endings (run after the arena builder) |
+
+Run the biome builders after **Wulang > Volcano > Rebuild volcano biome**: the volcano builder restores every terrain tree from its own snapshot. Each biome builder snapshots its region on first run (`Assets/Environment/Forest|Snow/* baseline.bytes`) and restores it before rebuilding. Rebuilding the boss prefabs replaces their components, so re-run **Populate regions**, **Build final arena** and the story setup afterwards.
+
+Enemies move with **root motion**: the AI picks a gait (idle, walk, run) and a facing, and the animation carries the body (`Combat/RootMotionBody`), so feet stay planted during strides, leaps and swipes; foot IK keeps them on slopes.
 
 Boss animations come from the Mixamo Creature Pack (via the Paramnesia project) and the Mixamo Pro Magic Pack; Abe's talk clip is Kevin Iglesias' Human Basic Motions.
 
