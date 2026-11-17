@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,7 +18,6 @@ public class PlayerInventory : MonoBehaviour
     private readonly Dictionary<ItemData, int> counts = new();
     private readonly List<ItemData> order = new();
     private InputAction usePotion;
-    private TMP_Text potionCount;
 
     public event Action Changed;
     public IReadOnlyList<ItemData> Items => order;
@@ -53,14 +51,7 @@ public class PlayerInventory : MonoBehaviour
             foreach (var element in affinity.UnlockedElements) AddTome(element);
             affinity.OnElementUnlocked += AddTome;
         }
-        var hud = UIKit.HUDRoot();
-        if (hud == null) return;
-        var top = new Vector2(0f, 1f);
-        var panel = UIKit.Rect(hud, "PotionHUD", new Vector2(156f, 56f), new Vector2(188f, -24f), top);
-        FantasyUI.Panel(panel);
-        UIKit.Text(panel, "Key", "<color=#E8C77F>H</color>", 14f, new Vector2(30f, 20f), new Vector2(14f, -18f), top, FantasyUI.Muted);
-        potionCount = UIKit.Text(panel, "Count", "", 22f, new Vector2(110f, 36f), new Vector2(38f, -12f), top, FantasyUI.Parchment);
-        Refresh();
+        Refresh(); // the potion count shows on the shared status plate (StatusHUD)
     }
 
     private void AddTome(ElementType element)
@@ -98,9 +89,5 @@ public class PlayerInventory : MonoBehaviour
         else Subtitle.Show("[I'm already at full strength.]", 2f);
     }
 
-    private void Refresh()
-    {
-        if (potionCount != null) potionCount.text = $"Potion x{Count(healingPotion)}";
-        Changed?.Invoke();
-    }
+    private void Refresh() => Changed?.Invoke();
 }

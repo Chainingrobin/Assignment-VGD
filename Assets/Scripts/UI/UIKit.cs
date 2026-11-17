@@ -81,6 +81,21 @@ public static class UIKit
         return fill;
     }
 
+    // A small gold-rimmed key label, e.g. [H] or [LMB], used for every input hint.
+    public static RectTransform Keycap(Transform parent, string key, Vector2 position, Vector2 anchor)
+    {
+        float width = Mathf.Max(28f, 14f + key.Length * 11f);
+        var cap = Rect(parent, "Key " + key, new Vector2(width, 26f), position, anchor);
+        Fill(cap, FantasyUI.Gold * new Color(0.75f, 0.75f, 0.75f, 1f));
+        var inner = Stretch(cap, "Face");
+        inner.offsetMin = new Vector2(1.5f, 1.5f);
+        inner.offsetMax = new Vector2(-1.5f, -1.5f);
+        Fill(inner, new Color(0.08f, 0.055f, 0.04f, 1f));
+        var label = Text(cap, "Label", key, 15f, new Vector2(width, 26f), Vector2.zero, new Vector2(0.5f, 0.5f), FantasyUI.Gold, TextAlignmentOptions.Center);
+        label.fontStyle = FontStyles.Bold;
+        return cap;
+    }
+
     public static void SetBar(RectTransform fill, float fraction) =>
         fill.anchorMax = new Vector2(Mathf.Clamp01(fraction), 1f);
 

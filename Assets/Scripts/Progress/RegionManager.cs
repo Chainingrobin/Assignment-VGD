@@ -41,6 +41,8 @@ public class RegionManager : MonoBehaviour
 
     // Set by the main menu before loading the World: which region to start in.
     public static string PendingRegion = "Forest";
+    // The main menu loads the World behind itself as a living backdrop: no player, HUD or region.
+    public static bool MenuPreview;
 
     public static RegionManager Instance { get; private set; }
     public string Current { get; private set; }
@@ -58,6 +60,11 @@ public class RegionManager : MonoBehaviour
     private IEnumerator Start()
     {
         SceneManager.SetActiveScene(gameObject.scene);
+        if (MenuPreview)
+        {
+            HideGameplayForMenu();
+            yield break;
+        }
         PlayerLock.Reset();
         var controller = FindFirstObjectByType<FirstPersonController>();
         player = controller.transform;
@@ -136,6 +143,19 @@ public class RegionManager : MonoBehaviour
         foreach (var region in regions)
             if (region.seal != null)
                 region.seal.SetActive(!story.NewGamePlus && region.scene != Current && !story.HasFlag(region.requiredFlag));
+    }
+
+    private void HideGameplayForMenu()
+    {
+        var player = FindFirstObjectByType<FirstPersonController>();
+        if (player != null) player.gameObject.SetActive(false);
+        foreach (var hud in FindObjectsByType<ResponsiveHUD>(FindObjectsSortMode.None))
+            if (hud.gameObject.scene == gameObject.scene) hud.gameObject.SetActive(false);
+        foreach (var events in gameObject.scene.GetRootGameObjects())
+            if (events.GetComponent<UnityEngine.EventSystems.EventSystem>() != null) events.SetActive(false);
+        foreach (var behaviour in GetComponents<MonoBehaviour>())
+            if (behaviour != this) behaviour.enabled = false;
+        enabled = false;
     }
 
     // Used by scripted exits such as the volcano rift.

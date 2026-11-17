@@ -21,8 +21,10 @@ public class ObjectiveManager : MonoBehaviour
         var corner = Vector2.one;
         panel = UIKit.Rect(hud, "ObjectiveTracker", new Vector2(420f, 96f), new Vector2(-24f, -24f), corner);
         FantasyUI.Panel(panel);
-        header = UIKit.Text(panel, "Header", "Objective", 14f, new Vector2(380f, 20f), new Vector2(-20f, -12f), corner,
+        HUDIcon.Create(panel, HUDIcon.Shape.Quest, 22f, new Vector2(18f, -12f), new Vector2(0f, 1f));
+        header = UIKit.Text(panel, "Header", "Objective", 14f, new Vector2(380f, 20f), new Vector2(-20f, -13f), corner,
             FantasyUI.Gold, TextAlignmentOptions.TopRight);
+        header.fontStyle = FontStyles.SmallCaps;
         text = UIKit.Text(panel, "Text", "", 20f, new Vector2(380f, 56f), new Vector2(-20f, -34f), corner,
             FantasyUI.Parchment, TextAlignmentOptions.TopRight);
         text.textWrappingMode = TextWrappingModes.Normal;

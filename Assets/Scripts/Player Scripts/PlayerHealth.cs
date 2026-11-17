@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 
 // Wulang's health (100 HP). Enemies, bosses and hazards call TakeDamage; potions call Heal.
@@ -23,8 +22,6 @@ public class PlayerHealth : MonoBehaviour
     public event Action Respawned;
     public event Action<float> Changed;
 
-    private RectTransform barFill;
-    private TMP_Text barLabel;
     private CanvasGroup flash;
     private Vector3 startPosition;
     private Quaternion startRotation;
@@ -41,16 +38,10 @@ public class PlayerHealth : MonoBehaviour
 
     private void Start()
     {
+        // The vitality bar lives on the shared status plate.
+        if (GetComponent<StatusHUD>() == null) gameObject.AddComponent<StatusHUD>();
         var hud = UIKit.HUDRoot();
         if (hud == null) return;
-        var top = new Vector2(0f, 1f);
-        var panel = UIKit.Rect(hud, "VitalityHUD", new Vector2(320f, 58f), new Vector2(24f, -92f), top);
-        FantasyUI.Panel(panel);
-        UIKit.Text(panel, "Caption", "Vitality", 12f, new Vector2(200f, 18f), new Vector2(18f, -8f), top, FantasyUI.Muted);
-        barLabel = UIKit.Text(panel, "Value", "", 14f, new Vector2(100f, 18f), new Vector2(-18f, -8f), Vector2.one,
-            FantasyUI.Parchment, TextAlignmentOptions.TopRight);
-        barFill = UIKit.Bar(panel, "Bar", new Vector2(284f, 12f), new Vector2(18f, -32f), top, new Color(0.75f, 0.12f, 0.1f));
-
         var flashRect = UIKit.Stretch(hud, "HurtFlash");
         UIKit.Fill(flashRect, new Color(0.6f, 0f, 0f, 0.35f));
         flash = flashRect.gameObject.AddComponent<CanvasGroup>();
@@ -115,8 +106,5 @@ public class PlayerHealth : MonoBehaviour
     private void Refresh()
     {
         Changed?.Invoke(Health);
-        if (barFill == null) return;
-        UIKit.SetBar(barFill, Health / maxHealth);
-        barLabel.text = $"{Mathf.CeilToInt(Health)} / {Mathf.RoundToInt(maxHealth)}";
     }
 }

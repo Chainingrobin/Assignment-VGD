@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
@@ -31,9 +32,9 @@ public static class StorySetup
             if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder(Path.GetDirectoryName(folder).Replace('\\', '/'), Path.GetFileName(folder));
 
         var world = EditorSceneManager.OpenScene(SceneSplitSetup.WorldPath, OpenSceneMode.Single);
-        abeFace = Portrait("Abe", BossSetup.AbePrefab);
-        wulangFace = Portrait("Wulang", Wulang);
-        ganfaulFace = Portrait("Ganfaul", BossSetup.FinalBoss);
+        abeFace = Portrait("Abe", BossSetup.AbePrefab, "Talk01", 0.15f);
+        wulangFace = Portrait("Wulang", Wulang, "Talk01", 0.15f);
+        ganfaulFace = Portrait("Ganfaul", BossSetup.FinalBoss, "standing idle", 0.3f);
         var ghost = GhostMaterial();
         var profile = MemoryProfile();
         WorldSystems(world);
@@ -404,42 +405,78 @@ public static class StorySetup
         return profile;
     }
 
-    // A 256px head-and-shoulders render of a character for the dialogue box.
-    private static Sprite Portrait(string name, string source)
+    // A 384px head-and-shoulders portrait for the dialogue box: the character is posed with a
+    // frame of its idle animation (not the T-pose), framed on the head and shoulders, lit with
+    // a warm key and a cool rim, and rendered on a transparent background.
+    private static Sprite Portrait(string name, string source, string pose, float at)
     {
+        const int size = 384;
         string path = $"{PortraitFolder}/{name}.png";
         var instance = (GameObject)Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(source));
-        instance.transform.position = new Vector3(0f, -500f, 0f);
+        instance.transform.SetPositionAndRotation(new Vector3(0f, 3000f, 0f), Quaternion.identity);
+        foreach (var behaviour in instance.GetComponentsInChildren<MonoBehaviour>()) behaviour.enabled = false;
         var animator = instance.GetComponentInChildren<Animator>();
-        var head = animator != null && animator.isHuman ? animator.GetBoneTransform(HumanBodyBones.Head) : instance.transform;
+        animator.cullingMode = AnimatorCullingMode.AlwaysAnimate; // otherwise the off-screen pose never reaches the bones
+        var idle = AssetDatabase.LoadAllAssetsAtPath($"Assets/Characters/Bosses/Animations/{pose}.fbx").OfType<AnimationClip>()
+            .First(c => !c.name.StartsWith("__preview__"));
+        var graph = UnityEngine.Playables.PlayableGraph.Create("Portrait pose");
+        var output = UnityEngine.Animations.AnimationPlayableOutput.Create(graph, "Pose", animator);
+        var playable = UnityEngine.Animations.AnimationClipPlayable.Create(graph, idle);
+        playable.SetApplyFootIK(false);
+        output.SetSourcePlayable(playable);
+        playable.SetTime(idle.length * at);
+        graph.Evaluate();
+
+        var head = animator.GetBoneTransform(HumanBodyBones.Head);
+        var neck = animator.GetBoneTransform(HumanBodyBones.Neck) ?? head;
+        var left = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+        var right = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+        float shoulders = Vector3.Distance(left.position, right.position);
+        var focus = Vector3.Lerp(head.position, neck.position, 0.45f) + Vector3.up * shoulders * 0.08f;
+        var forward = instance.transform.forward;
+
         var camera = new GameObject("Portrait camera").AddComponent<Camera>();
         camera.clearFlags = CameraClearFlags.SolidColor;
-        camera.backgroundColor = new Color(0.12f, 0.08f, 0.06f, 1f);
-        var forward = instance.transform.forward;
-        float size = Mathf.Max(0.35f, head.lossyScale.y * 0.35f) * instance.transform.localScale.y;
-        camera.transform.position = head.position + forward * size * 4.5f + Vector3.up * size * 0.2f;
-        camera.transform.LookAt(head.position - Vector3.up * size * 0.3f);
-        camera.fieldOfView = 28f;
-        var light = new GameObject("Portrait light").AddComponent<Light>();
-        light.type = LightType.Directional;
-        light.transform.rotation = Quaternion.LookRotation(-forward + Vector3.down * 0.5f + Vector3.right * 0.4f);
-        var texture = new RenderTexture(256, 256, 24);
+        camera.backgroundColor = new Color(0f, 0f, 0f, 0f);
+        camera.fieldOfView = 24f;
+        // Head and shoulders fill the frame: distance from the shoulder span and the field of view.
+        float distance = shoulders * 1.25f / Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        // Face the head (not the hips), slightly off-axis for a three-quarter portrait.
+        var faceForward = Vector3.ProjectOnPlane(head.forward, Vector3.up).sqrMagnitude > 0.1f && Vector3.Dot(head.forward, forward) > 0.3f
+            ? Vector3.ProjectOnPlane(head.forward, Vector3.up).normalized : forward;
+        camera.transform.position = focus + Quaternion.Euler(0f, 12f, 0f) * faceForward * distance + Vector3.up * shoulders * 0.1f;
+        camera.transform.LookAt(focus);
+        var key = new GameObject("Key light").AddComponent<Light>();
+        key.type = LightType.Directional;
+        key.color = new Color(1f, 0.9f, 0.78f);
+        key.intensity = 1.3f;
+        key.transform.rotation = Quaternion.LookRotation(-forward + Vector3.down * 0.4f + Vector3.right * 0.5f);
+        var rim = new GameObject("Rim light").AddComponent<Light>();
+        rim.type = LightType.Directional;
+        rim.color = new Color(0.55f, 0.7f, 1f);
+        rim.intensity = 1.1f;
+        rim.transform.rotation = Quaternion.LookRotation(forward + Vector3.down * 0.2f - Vector3.right * 0.6f);
+
+        var texture = new RenderTexture(size, size, 24, RenderTextureFormat.ARGB32);
         camera.targetTexture = texture;
         camera.Render();
         RenderTexture.active = texture;
-        var image = new Texture2D(256, 256, TextureFormat.RGB24, false);
-        image.ReadPixels(new Rect(0, 0, 256, 256), 0, 0);
+        var image = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        image.ReadPixels(new Rect(0, 0, size, size), 0, 0);
         image.Apply();
         RenderTexture.active = null;
         camera.targetTexture = null;
         File.WriteAllBytes(path, image.EncodeToPNG());
+        graph.Destroy();
         Object.DestroyImmediate(texture);
         Object.DestroyImmediate(camera.gameObject);
-        Object.DestroyImmediate(light.gameObject);
+        Object.DestroyImmediate(key.gameObject);
+        Object.DestroyImmediate(rim.gameObject);
         Object.DestroyImmediate(instance);
         AssetDatabase.ImportAsset(path);
         var importer = (TextureImporter)AssetImporter.GetAtPath(path);
         importer.textureType = TextureImporterType.Sprite;
+        importer.alphaIsTransparency = true;
         importer.SaveAndReimport();
         return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }

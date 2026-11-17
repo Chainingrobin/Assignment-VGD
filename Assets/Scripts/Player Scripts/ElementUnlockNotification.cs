@@ -19,20 +19,16 @@ public class ElementUnlockNotification : MonoBehaviour
     private UnityEngine.UI.Image glow;
     private Coroutine notificationRoutine;
     private bool ready;
-    private RectTransform coinsHUD;
-    private TMP_Text coinCount;
-    private PlayerCoins wallet;
 
     private void Awake()
     {
-        var canvas = FindFirstObjectByType<Canvas>();
-        if (canvas == null)
+        // The player's own HUD canvas (other scenes, like the main menu, may have canvases too).
+        var responsive = FindFirstObjectByType<ResponsiveHUD>();
+        if (responsive == null)
         {
-            Debug.LogError("ElementUnlockNotification: no Canvas found.", this);
+            Debug.LogError("ElementUnlockNotification: no ResponsiveHUD canvas found.", this);
             return;
         }
-        var responsive = canvas.GetComponent<ResponsiveHUD>();
-        if (responsive == null) responsive = canvas.gameObject.AddComponent<ResponsiveHUD>();
         var content = responsive.Content;
         card = CreateRect(content, "ElementUnlockNotification", new Vector2(372f, 96f), Vector2.zero);
         card.anchorMin = card.anchorMax = card.pivot = Vector2.one;
@@ -58,14 +54,12 @@ public class ElementUnlockNotification : MonoBehaviour
         activeElement = CreateText(activeHUD, "ElementName", "", 24f, new Vector2(90f, -30f), new Vector2(176f, 32f), Color.white);
         activeElement.fontStyle = FontStyles.Bold;
         Divider(activeHUD, new Vector2(90f, -54f), 168f);
-        CreateText(activeHUD, "SwitchHint", "<color=#E8C77F>Q</color>   Switch   <color=#E8C77F>E</color>", 12f, new Vector2(90f, -66f), new Vector2(168f, 18f), FantasyUI.Muted).alignment = TextAlignmentOptions.Top;
+        // Q / E keycaps either side of the label, matching every other input hint.
+        UIKit.Keycap(activeHUD, "Q", new Vector2(90f, -60f), new Vector2(0f, 1f));
+        CreateText(activeHUD, "SwitchHint", "Switch", 13f, new Vector2(124f, -65f), new Vector2(98f, 22f), FantasyUI.Muted).alignment = TextAlignmentOptions.Top;
+        UIKit.Keycap(activeHUD, "E", new Vector2(226f, -60f), new Vector2(0f, 1f));
         activeElement.outlineWidth = 0.2f;
         activeElement.outlineColor = new Color32(12, 7, 4, 255);
-        coinsHUD = CreateRect(content, "CoinsHUD", new Vector2(150f, 56f), new Vector2(24f, -24f));
-        FantasyUI.Panel(coinsHUD);
-        var coinRect = CreateRect(coinsHUD, "CoinIcon", new Vector2(32f, 32f), new Vector2(14f, -12f));
-        coinRect.gameObject.AddComponent<CoinIcon>().raycastTarget = false;
-        coinCount = CreateText(coinsHUD, "Count", "0", 26f, new Vector2(56f, -10f), new Vector2(84f, 36f), FantasyUI.Parchment);
     }
 
     // Gold-rimmed socket with an element-coloured halo behind the vector icon.
@@ -100,17 +94,12 @@ public class ElementUnlockNotification : MonoBehaviour
         affinity.OnActiveElementChanged += UpdateActiveElement;
         if (activeHUD != null) activeHUD.gameObject.SetActive(true);
         UpdateActiveElement(affinity.ActiveElement);
-        wallet = affinity.GetComponentInParent<PlayerCoins>();
-        if (wallet != null) { wallet.OnChanged += UpdateCoins; UpdateCoins(wallet.Count); }
-        if (coinsHUD != null) coinsHUD.gameObject.SetActive(true);
     }
 
     private void Start() => ready = true;
 
     private void OnDisable()
     {
-        if (wallet != null) wallet.OnChanged -= UpdateCoins;
-        if (coinsHUD != null) coinsHUD.gameObject.SetActive(false);
         if (affinity != null)
         {
             affinity.OnElementUnlocked -= ShowUnlocked;
@@ -127,7 +116,6 @@ public class ElementUnlockNotification : MonoBehaviour
     {
         if (card != null) Destroy(card.gameObject);
         if (activeHUD != null) Destroy(activeHUD.gameObject);
-        if (coinsHUD != null) Destroy(coinsHUD.gameObject);
     }
 
     private void ShowUnlocked(ElementType element)
@@ -183,7 +171,6 @@ public class ElementUnlockNotification : MonoBehaviour
         activeElement.text = $"<color=#{hex}>{(element == ElementType.None ? "None" : element.ToString())}</color>";
     }
 
-    private void UpdateCoins(int count) => coinCount.text = count.ToString();
 
     private static RectTransform CreateRect(Transform parent, string objectName, Vector2 size, Vector2 position)
     {

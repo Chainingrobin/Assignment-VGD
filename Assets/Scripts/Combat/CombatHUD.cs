@@ -32,6 +32,37 @@ public class CombatHUD : MonoBehaviour
             fill.color = FantasyUI.Gold;
             fill.transform.parent.GetComponent<UnityEngine.UI.Image>().color = FantasyUI.Inset;
         }
+        // Name the spells and show their keys as keycaps, like the rest of the HUD.
+        Label(projectileCount.transform.parent, "Bolt", "LMB");
+        Label(areaCount.transform.parent, "Burst", "RMB");
+    }
+
+    private static void Label(Transform card, string spell, string key)
+    {
+        var caption = card.Find("Caption")?.GetComponent<TMP_Text>();
+        if (caption != null)
+        {
+            caption.text = spell;
+            caption.fontSize = 15f;
+            caption.fontStyle = FontStyles.SmallCaps;
+        }
+        UIKit.Keycap(card, key, new Vector2(-10f, -8f), Vector2.one);
+        // Count on its own row under the name; status text bottom-right above the bar.
+        Place(card.Find("Count"), new Vector2(12f, -30f), new Vector2(72f, 26f), TextAlignmentOptions.Left, 22f);
+        Place(card.Find("Recovery"), new Vector2(66f, -36f), new Vector2(68f, 18f), TextAlignmentOptions.Right, 12f);
+    }
+
+    private static void Place(Transform item, Vector2 position, Vector2 size, TextAlignmentOptions alignment, float fontSize)
+    {
+        if (item == null) return;
+        var rect = (RectTransform)item;
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 1f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+        var text = item.GetComponent<TMP_Text>();
+        text.alignment = alignment;
+        text.fontSize = fontSize;
+        text.textWrappingMode = TextWrappingModes.NoWrap;
     }
 
     private void Update()
@@ -48,7 +79,7 @@ public class CombatHUD : MonoBehaviour
         areaCount.transform.localScale = Vector3.one * (1f + areaPulse * 0.18f);
         projectileCount.text = $"{charges.Projectiles}/15";
         areaCount.text = $"{charges.Areas}/5";
-        reloadLabel.text = charges.IsReloading ? $"{charges.ReloadRemaining:0.0}s" : "R";
+        reloadLabel.text = charges.IsReloading ? $"{charges.ReloadRemaining:0.0}s" : "<color=#E8C77F>R</color>  Reload";
         recoveryLabel.text = "";
         reloadFill.transform.parent.gameObject.SetActive(charges.IsReloading);
         recoveryFill.transform.parent.gameObject.SetActive(charges.Areas < SpellCharges.AreaCapacity);

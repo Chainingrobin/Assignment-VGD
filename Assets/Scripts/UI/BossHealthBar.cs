@@ -11,6 +11,7 @@ public class BossHealthBar : MonoBehaviour
     private RectTransform fill;
     private UnityEngine.UI.Image fillImage;
     private TMP_Text title, element;
+    private ElementIcon icon;
 
     public static void Show(CombatTarget target, string name)
     {
@@ -28,6 +29,10 @@ public class BossHealthBar : MonoBehaviour
             instance.element = UIKit.Text(panel, "Element", "", 16f, new Vector2(200f, 24f), new Vector2(-24f, -16f),
                 Vector2.one, FantasyUI.Parchment, TextAlignmentOptions.TopRight);
             instance.fill = UIKit.Bar(panel, "Health", new Vector2(712f, 16f), new Vector2(0f, -50f), top, Color.white);
+            // The element emblem tells the player what the boss is weak to at a glance.
+            instance.icon = UIKit.Rect(panel, "ElementIcon", new Vector2(28f, 28f), new Vector2(26f, -12f), new Vector2(0f, 1f))
+                .gameObject.AddComponent<ElementIcon>();
+            instance.icon.raycastTarget = false;
             instance.fillImage = instance.fill.GetComponent<UnityEngine.UI.Image>();
         }
         instance.target = target;
@@ -46,6 +51,8 @@ public class BossHealthBar : MonoBehaviour
         UIKit.SetBar(fill, target.Health / target.MaxHealth);
         var color = ElementVisuals.ColorFor(target.Affinity);
         fillImage.color = color;
+        icon.Element = target.Affinity;
+        icon.color = color;
         element.text = $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{target.Affinity}</color>";
     }
 }
