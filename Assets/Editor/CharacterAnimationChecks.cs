@@ -1,8 +1,10 @@
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Playables;
 
 public static class CharacterAnimationChecks
 {
@@ -123,5 +125,85 @@ public static class CharacterAnimationChecks
             Object.DestroyImmediate(copy); Object.DestroyImmediate(slope); Object.DestroyImmediate(wall);
             Physics.SyncTransforms();
         }
+    }
+
+    // No boss or Abe clip floats: every boss clip has its root height baked into the pose (in-place
+    // actions their root XZ too), and sampled on its prefab, the lowest point of the skinned mesh (the
+    // soles) stays on the ground for most of every clip. Root motion is off while sampling because in
+    // game RootMotionBody throws vertical root motion away, so height is whatever the pose carries.
+    // Slight sinking is left to RootMotionBody's foot IK, which stands planted soles back on the ground.
+    [MenuItem("Wulang/Checks/Boss and Abe feet on the ground (edit mode)")]
+    public static string BossFeet()
+    {
+        Assert.IsFalse(Application.isPlaying, "Run the feet check in Edit mode.");
+        var failures = new System.Collections.Generic.List<string>();
+        foreach (var path in System.IO.Directory.GetFiles("Assets/Characters/Bosses/Animations", "*.fbx"))
+        {
+            var importer = (ModelImporter)AssetImporter.GetAtPath(path.Replace('\\', '/'));
+            string name = System.IO.Path.GetFileNameWithoutExtension(path).ToLowerInvariant();
+            bool travels = name.Contains("walk") || name.Contains("run") || name.Contains("jump attack");
+            foreach (var clip in importer.clipAnimations)
+                if (!clip.lockRootHeightY || clip.lockRootPositionXZ == travels) failures.Add(name + ": root height or position not baked as expected");
+        }
+        int sampled = 0;
+        foreach (var path in new[] { BossSetup.EarthBoss, BossSetup.IceBoss, BossSetup.FireBoss, BossSetup.FinalBoss, BossSetup.AbePrefab })
+        {
+            var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            instance.hideFlags = HideFlags.HideAndDontSave;
+            try
+            {
+                foreach (var behaviour in instance.GetComponentsInChildren<MonoBehaviour>()) behaviour.enabled = false;
+                var animator = instance.GetComponentInChildren<Animator>();
+                animator.applyRootMotion = false;
+                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                float tolerance = RootMotionBody.PlantBand * instance.transform.lossyScale.y; // foot IK plants anything closer
+                // RootMotionBody shifts the body by the rig's measured idle offset, so judge the pose after that shift.
+                var rig = instance.GetComponentInChildren<RootMotionBody>(); // seated Abe has none
+                float offset = rig != null ? new SerializedObject(rig).FindProperty("groundOffset").floatValue : 0f;
+                foreach (var clip in animator.runtimeAnimatorController.animationClips.Distinct())
+                {
+                    string clipName = System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(clip));
+                    // A leap and a fall leave the ground on purpose.
+                    if (clipName.Contains("jump attack") || clipName.Contains("dying") || clipName.Contains("Death")) continue;
+                    var soles = Soles(instance, animator, clip, 10);
+                    sampled++;
+                    if (soles[soles.Length / 2] - offset > tolerance)
+                        failures.Add($"{instance.name.Replace("(Clone)", "")} / {clipName}: soles {soles[soles.Length / 2] - offset:+0.00} m above the ground for most of the clip");
+                }
+            }
+            finally { Object.DestroyImmediate(instance); }
+        }
+        Assert.IsTrue(failures.Count == 0, "Floating clips:\n" + string.Join("\n", failures));
+        return $"Boss and Abe feet PASS ({sampled} clips grounded, root baked on every boss clip)";
+    }
+
+    // The lowest skinned-mesh point above the character's origin at evenly spaced times, sorted.
+    internal static float[] Soles(GameObject instance, Animator animator, AnimationClip clip, int steps)
+    {
+        var skins = instance.GetComponentsInChildren<SkinnedMeshRenderer>().Where(s => s.gameObject.activeInHierarchy && s.sharedMesh != null).ToArray();
+        animator.cullingMode = AnimatorCullingMode.AlwaysAnimate; // off screen, a culled pose never reaches the bones
+        var baked = new Mesh();
+        var graph = PlayableGraph.Create("Feet check");
+        var output = UnityEngine.Animations.AnimationPlayableOutput.Create(graph, "Pose", animator);
+        var playable = UnityEngine.Animations.AnimationClipPlayable.Create(graph, clip);
+        playable.SetApplyFootIK(false);
+        output.SetSourcePlayable(playable);
+        var soles = new float[steps + 1];
+        for (int i = 0; i <= steps; i++)
+        {
+            playable.SetTime(clip.length * i / steps);
+            graph.Evaluate();
+            float low = float.MaxValue;
+            foreach (var skin in skins)
+            {
+                skin.BakeMesh(baked, true);
+                foreach (var vertex in baked.vertices) low = Mathf.Min(low, skin.transform.TransformPoint(vertex).y);
+            }
+            soles[i] = low - instance.transform.position.y;
+        }
+        graph.Destroy();
+        Object.DestroyImmediate(baked);
+        System.Array.Sort(soles);
+        return soles;
     }
 }

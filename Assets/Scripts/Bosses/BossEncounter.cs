@@ -103,6 +103,8 @@ public class BossEncounter : MonoBehaviour
             var drop = Instantiate(rewardPrefab, boss.Target.AimPoint + Vector3.up * 0.5f, Quaternion.identity);
             SceneManager.MoveGameObjectToScene(drop, gameObject.scene);
         }
+        // The body would block the memory echo's shot at the arena centre; a reload hides it too.
+        boss.gameObject.SetActive(false);
         var story = StoryStateManager.Instance;
         story.SetFlag(Flag);
         story.SetFlag(defeatFlag);

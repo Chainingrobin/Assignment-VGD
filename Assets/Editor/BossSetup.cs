@@ -12,7 +12,9 @@ public static class BossSetup
 {
     private const string Characters = "Assets/Characters/Bosses";
     private const string Clips = Characters + "/Animations";
-    private const string Creature = "Assets/Characters/Vampire/Creature NPC animations";
+    // The vampires' grounded copies of the Creature Pack clips (VampireAnimationSetup). The raw
+    // Creature FBX clips keep their root height unbaked, which floated the brutes.
+    private const string VampireClips = "Assets/Combat/Vampire animations";
     public const string Output = "Assets/Bosses";
 
     public const string EarthBoss = Output + "/Earth Guardian (Maw).prefab";
@@ -32,9 +34,9 @@ public static class BossSetup
         foreach (var path in Directory.GetFiles(Clips, "*.fbx")) ImportClip(path.Replace('\\', '/'));
         TelegraphMaterial();
 
-        var brute = Controller(Output + "/Brute.controller", Clip(Creature, "mutant breathing idle"), Clip(Creature, "mutant walking"),
-            Clip(Creature, "mutant run"), Clip(Creature, "mutant dying"),
-            ("Roar", Clip(Clips, "mutant roaring")), ("Punch", Clip(Clips, "mutant punch")), ("Swipe", Clip(Creature, "mutant swiping")),
+        var brute = Controller(Output + "/Brute.controller", Vampire("breathing idle"), Vampire("Walk forward"),
+            Vampire("Run forward"), Vampire("dying"),
+            ("Roar", Clip(Clips, "mutant roaring")), ("Punch", Clip(Clips, "mutant punch")), ("Swipe", Vampire("Melee swipe")),
             ("Leap", Clip(Clips, "mutant jump attack")), ("Attack2H", Clip(Clips, "Standing 2H Magic Attack 01")),
             ("AreaCast", Clip(Clips, "Standing 2H Magic Area Attack 01")), ("Cast", Clip(Clips, "Standing 2H Cast Spell 01")),
             ("HitLarge", Clip(Clips, "Standing React Large From Front")));
@@ -54,6 +56,7 @@ public static class BossSetup
         FinalBossPhases();
         foreach (var boss in new[] { EarthBoss, IceBoss, FireBoss, FinalBoss }) RootMotionSetup.AddBody(boss);
         Abe();
+        AbeSeated();
         AssetDatabase.SaveAssets();
         Debug.Log("BossSetup: 4 bosses and Abe built in " + Output);
     }
@@ -115,17 +118,168 @@ public static class BossSetup
         importer.materialImportMode = ModelImporterMaterialImportMode.None;
         string lower = Path.GetFileNameWithoutExtension(path).ToLowerInvariant();
         bool loop = lower.Contains("idle") || lower.Contains("walk") || lower.Contains("run") || lower.Contains("talk");
+        // Only strides and the leap really travel; every other action plays on the spot.
+        bool travels = lower.Contains("walk") || lower.Contains("run") || lower.Contains("jump attack");
         var clips = importer.defaultClipAnimations;
         foreach (var clip in clips)
         {
             clip.loopTime = loop;
             clip.lockRootRotation = true;
             clip.keepOriginalOrientation = true;
-            clip.lockRootHeightY = lower.Contains("idle") || lower.Contains("walk") || lower.Contains("run");
+            // Height baked into the pose (as the vampires' clips are): unbaked, a cast's or slam's crouch was
+            // thrown away as root motion while the legs still bent, lifting the feet up to a metre off the floor.
+            clip.lockRootHeightY = true;
             clip.keepOriginalPositionY = true;
+            clip.heightFromFeet = false;
+            // Unbaked hip sway became root motion, so RootMotionBody slid the whole boss on every punch and cast.
+            clip.lockRootPositionXZ = !travels;
         }
         importer.clipAnimations = clips;
         importer.SaveAndReimport();
+    }
+
+    // Re-grounds the existing bosses and Abe without rebuilding their prefabs: re-imports every
+    // boss clip with the root settings above and points the Brute controller at the vampire clips
+    // in place, so prefab, region, arena and story references all survive.
+    [MenuItem("Wulang/Bosses/Fix animation roots")]
+    public static void FixRoots()
+    {
+        if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Stop Play mode first.");
+        foreach (var path in Directory.GetFiles(Clips, "*.fbx")) ImportClip(path.Replace('\\', '/'));
+        var brute = AssetDatabase.LoadAssetAtPath<AnimatorController>(Output + "/Brute.controller");
+        var states = brute.layers[0].stateMachine.states.Select(s => s.state).ToArray();
+        var tree = (BlendTree)states.First(s => s.name == "Locomotion").motion;
+        var children = tree.children;
+        children[0].motion = Vampire("breathing idle");
+        children[1].motion = Vampire("Walk forward");
+        children[2].motion = Vampire("Run forward");
+        tree.children = children;
+        states.First(s => s.name == "Swipe").motion = Vampire("Melee swipe");
+        states.First(s => s.name == "Death").motion = Vampire("dying");
+        EditorUtility.SetDirty(tree);
+        EditorUtility.SetDirty(brute);
+        // Abe sits at his camps now (AbeSeated), so the standing foot IK and ground offset are the bosses' only.
+        foreach (var path in new[] { EarthBoss, IceBoss, FireBoss, FinalBoss }) Ground(path);
+        AssetDatabase.SaveAssets();
+        Debug.Log("BossSetup: boss and Abe clips re-grounded; Brute uses the vampire locomotion, swipe and death clips.");
+    }
+
+    private const string Gestures = Clips + "/Gestures";
+    public const string UpperBodyMask = Output + "/Upper body.mask";
+    public const string StandingAbe = Output + "/NPC standing.overrideController";
+
+    // Abe sits by his camp fires: Sitting Idle is his default pose, and an upper-body "Gestures"
+    // layer (legs masked out, so he stays seated) holds one state per clip of the Gestures Pack
+    // for NpcGestures to play while he talks. He loses the standing foot IK. Re-runnable.
+    [MenuItem("Wulang/Bosses/Abe sitting and gestures")]
+    public static void AbeSeated()
+    {
+        if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Stop Play mode first.");
+        ImportClip(Clips + "/Sitting Idle.fbx");
+        var gestures = Directory.GetFiles(Gestures, "*.fbx").Select(p => p.Replace('\\', '/')).ToArray();
+        foreach (var path in gestures) ImportClip(path);
+
+        var mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(UpperBodyMask);
+        if (mask == null)
+        {
+            mask = new AvatarMask();
+            AssetDatabase.CreateAsset(mask, UpperBodyMask);
+        }
+        for (var part = AvatarMaskBodyPart.Root; part < AvatarMaskBodyPart.LastBodyPart; part++)
+            mask.SetHumanoidBodyPartActive(part, part is AvatarMaskBodyPart.Body or AvatarMaskBodyPart.Head or AvatarMaskBodyPart.LeftArm
+                or AvatarMaskBodyPart.RightArm or AvatarMaskBodyPart.LeftFingers or AvatarMaskBodyPart.RightFingers);
+        EditorUtility.SetDirty(mask);
+
+        var npc = AssetDatabase.LoadAssetAtPath<AnimatorController>(Output + "/NPC.controller");
+        var machine = npc.layers[0].stateMachine;
+        var sit = machine.states.Select(s => s.state).FirstOrDefault(s => s.name == "Sit") ?? machine.AddState("Sit");
+        sit.motion = Clip(Clips, "Sitting Idle");
+        sit.iKOnFeet = false;
+        machine.defaultState = sit;
+        while (npc.layers.Length > 1) npc.RemoveLayer(1);
+        npc.AddLayer("Gestures");
+        var layers = npc.layers;
+        layers[1].avatarMask = mask;
+        layers[1].defaultWeight = 1f;
+        layers[1].blendingMode = AnimatorLayerBlendingMode.Override;
+        npc.layers = layers;
+        var gestureMachine = npc.layers[1].stateMachine;
+        var empty = gestureMachine.AddState("Empty");
+        gestureMachine.defaultState = empty;
+        foreach (var path in gestures)
+        {
+            var state = gestureMachine.AddState(Path.GetFileNameWithoutExtension(path));
+            state.motion = Clip(Gestures, Path.GetFileNameWithoutExtension(path));
+            var back = state.AddTransition(empty);
+            back.hasExitTime = true;
+            back.exitTime = 0.88f;
+            back.duration = 0.3f;
+        }
+        EditorUtility.SetDirty(npc);
+
+        // In the Sanctum he stands to make his offer: the same controller (gestures included) with
+        // the sitting idle swapped for the standing one.
+        AssetDatabase.DeleteAsset(StandingAbe);
+        var standingController = new AnimatorOverrideController(npc) { name = "NPC standing" };
+        standingController[Clip(Clips, "Sitting Idle")] = Clip(Clips, "standing idle");
+        AssetDatabase.CreateAsset(standingController, StandingAbe);
+
+        var root = PrefabUtility.LoadPrefabContents(AbePrefab);
+        try
+        {
+            var animator = root.GetComponentInChildren<Animator>();
+            animator.applyRootMotion = false;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate; // the look-at must track even off screen edges
+            var standing = animator.GetComponent<RootMotionBody>();
+            if (standing != null) Object.DestroyImmediate(standing);
+            if (animator.GetComponent<NpcGestures>() == null) animator.gameObject.AddComponent<NpcGestures>();
+            // Seated, he is about 1.3 m tall: the capsule the interaction ray finds follows.
+            var capsule = root.GetComponent<CapsuleCollider>();
+            capsule.center = Vector3.up * 0.65f;
+            capsule.height = 1.3f;
+            PrefabUtility.SaveAsPrefabAsset(root, AbePrefab);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+        AssetDatabase.SaveAssets();
+        Debug.Log($"BossSetup: Abe sits, with {gestures.Length} upper-body gestures.");
+    }
+
+    // Measures how far the rig's soles sit off the ground in its idle pose and stores it on its
+    // RootMotionBody, which shifts the body by that much so the feet rest on the ground.
+    private static void Ground(string path)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        var probe = Object.Instantiate(prefab);
+        probe.hideFlags = HideFlags.HideAndDontSave;
+        float offset;
+        try
+        {
+            foreach (var behaviour in probe.GetComponentsInChildren<MonoBehaviour>()) behaviour.enabled = false;
+            var animator = probe.GetComponentInChildren<Animator>();
+            animator.applyRootMotion = false;
+            var locomotion = (AnimatorController)animator.runtimeAnimatorController;
+            var tree = (BlendTree)locomotion.layers[0].stateMachine.states.First(s => s.state.name == "Locomotion").state.motion;
+            var soles = CharacterAnimationChecks.Soles(probe, animator, (AnimationClip)tree.children[0].motion, 10);
+            offset = soles[soles.Length / 2];
+        }
+        finally { Object.DestroyImmediate(probe); }
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var settings = new SerializedObject(root.GetComponentInChildren<RootMotionBody>());
+            settings.FindProperty("groundOffset").floatValue = offset;
+            settings.ApplyModifiedPropertiesWithoutUndo();
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+        Debug.Log($"BossSetup: {prefab.name} idle soles {offset:+0.00;-0.00} m, body shifted to compensate.");
+    }
+
+    private static AnimationClip Vampire(string name)
+    {
+        var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>($"{VampireClips}/{name}.anim");
+        if (clip == null) throw new FileNotFoundException($"No vampire clip {VampireClips}/{name}.anim (run the vampire animation setup first)");
+        return clip;
     }
 
     private static AnimationClip Clip(string folder, string name)

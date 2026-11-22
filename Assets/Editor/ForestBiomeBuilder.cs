@@ -29,7 +29,7 @@ public static class ForestBiomeBuilder
     private static readonly Rect Area = Rect.MinMaxRect(300f, 395f, 640f, 880f);
     private static readonly Vector2 Armory = new(560f, 567f);
     private static readonly Vector2 Spawn = new(566f, 604f);
-    private static readonly Vector2[] TrailToArena = { new(556f, 552f), new(538f, 524f), new(518f, 496f), new(501f, 468f) };
+    internal static readonly Vector2[] TrailToArena = { new(556f, 552f), new(538f, 524f), new(518f, 496f), new(501f, 468f) };
     private static readonly Vector2[] TrailToLake = { new(505f, 424f), new(540f, 410f), new(585f, 400f), new(632f, 392f) };
     private static readonly Vector2[] Creek = { new(335f, 830f), new(368f, 760f), new(396f, 690f), new(420f, 622f), new(436f, 560f), new(440f, 505f), new(434f, 466f) };
     private static readonly Vector2 Knoll = new(398f, 705f);

@@ -39,6 +39,27 @@ public class StoryStateManager : MonoBehaviour
         set { PlayerPrefs.SetInt("wulang.ngplus", value ? 1 : 0); PlayerPrefs.Save(); }
     }
 
+    // Checkpoint between sessions: the region last entered and every flag at that moment.
+    // shortcut: coins, potions and journal entries aren't saved; add them if playtests need it.
+    private const string SaveKey = "wulang.save";
+    public static bool HasSave => PlayerPrefs.HasKey(SaveKey);
+
+    public void Save(string region)
+    {
+        if (NewGamePlus || string.IsNullOrEmpty(region)) return;
+        PlayerPrefs.SetString(SaveKey, region + "\n" + string.Join("\n", flags));
+        PlayerPrefs.Save();
+    }
+
+    // Restores the checkpoint's flags and returns its region.
+    public string Load()
+    {
+        ClearAll();
+        var lines = PlayerPrefs.GetString(SaveKey).Split('\n');
+        for (int i = 1; i < lines.Length; i++) SetFlag(lines[i]);
+        return lines[0];
+    }
+
     private void Awake()
     {
         if (instance != null && instance != this) { Destroy(gameObject); return; }
@@ -70,6 +91,7 @@ public static class Flags
     public const string BossFire = "bossFireDefeated";
     public const string BossFinal = "bossFinalDefeated";
     public const string LakeFrozen = "lakeFrozen";
+    public const string IntroSeen = "introSeen";
     public const string ChoseSubmission = "choseSubmission";
     public const string EndingTruth = "endingTruth";
     public static string Has(ElementType element) => "has" + element;

@@ -69,7 +69,9 @@ public class EndingController : MonoBehaviour
 
     private void OnRespawned()
     {
-        if (ending || reOffered || deaths < 2 || reOffer == null) return;
+        if (ending || !StoryStateManager.Instance.HasFlag(RefusedOffer)) return;
+        // The encounter disengaged on death and doesn't auto-engage here, so restart the fight.
+        if (reOffered || deaths < 2 || reOffer == null) { encounter.Engage(); return; }
         reOffered = true;
         // The second fall: Ganfaul offers again. Refusing again restarts the fight.
         DialogueManager.Instance.Play(reOffer, () => { if (!StoryStateManager.Instance.HasFlag(Flags.ChoseSubmission)) encounter.Engage(); });

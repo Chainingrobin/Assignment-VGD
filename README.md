@@ -31,7 +31,7 @@ Any region scene in `Assets/Scenes/Regions/` can also be played directly: it loa
 
 | Build order | Scene | Contents |
 |---|---|---|
-| 0 | `Scenes/MainMenu.unity` | New Game, chapter select in story order, New Game+ (after an ending), Quit |
+| 0 | `Scenes/MainMenu.unity` | Continue (back to the start of the region last entered), New Game, chapter select in story order, New Game+ (after an ending), Quit |
 | 1 | `Scenes/World.unity` | The whole terrain, sky, day/night, player, HUD, statue/lake freeze and landmark cinematics |
 | 2 | `Scenes/Regions/Forest.unity` | Chapter I: Abe's armory camp, training and field vampires, Earth Guardian (Maw J Laygo) |
 | 3 | `Scenes/Regions/Ice.unity` | Chapter II: Ice Guardian (Mutant), Ice vampires, mountain-pass waystone |
@@ -47,7 +47,9 @@ The World stays loaded, so every region remains visible on the horizon. `RegionM
 3. **Volcano:** enter the caldera through the lava tube, defeat the **Fire Guardian** (weak to Ice), claim Fire, step into the rift.
 4. **Final arena:** Abe offers Wulang her past in exchange for the elements. **Kneel** for the Submission ending, or **refuse** to fight **Ganfaul**, whose element changes every quarter of his health (only the current weakness hurts him), for the Truth ending.
 
-Each element claim replays a **memory echo** (the world desaturates and ghosts of Wulang and Abe act it out). Vampires drop Wubucks; Abe sells healing potions at a camp in every region.
+Each region hides three **points of interest** off the main path, each with its own landmark, a small story told by its props, usually a guard pack, and a chest under a light beam (rose for a vitality relic, gold for supplies). Six reliquaries each raise maximum health by 10, and every chest adds a journal page that hints at who Abe really is. Forest: the runestone crown on the knoll, the book-bearer's camp, the blossom shrine by the pond. Frozen Reach: the frozen caravan, the crystal crown, the glacier gate. Volcano: the chain forge on the plateau (jump up the slabs on its west side), the ember shrine, the burnt watch post. Opened chests are story flags, so they stay looted after a restart or Continue.
+
+Each element claim replays a **memory echo** (the world desaturates, the camera cuts to a framed shot of ghosts of Wulang and Abe acting it out). Abe sits by a camp fire in every region: F talks to him (that region's conversation, with gestures), then F trades. His camps are safe ground: vampires give up the chase there. Vampires of each biome's element roam in packs and drop Wubucks; coin piles, Wubucks bags and potions are scattered off the paths.
 
 ## Controls
 
@@ -57,7 +59,7 @@ Each element claim replays a **memory echo** (the world desaturates and ghosts o
 | Q / E | Previous / next unlocked element |
 | Left mouse / Right mouse | Element projectile / element area spell |
 | R | Reload projectile charges |
-| F | Interact: Abe's shop, statue, waystone, rift, lore notes, landmark previews |
+| F | Interact: talk to or trade with Abe, statue, waystone, rift, lore notes |
 | H | Drink a healing potion |
 | Tab | Satchel and journal (items, memories and lore) |
 | Esc | Pause: Resume, Restart Region, Main Menu, Quit |
@@ -77,6 +79,7 @@ Each element claim replays a **memory echo** (the world desaturates and ghosts o
 | Combat additions | `Combat/StormQuake` (Earth + Lightning combo), `CombatTarget` death event, stagger, status scaling, resistance |
 | Player | `PlayerHealth` (HP, death and respawn), `Items/PlayerInventory` (potions on H, tomes), `ItemData`, `LootDrop`, `Merchant`, `World/HazardZone` |
 | UI | `UI/MainMenu`, `PauseMenu`, `InventoryUI`, `ShopUI`, `Subtitle`, `UIKit` |
+| Exploration | `World/TreasureChest` (chest rewards; vitality relics raise `PlayerHealth`'s maximum), `World/Spin` (the Sanctum's drifting rocks) |
 
 ### Rebuilding content (Editor menus)
 
@@ -91,6 +94,14 @@ Each element claim replays a **memory echo** (the world desaturates and ghosts o
 | **Wulang > Scenes > Populate regions** | Guardian arenas, Abe camps, field vampires, waystone and rift, lava hazards |
 | **Wulang > Scenes > Build final arena** | The floating sanctum, element pillars and final encounter |
 | **Wulang > Story > Lay placeholder story onto regions** | Dialogue, portraits, objectives, triggers, lore notes, memory echoes, endings (run after the arena builder) |
+| **Wulang > Bosses > Fix animation roots** | Bakes boss and Abe clip roots (no floating or body sliding) and grounds each rig's idle pose |
+| **Wulang > Bosses > Abe sitting and gestures** | Abe's sitting idle and upper-body Gestures Pack layer; the standing variant for the Sanctum |
+| **Wulang > Characters > Tune skin materials** | Per-element skin smoothness, specular maps where models have them, Maw's glow map |
+| **Wulang > Forest > Dress the armory compound** | Fence, braziers, training ground, smithy and supply corner around the armory tower |
+| **Wulang > Terrain > Add gentle ground variation** | Small undulation on open ground only (run after the biome builders, before Populate regions) |
+| **Wulang > Cinematics > Build intro flight and tidy cutscenes** | The New Game intro flight; no Ice fly-over (the freeze reveal shows it); no "view area" previews |
+| **Wulang > Story > Re-render portraits** | The three dialogue portraits only |
+| **Wulang > World > Build landmarks, rewards and arenas** | Nine points of interest with chests, guards and journal pages; arena dressing for all four guardians; the snow's own palette (run last: after the biome builders, Populate regions and the story setup) |
 
 Run the biome builders after **Wulang > Volcano > Rebuild volcano biome**: the volcano builder restores every terrain tree from its own snapshot. Each biome builder snapshots its region on first run (`Assets/Environment/Forest|Snow/* baseline.bytes`) and restores it before rebuilding. Rebuilding the boss prefabs replaces their components, so re-run **Populate regions**, **Build final arena** and the story setup afterwards.
 

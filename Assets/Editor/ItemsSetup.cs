@@ -85,8 +85,8 @@ public static class ItemsSetup
         return item;
     }
 
-    // The unfrozen lake drowns: a hazard box just under the ice surface, so walking on the
-    // frozen lake is safe but wading into open water hurts and hauls Wulang back ashore.
+    // The unfrozen lake drowns: a hazard box from waist depth down, so shallows and the frozen
+    // lake are safe but wading into open water hurts and hauls Wulang back ashore.
     private static void AddLakeHazard()
     {
         var existing = GameObject.Find("Lake drowning hazard");
@@ -95,7 +95,7 @@ public static class ItemsSetup
         var go = new GameObject("Lake drowning hazard");
         go.layer = 2; // Ignore Raycast: spell aiming must pass through the volume.
         var box = go.AddComponent<BoxCollider>();
-        float top = ice.max.y - 0.7f, bottom = -20f;
+        float top = ice.max.y - 1.5f, bottom = -20f;
         go.transform.position = new Vector3(ice.center.x, (top + bottom) / 2f, ice.center.z);
         box.size = new Vector3(ice.size.x, top - bottom, ice.size.z);
         var hazard = go.AddComponent<HazardZone>();
@@ -103,6 +103,7 @@ public static class ItemsSetup
         settings.FindProperty("damagePerSecond").floatValue = 12f;
         settings.FindProperty("element").enumValueIndex = (int)ElementType.Ice;
         settings.FindProperty("returnAfter").floatValue = 1.5f;
+        settings.FindProperty("safeWhenFlag").stringValue = Flags.LakeFrozen;
         settings.FindProperty("firstTimeLine").stringValue = "[The water is freezing. I can't swim this.]";
         settings.ApplyModifiedPropertiesWithoutUndo();
     }

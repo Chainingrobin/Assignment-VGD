@@ -15,6 +15,7 @@ public class Interactable : MonoBehaviour
     readonly List<GameObject> outlineObjects = new();
 
     public string Prompt => prompt;
+    public void SetPrompt(string text) => prompt = text;
     // A disabled Interactable (e.g. switched off by a FlagGate) can't be used.
     public bool CanInteract => isActiveAndEnabled && !(singleUse && used);
     public UnityEvent OnInteract => onInteract;
@@ -77,12 +78,6 @@ public class Interactable : MonoBehaviour
     {
         if (!CanInteract) return;
         used = true;
-
-        int n = onInteract.GetPersistentEventCount();
-        Debug.Log($"Interactable.Interact called on {name}. Event entries: {n}");
-        for (int i = 0; i < n; i++)
-            Debug.Log($"  entry {i}: target={onInteract.GetPersistentTarget(i)}  method={onInteract.GetPersistentMethodName(i)}");
-
         onInteract.Invoke();
     }
 }

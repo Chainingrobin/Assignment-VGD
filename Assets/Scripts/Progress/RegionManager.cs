@@ -53,6 +53,7 @@ public class RegionManager : MonoBehaviour
     private CharacterController body;
     private float sealCooldown;
     private readonly HashSet<string> warned = new();
+    private readonly HashSet<string> visited = new();
 
     private void Awake() => Instance = this;
     private void OnDestroy() { if (Instance == this) Instance = null; }
@@ -99,7 +100,13 @@ public class RegionManager : MonoBehaviour
         }
         yield return null; // let the region's Awake/Start (prerequisites, objectives) run
         MoveToSpawn(Current);
-        RegionEntered?.Invoke(Current);
+        // A fresh New Game opens on its region's flight under the chapter card (the intro cutscene);
+        // the prologue's own beat waits for it, since it holds off while a transition is busy.
+        var opening = Array.Find(regions, r => r.scene == Current);
+        bool intro = alreadyLoaded.Count == 0 && !story.NewGamePlus && opening?.cutscene != null && !story.HasFlag(Flags.IntroSeen);
+        if (intro) story.SetFlag(Flags.IntroSeen); // before the checkpoint, so Continue doesn't replay it
+        Arrived();
+        if (intro) StartCoroutine(Enter(opening));
         yield return TransitionOverlay.Instance.FadeTo(0f, 0.8f);
         RefreshSeals();
     }
@@ -115,7 +122,7 @@ public class RegionManager : MonoBehaviour
         {
             if (!HasDomain(region) || region.scene == Current) continue;
             if (p.x < region.domainMin.x || p.x > region.domainMax.x || p.y < region.domainMin.y || p.y > region.domainMax.y) continue;
-            if (story.HasFlag(region.requiredFlag)) { StartCoroutine(Enter(region)); return; }
+            if (story.HasFlag(region.requiredFlag)) { StartCoroutine(Enter(region, walked: true)); return; }
             PushOut(region, p);
         }
     }
@@ -167,39 +174,52 @@ public class RegionManager : MonoBehaviour
         Debug.LogError($"RegionManager: no region named {scene}", this);
     }
 
-    private IEnumerator Enter(Region region)
+    private IEnumerator Enter(Region region, bool walked = false)
     {
         Busy = true;
         PlayerLock.Push();
         var overlay = TransitionOverlay.Instance;
         float started = Time.unscaledTime;
-        bool flight = region.cutscene != null;
+        // Walking back into a region already played: load it quietly, no flight or chapter card again.
+        bool revisit = region.scene != Current && visited.Contains(region.scene);
+        bool flight = region.cutscene != null && !revisit;
+        // Walking across a border with no flight (the frozen lake into the Frozen Reach): the chapter
+        // card plays over the live view and the player stays where they walked to. No black screen,
+        // no teleport, and no fly-over of ground they have just seen.
+        bool live = walked && !flight;
         if (flight) region.cutscene.PlayTransition();
-        else yield return overlay.FadeTo(1f, 0.8f, region.whiteFade ? Color.white : Color.black);
-        yield return overlay.ShowCaption(region.title, RecapFor(region));
+        else if (!live) yield return overlay.FadeTo(1f, 0.8f, region.whiteFade ? Color.white : Color.black);
+        if (!revisit) yield return overlay.ShowCaption(region.title, RecapFor(region));
 
-        string previous = Current;
-        var load = SceneManager.LoadSceneAsync(region.scene, LoadSceneMode.Additive);
-        while (!load.isDone)
+        // The opening flight presents the region that is already loaded; every other entry loads it.
+        if (region.scene != Current)
         {
-            overlay.SetProgress($"{Mathf.RoundToInt(load.progress * 100f)}%");
+            string previous = Current;
+            var load = SceneManager.LoadSceneAsync(region.scene, LoadSceneMode.Additive);
+            while (!load.isDone)
+            {
+                overlay.SetProgress($"{Mathf.RoundToInt(load.progress * 100f)}%");
+                yield return null;
+            }
+            overlay.SetProgress("");
+            if (!string.IsNullOrEmpty(previous) && SceneManager.GetSceneByName(previous).isLoaded)
+                yield return SceneManager.UnloadSceneAsync(previous);
+            Current = region.scene;
             yield return null;
+            if (!live) MoveToSpawn(Current);
+            Arrived();
         }
-        overlay.SetProgress("");
-        if (!string.IsNullOrEmpty(previous) && previous != region.scene && SceneManager.GetSceneByName(previous).isLoaded)
-            yield return SceneManager.UnloadSceneAsync(previous);
-        Current = region.scene;
-        yield return null;
-        MoveToSpawn(Current);
-        RegionEntered?.Invoke(Current);
 
         while (flight && region.cutscene.IsPlaying) yield return null;
-        // Hold the caption long enough to read, unless the player skips.
-        overlay.ShowSkipHint(true);
-        while (Time.unscaledTime - started < minimumCaptionTime && !TransitionOverlay.SkipPressed) yield return null;
-        overlay.ShowSkipHint(false);
-        if (!flight) StartCoroutine(overlay.FadeTo(0f, 0.8f));
-        yield return overlay.HideCaption();
+        if (!revisit)
+        {
+            // Hold the caption long enough to read, unless the player skips.
+            overlay.ShowSkipHint(true);
+            while (Time.unscaledTime - started < minimumCaptionTime && !TransitionOverlay.SkipPressed) yield return null;
+            overlay.ShowSkipHint(false);
+        }
+        if (!flight && !live) StartCoroutine(overlay.FadeTo(0f, 0.8f));
+        if (!revisit) yield return overlay.HideCaption();
         RefreshSeals();
         PlayerLock.Pop();
         Busy = false;
@@ -223,10 +243,18 @@ public class RegionManager : MonoBehaviour
         yield return null;
         MoveToSpawn(Current);
         if (PlayerHealth.Instance != null) PlayerHealth.Instance.HealFull();
-        RegionEntered?.Invoke(Current);
+        Arrived();
         yield return overlay.FadeTo(0f, 0.8f);
         PlayerLock.Pop();
         Busy = false;
+    }
+
+    // Every arrival in a region: remember it was played and checkpoint the story there.
+    private void Arrived()
+    {
+        visited.Add(Current);
+        StoryStateManager.Instance.Save(Current);
+        RegionEntered?.Invoke(Current);
     }
 
     // Placeholder recap built from story flags; the narrative pass replaces the wording.

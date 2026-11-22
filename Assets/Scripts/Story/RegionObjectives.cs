@@ -13,6 +13,8 @@ public class RegionObjectives : MonoBehaviour
         public string showWhen;
         [Tooltip("Flag(s) that complete it; empty = stays until the region changes.")]
         public string doneWhen;
+        [Tooltip("World position of the goal, for the HUD compass marker. Zero = no marker.")]
+        public Vector3 marker;
     }
 
     [SerializeField] private Objective[] objectives;

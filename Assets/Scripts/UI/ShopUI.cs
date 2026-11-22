@@ -1,27 +1,35 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
-// Abe's shop window: his stock with prices and lore descriptions, the player's Wubucks, and a
-// Buy button per item. Opening it pauses the player and frees the cursor; Esc or Leave closes.
+// Abe's trade window, one tidy panel: the trader's portrait and name on the left, the player's
+// purse (a coin and a number) on the right, then his wares as cards: icon, name and price. Click a
+// card to buy it; hovering one shows its lore on a single line underneath. Esc leaves. Not enough
+// Wubucks makes the purse flash red instead of a message. Opening it pauses the player and frees
+// the cursor.
 public class ShopUI : MonoBehaviour
 {
     private static ShopUI instance;
     private Canvas canvas;
-    private RectTransform list;
-    private TMP_Text wallet, header;
+    private RectTransform cards;
+    private Image portrait;
+    private TMP_Text wallet, header, lore;
     private ItemData[] stock;
     private System.Action onClose;
 
     public static bool IsOpen => instance != null && instance.canvas.enabled;
 
-    public static void Open(string merchantName, ItemData[] stock, System.Action onClose = null)
+    public static void Open(string merchantName, Sprite face, ItemData[] stock, System.Action onClose = null)
     {
         if (instance == null) instance = Build();
         instance.stock = stock;
         instance.onClose = onClose;
         instance.header.text = merchantName;
+        instance.portrait.sprite = face;
+        instance.portrait.transform.parent.parent.gameObject.SetActive(face != null);
         instance.Populate();
         instance.canvas.enabled = true;
         PlayerLock.Push(showCursor: true);
@@ -33,16 +41,33 @@ public class ShopUI : MonoBehaviour
         var shop = canvas.gameObject.AddComponent<ShopUI>();
         shop.canvas = canvas;
         var center = new Vector2(0.5f, 0.5f);
+        var topLeft = new Vector2(0f, 1f);
         UIKit.Fill(UIKit.Stretch(canvas.transform, "Dim"), new Color(0f, 0f, 0f, 0.55f));
-        var panel = UIKit.Rect(canvas.transform, "Panel", new Vector2(760f, 620f), Vector2.zero, center);
+        var panel = UIKit.Rect(canvas.transform, "Panel", new Vector2(700f, 430f), Vector2.zero, center);
         FantasyUI.Panel(panel);
-        var top = new Vector2(0.5f, 1f);
-        shop.header = UIKit.Text(panel, "Header", "", 36f, new Vector2(700f, 50f), new Vector2(0f, -24f), top,
-            FantasyUI.Gold, TextAlignmentOptions.Center);
-        shop.wallet = UIKit.Text(panel, "Wallet", "", 22f, new Vector2(700f, 30f), new Vector2(0f, -78f), top,
-            FantasyUI.Parchment, TextAlignmentOptions.Center);
-        shop.list = UIKit.Rect(panel, "Items", new Vector2(700f, 420f), new Vector2(0f, -120f), top);
-        UIKit.Button(panel, "Leave", new Vector2(220f, 56f), new Vector2(0f, 24f), new Vector2(0.5f, 0f), shop.Close);
+
+        // Trader: round portrait and name.
+        var frame = UIKit.Rect(panel, "Portrait", new Vector2(100f, 100f), new Vector2(32f, -28f), topLeft);
+        frame.gameObject.AddComponent<Image>().sprite = FantasyUI.Socket;
+        var window = UIKit.Rect(frame, "Window", new Vector2(80f, 80f), Vector2.zero, center);
+        window.gameObject.AddComponent<Image>().sprite = FantasyUI.Socket;
+        window.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+        shop.portrait = UIKit.Rect(window, "Image", new Vector2(80f, 80f), Vector2.zero, center).gameObject.AddComponent<Image>();
+        shop.portrait.preserveAspect = true;
+        shop.header = UIKit.Text(panel, "Name", "", 34f, new Vector2(360f, 44f), new Vector2(150f, -54f), topLeft, FantasyUI.Gold);
+        shop.header.fontStyle = FontStyles.Bold | FontStyles.SmallCaps;
+
+        // Purse, top right.
+        var purse = UIKit.Rect(panel, "Purse", new Vector2(120f, 32f), new Vector2(-32f, -60f), Vector2.one);
+        UIKit.Rect(purse, "Coin", new Vector2(28f, 28f), new Vector2(0f, -2f), topLeft).gameObject.AddComponent<CoinIcon>().raycastTarget = false;
+        shop.wallet = UIKit.Text(purse, "Wallet", "", 26f, new Vector2(84f, 32f), new Vector2(36f, 0f), topLeft, FantasyUI.Parchment);
+
+        UIKit.Fill(UIKit.Rect(panel, "Divider", new Vector2(636f, 1f), new Vector2(0f, -146f), new Vector2(0.5f, 1f)), FantasyUI.Gold * new Color(1f, 1f, 1f, 0.35f));
+        shop.cards = UIKit.Rect(panel, "Wares", new Vector2(636f, 176f), new Vector2(0f, -166f), new Vector2(0.5f, 1f));
+        shop.lore = UIKit.Text(panel, "Lore", "", 18f, new Vector2(636f, 50f), new Vector2(0f, 64f), new Vector2(0.5f, 0f), FantasyUI.Muted,
+            TextAlignmentOptions.Top);
+        shop.lore.textWrappingMode = TextWrappingModes.Normal;
+        UIKit.Hint(panel, "Esc", "Leave", new Vector2(-24f, 18f), new Vector2(1f, 0f), 16f);
         if (FindFirstObjectByType<EventSystem>() == null)
         {
             var events = new GameObject("EventSystem", typeof(EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
@@ -52,25 +77,34 @@ public class ShopUI : MonoBehaviour
         return shop;
     }
 
+    // One card per item, centred in a row.
     private void Populate()
     {
-        foreach (Transform child in list) Destroy(child.gameObject);
+        foreach (Transform child in cards) Destroy(child.gameObject);
+        const float width = 150f, gap = 16f;
+        int count = 0;
+        foreach (var item in stock) if (item != null) count++;
+        float x = -(count * width + (count - 1) * gap) * 0.5f + width * 0.5f;
         var top = new Vector2(0.5f, 1f);
-        float y = 0f;
         foreach (var item in stock)
         {
             if (item == null) continue;
-            var row = UIKit.Rect(list, item.displayName, new Vector2(700f, 120f), new Vector2(0f, y), top);
-            UIKit.Fill(row, new Color(0.1f, 0.07f, 0.05f, 0.8f));
-            var left = new Vector2(0f, 1f);
-            UIKit.Text(row, "Name", $"{item.displayName}   <color=#E8C77F>{item.price} Wubucks</color>", 24f,
-                new Vector2(480f, 32f), new Vector2(16f, -10f), left, FantasyUI.Parchment);
-            var lore = UIKit.Text(row, "Lore", item.description, 16f, new Vector2(480f, 70f), new Vector2(16f, -44f), left, FantasyUI.Muted);
-            lore.textWrappingMode = TextWrappingModes.Normal;
             var captured = item;
-            UIKit.Button(row, "Buy", new Vector2(160f, 56f), new Vector2(-16f, 0f), new Vector2(1f, 0.5f), () => Buy(captured));
-            y -= 132f;
+            var card = UIKit.Button(cards, "", new Vector2(width, 176f), new Vector2(x, 0f), top, () => Buy(captured));
+            UIKit.ItemGlyph(UIKit.Rect(card.transform, "Slot", new Vector2(80f, 80f), new Vector2(0f, -14f), top), item, 60f);
+            UIKit.Text(card.transform, "Name", item.displayName, 18f, new Vector2(width - 16f, 26f), new Vector2(0f, -100f), top,
+                FantasyUI.Parchment, TextAlignmentOptions.Center);
+            var price = UIKit.Rect(card.transform, "Price", new Vector2(80f, 28f), new Vector2(0f, -132f), top);
+            UIKit.Rect(price, "Coin", new Vector2(22f, 22f), new Vector2(4f, -3f), new Vector2(0f, 1f)).gameObject.AddComponent<CoinIcon>().raycastTarget = false;
+            UIKit.Text(price, "Amount", item.price.ToString(), 22f, new Vector2(50f, 28f), new Vector2(32f, 0f), new Vector2(0f, 1f), FantasyUI.Gold);
+            // Hovering a card reads its lore underneath.
+            var hover = card.gameObject.AddComponent<EventTrigger>();
+            var enter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+            enter.callback.AddListener(_ => lore.text = captured.description);
+            hover.triggers.Add(enter);
+            x += width + gap;
         }
+        lore.text = "";
         RefreshWallet();
     }
 
@@ -79,16 +113,27 @@ public class ShopUI : MonoBehaviour
         var coins = FindFirstObjectByType<PlayerCoins>();
         var inventory = PlayerInventory.Instance;
         if (coins == null || inventory == null) return;
-        if (!coins.Spend(item.price)) { Subtitle.Show($"[Not enough Wubucks for the {item.displayName}.]", 2f); return; }
+        if (!coins.Spend(item.price)) { StopAllCoroutines(); StartCoroutine(FlashPurse()); return; }
         inventory.Add(item);
-        Subtitle.Show($"[Bought {item.displayName}.]", 1.5f);
+        Subtitle.Show($"[{item.displayName} +1]", 1.2f);
         RefreshWallet();
+    }
+
+    private IEnumerator FlashPurse()
+    {
+        var red = new Color(1f, 0.35f, 0.3f);
+        for (float t = 0f; t < 0.6f; t += Time.unscaledDeltaTime)
+        {
+            wallet.color = Color.Lerp(red, FantasyUI.Parchment, t / 0.6f);
+            yield return null;
+        }
+        wallet.color = FantasyUI.Parchment;
     }
 
     private void RefreshWallet()
     {
         var coins = FindFirstObjectByType<PlayerCoins>();
-        wallet.text = $"Your Wubucks: {(coins != null ? coins.Count : 0)}";
+        wallet.text = (coins != null ? coins.Count : 0).ToString();
     }
 
     private void Update()

@@ -56,10 +56,24 @@ public class WaterFreezer : MonoBehaviour
     }
 
     // A lake frozen earlier in this playthrough (or required by the region being played)
-    // starts frozen, skipping the reveal.
+    // starts frozen, skipping the reveal. Chapter select loads this World before the region
+    // that grants the flag, so also listen for it arriving.
     void Start()
     {
-        if (!enabled || !StoryStateManager.Instance.HasFlag(Flags.LakeFrozen)) return;
+        if (!enabled) return;
+        StoryStateManager.Instance.OnFlagSet += OnFlagSet;
+        OnFlagSet(Flags.LakeFrozen);
+    }
+
+    void OnDestroy()
+    {
+        var story = StoryStateManager.Instance;
+        if (story != null) story.OnFlagSet -= OnFlagSet;
+    }
+
+    void OnFlagSet(string flag)
+    {
+        if (started || flag != Flags.LakeFrozen || !StoryStateManager.Instance.HasFlag(flag)) return;
         started = true;
         ice.gameObject.SetActive(true);
         SetProgress(1f);
@@ -68,7 +82,6 @@ public class WaterFreezer : MonoBehaviour
 
     public void Freeze()
     {
-        Debug.Log("Freeze called");
         if (started || !enabled) return;
         if (ice == null) { Debug.LogError("WaterFreezer: Ice is not assigned", this); return; }
         started = true;
@@ -77,7 +90,6 @@ public class WaterFreezer : MonoBehaviour
 
     IEnumerator Run()
     {
-        Debug.Log("Freeze started");
         SetProgress(0f);
         ice.gameObject.SetActive(true);
         if (freezeParticles != null) freezeParticles.Play();
@@ -97,7 +109,6 @@ public class WaterFreezer : MonoBehaviour
         if (freezeLight != null) freezeLight.enabled = false;
         StoryStateManager.Instance.SetFlag(Flags.LakeFrozen);
         onFreezeFinished.Invoke();
-        Debug.Log("Freeze finished");
     }
 
     void SetProgress(float value)

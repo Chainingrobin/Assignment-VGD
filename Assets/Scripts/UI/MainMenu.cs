@@ -132,6 +132,7 @@ public class MainMenu : MonoBehaviour
         var center = new Vector2(0.5f, 1f);
         mainPanel = UIKit.Rect(column, "Main", new Vector2(420f, 400f), new Vector2(0f, -400f), center);
         float y = 0f;
+        if (StoryStateManager.HasSave) Button(mainPanel, "Continue", ref y, Continue);
         Button(mainPanel, "New Game", ref y, () => StartAt("Forest", false));
         Button(mainPanel, "Chapters", ref y, () => ShowChapters(true));
         if (StoryStateManager.NewGamePlusUnlocked) Button(mainPanel, "New Game+", ref y, () => StartAt("Forest", true));
@@ -176,6 +177,18 @@ public class MainMenu : MonoBehaviour
         if (newGamePlus)
             foreach (ElementType element in System.Enum.GetValues(typeof(ElementType)))
                 if (element != ElementType.None) story.SetFlag(Flags.Has(element));
+        Launch(region);
+    }
+
+    // Back to the start of the region last entered, with the story as it was then.
+    private static void Continue()
+    {
+        var region = StoryStateManager.Instance.Load();
+        Launch(System.Array.Exists(Chapters, c => c.scene == region) ? region : "Forest");
+    }
+
+    private static void Launch(string region)
+    {
         RegionManager.MenuPreview = false;
         RegionManager.PendingRegion = region;
         SceneManager.LoadScene(RegionManager.WorldScene);

@@ -81,7 +81,8 @@ public class VampireMelee : MonoBehaviour
         float speed = 0f;
         float homeDistance = Vector3.ProjectOnPlane(transform.position - home, Vector3.up).magnitude;
         float playerHomeDistance = Vector3.ProjectOnPlane(player.transform.position - home, Vector3.up).magnitude;
-        bool sees = sight.CanSeePlayer && playerHomeDistance <= PursuitRadius && homeDistance <= PursuitRadius + 2f;
+        // Abe's camps are safe ground: a vampire gives up the chase there.
+        bool sees = sight.CanSeePlayer && playerHomeDistance <= PursuitRadius && homeDistance <= PursuitRadius + 2f && !Merchant.Sanctuary(player.transform.position);
         if (sees) returning = false;
         else if (homeDistance > territoryRadius) returning = true;
         else if (homeDistance < territoryRadius * 0.5f) returning = false;

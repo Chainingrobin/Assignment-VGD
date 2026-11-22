@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
+  m_Name: Caravan manifest
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  displayName: Caravan manifest
+  description: '[Manifest: Cargo, one Ice tome, for the Amphitheater. Paid in full
+    by ''A.'' Do not open the tome. Do not linger.]'
+  icon: {fileID: 0}
+  category: 3
+  price: 0
+  healAmount: 0
+  element: 0

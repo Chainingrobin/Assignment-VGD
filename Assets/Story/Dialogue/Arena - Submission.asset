@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   lines:
   - speaker: Wulang
-    portrait: {fileID: -6136380630663778560, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
+    portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
     text: '[...Take them. Just give me back who I was.]'
   - speaker: '[Ganfaul]'
-    portrait: {fileID: -8051204198449093646, guid: 924f016cfae1d9841a3816716934f22b, type: 3}
+    portrait: {fileID: 21300000, guid: 924f016cfae1d9841a3816716934f22b, type: 3}
     text: '[Good girl. You were never anyone. Now you never will be.]'
   choices: []
   flagToSetWhenFinished: 

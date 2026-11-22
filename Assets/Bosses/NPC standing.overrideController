@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: NPC standing
+  m_Controller: {fileID: 9100000, guid: 4a450fa547ef7e4458cb6e915845e0f3, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: -203655887218126122, guid: 677ef3398e2077d46b09de70c5d2f329, type: 3}
+    m_OverrideClip: {fileID: -203655887218126122, guid: 61b7437a76a8ef04b935d8667b3cf9b1, type: 3}

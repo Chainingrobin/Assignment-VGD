@@ -10,9 +10,11 @@ public static class FantasyUI
     public static readonly Color Inset = new(0.06f, 0.04f, 0.03f, 0.95f);
     private static readonly Color DarkGold = new(0.5f, 0.34f, 0.14f);
     private static readonly Color BrightGold = new(1f, 0.88f, 0.56f);
-    private static Sprite frame, socket, glow, divider;
+    private static Sprite frame, socket, glow, divider, soft;
 
     public static Sprite Frame => frame != null ? frame : frame = Create("Gilded frame", 64, 64, new Vector4(22, 22, 22, 22), FramePixel);
+    // A feathered rounded rectangle (sliced): an even dark interior that fades out at the edges.
+    public static Sprite Soft => soft != null ? soft : soft = Create("Soft backing", 64, 64, new Vector4(24, 24, 24, 24), SoftPixel);
     public static Sprite Socket => socket != null ? socket : socket = Create("Gem socket", 64, 64, Vector4.zero, SocketPixel);
     public static Sprite Glow => glow != null ? glow : glow = Create("Soft glow", 64, 64, Vector4.zero, GlowPixel);
     public static Sprite Divider => divider != null ? divider : divider = Create("Gilded divider", 128, 16, Vector4.zero, DividerPixel);
@@ -61,6 +63,12 @@ public static class FantasyUI
         float r = Vector2.Distance(new Vector2(x, y), new Vector2(31.5f, 31.5f)) / 32f;
         float a = Mathf.Clamp01(1f - r);
         return new Color(1f, 1f, 1f, a * a);
+    }
+
+    private static Color SoftPixel(float x, float y, int width, int height)
+    {
+        var outside = new Vector2(Mathf.Max(Mathf.Abs(x - 31.5f) - 7.5f, 0f), Mathf.Max(Mathf.Abs(y - 31.5f) - 7.5f, 0f));
+        return new Color(1f, 1f, 1f, 1f - Mathf.SmoothStep(0f, 1f, outside.magnitude / 24f));
     }
 
     private static Color DividerPixel(float x, float y, int width, int height)

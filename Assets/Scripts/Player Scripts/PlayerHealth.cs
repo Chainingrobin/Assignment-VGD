@@ -12,6 +12,10 @@ public class PlayerHealth : MonoBehaviour
 
     [SerializeField, Min(1f)] private float maxHealth = 100f;
 
+    // Each vitality relic found (a story flag, so it is saved with the checkpoint) adds maximum health.
+    public const string VitalityPrefix = "vitality: ";
+    public const float VitalityPerRelic = 10f;
+
     public float Health { get; private set; }
     public float MaxHealth => maxHealth;
     public bool IsDead { get; private set; }
@@ -29,12 +33,29 @@ public class PlayerHealth : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        var story = StoryStateManager.Instance;
+        foreach (var flag in story.Flags)
+            if (flag.StartsWith(VitalityPrefix)) maxHealth += VitalityPerRelic;
+        story.OnFlagSet += OnFlagSet;
         Health = maxHealth;
         startPosition = transform.position;
         startRotation = transform.rotation;
     }
 
-    private void OnDestroy() { if (Instance == this) Instance = null; }
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+        var story = StoryStateManager.Instance;
+        if (story != null) story.OnFlagSet -= OnFlagSet;
+    }
+
+    private void OnFlagSet(string flag)
+    {
+        if (!flag.StartsWith(VitalityPrefix)) return;
+        maxHealth += VitalityPerRelic;
+        Health = Mathf.Min(maxHealth, Health + VitalityPerRelic);
+        Refresh();
+    }
 
     private void Start()
     {

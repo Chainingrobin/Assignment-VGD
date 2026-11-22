@@ -104,6 +104,7 @@ public static class PrototypeChecks
             iceTarget.TakeDamage(99999f, ElementType.Fire);
             iceTarget.TakeDamage(99999f, ElementType.Fire);
             Check(deaths == 1 && iceTarget.IsDead, "A boss's Died event must fire exactly once.");
+            Check(Vector3.Distance(iceTarget.AimPoint, ice.transform.position) < 5f, "A dead boss's tome must drop at its body, not the world origin.");
 
             Check(StoryStateManager.Instance.gameObject.scene.name == "DontDestroyOnLoad", "Story state must survive scene loads.");
             Debug.Log("PrototypeChecks: combat and story rules OK.");

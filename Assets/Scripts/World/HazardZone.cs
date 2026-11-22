@@ -16,6 +16,8 @@ public class HazardZone : MonoBehaviour
     [SerializeField] private string firstTimeLine;
     [Tooltip("Lava: the molten surface mesh. When set, the player is 'inside' only while standing at or below it.")]
     [SerializeField] private MeshCollider surface;
+    [Tooltip("Story flag that makes this zone harmless (the lake once it's frozen). Empty = always dangerous.")]
+    [SerializeField] private string safeWhenFlag;
 
     private static Vector3 lastSafe;
     private static float lastSafeTime;
@@ -51,7 +53,8 @@ public class HazardZone : MonoBehaviour
             if (controller == null) return;
             player = controller.transform;
         }
-        bool isInside = box.bounds.Contains(player.position) && BelowSurface();
+        bool safe = !string.IsNullOrEmpty(safeWhenFlag) && StoryStateManager.Instance.HasFlag(safeWhenFlag);
+        bool isInside = !safe && box.bounds.Contains(player.position) && BelowSurface();
         if (!isInside)
         {
             if (inside > 0f) occupied--;

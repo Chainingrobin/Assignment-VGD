@@ -86,9 +86,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.4
-  m_Height: 1.8
+  m_Height: 1.3
   m_Direction: 1
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 0.65, z: 0}
 --- !u!114 &3151349897080428802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,9 +118,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 952e56faf6b1fcd44936d29f625c1ee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Merchant
-  merchantName: '[Abe]''s Wares'
+  npcName: '[Abe]'
+  portrait: {fileID: 0}
   stock:
   - {fileID: 11400000, guid: e23cdac06a8c93143b4026d683868d08, type: 2}
+  conversation: {fileID: 0}
   greeting: '[Abe: Potions, friend. The road ahead is cruel.]'
 --- !u!1 &446294317373269963
 GameObject:
@@ -754,7 +756,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4018060002910663725, guid: 542cba35c30a65c46914935874991326, type: 3}
+  - {fileID: 2100000, guid: 5caedc9ccf8860047acac75a5f6eae9c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1396,6 +1398,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1757865271922132705}
   - component: {fileID: 1895375987333659870}
+  - component: {fileID: 8580954341806163870}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -1431,8 +1434,8 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 542cba35c30a65c46914935874991326, type: 3}
   m_Controller: {fileID: 9100000, guid: 4a450fa547ef7e4458cb6e915845e0f3, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
+  m_CullingMode: 0
+  m_UpdateMode: 1
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
@@ -1442,6 +1445,31 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8580954341806163870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5605882950770356517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f74b4fc35eff61442b7b757e83a7c217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NpcGestures
+  speaker: Abe
+  speaking:
+  - happy hand gesture
+  - dismissing gesture
+  - being cocky
+  - thoughtful head shake
+  - look away gesture
+  - relieved sigh
+  listening:
+  - head nod yes
+  - acknowledging
+  - lengthy head nod
+  lookRange: 7
 --- !u!1 &5751974196059549921
 GameObject:
   m_ObjectHideFlags: 0

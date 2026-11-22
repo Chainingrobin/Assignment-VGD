@@ -56,7 +56,8 @@ public class CombatTarget : MonoBehaviour, IDamageable
     public string LastFeedback { get; private set; }
     public float LastHitTime { get; private set; } = float.NegativeInfinity;
     // Collider centre, so scaled-up bosses are aimed at their body rather than their knees.
-    public Vector3 AimPoint => bodyCollider != null ? bodyCollider.bounds.center : transform.position + Vector3.up;
+    // A disabled collider (dead target) reports empty bounds at the world origin, so fall back then.
+    public Vector3 AimPoint => bodyCollider != null && bodyCollider.enabled ? bodyCollider.bounds.center : transform.position + Vector3.up;
     public Vector3 HeadPosition => head != null ? head.position : transform.position + Vector3.up * 1.8f;
 
     private void Awake()

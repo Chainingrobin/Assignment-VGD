@@ -489,9 +489,9 @@ public static class CombatSetup
             var card = Rect(root, i == 0 ? "Projectile charges" : "Area charges", new Vector2(144, 74), new Vector2(i * 152, 0));
             Panel(card, new Color(0.045f, 0.065f, 0.1f, 0.94f));
             Text(card, "Caption", i == 0 ? "LMB" : "RMB", 16, new Vector2(12, -8), new Vector2(46, 22)).color = colors[i];
-            settings.FindProperty(i == 0 ? "projectileCount" : "areaCount").objectReferenceValue = Text(card, "Count", i == 0 ? "15/15" : "5/5", 24, new Vector2(58, -5), new Vector2(80, 30));
-            settings.FindProperty(i == 0 ? "reloadLabel" : "recoveryLabel").objectReferenceValue = Text(card, "Recovery", i == 0 ? "R" : "", 16, new Vector2(12, -38), new Vector2(110, 22));
-            settings.FindProperty(i == 0 ? "reloadFill" : "recoveryFill").objectReferenceValue = Bar(card, "Progress", 120, new Vector2(12, -65), colors[i]);
+            Text(card, "Count", i == 0 ? "15/15" : "5/5", 24, new Vector2(58, -5), new Vector2(80, 30));
+            Text(card, "Recovery", i == 0 ? "R" : "", 16, new Vector2(12, -38), new Vector2(110, 22));
+            Bar(card, "Progress", 120, new Vector2(12, -65), colors[i]);
         }
         settings.ApplyModifiedPropertiesWithoutUndo();
     }

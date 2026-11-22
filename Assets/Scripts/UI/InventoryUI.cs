@@ -12,7 +12,8 @@ public class InventoryUI : MonoBehaviour
 {
     private Canvas canvas;
     private RectTransform list;
-    private TMP_Text title, detailName, detailText, tabLabel;
+    private TMP_Text title, detailName, detailText, purseCount;
+    private RectTransform purse;
     private bool journal;
 
     private void Start()
@@ -34,8 +35,11 @@ public class InventoryUI : MonoBehaviour
         detailName = UIKit.Text(detail, "Name", "", 30f, new Vector2(520f, 40f), new Vector2(20f, -18f), left, FantasyUI.Gold);
         detailText = UIKit.Text(detail, "Lore", "", 22f, new Vector2(520f, 420f), new Vector2(20f, -70f), left, FantasyUI.Parchment);
         detailText.textWrappingMode = TextWrappingModes.Normal;
-        tabLabel = UIKit.Text(panel, "Hint", "<color=#E8C77F>Tab</color>  close", 16f, new Vector2(200f, 24f), new Vector2(-24f, 16f),
-            new Vector2(1f, 0f), FantasyUI.Muted, TextAlignmentOptions.BottomRight);
+        // The purse sits in the satchel's corner as a coin and a number.
+        purse = UIKit.Rect(panel, "Purse", new Vector2(160f, 32f), new Vector2(40f, -34f), new Vector2(0f, 1f));
+        UIKit.Rect(purse, "Coin", new Vector2(28f, 28f), new Vector2(0f, -2f), new Vector2(0f, 1f)).gameObject.AddComponent<CoinIcon>().raycastTarget = false;
+        purseCount = UIKit.Text(purse, "Count", "", 24f, new Vector2(120f, 32f), new Vector2(38f, 0f), new Vector2(0f, 1f), FantasyUI.Parchment);
+        UIKit.Hint(panel, "Tab", "Close", new Vector2(-24f, 18f), new Vector2(1f, 0f), 16f);
         canvas.enabled = false;
     }
 
@@ -71,20 +75,26 @@ public class InventoryUI : MonoBehaviour
         var items = inventory == null ? new ItemData[0] : inventory.Items.Where(i =>
             journal ? i.category is ItemCategory.Memory or ItemCategory.Lore : i.category is ItemCategory.Consumable or ItemCategory.Tome).ToArray();
         var coins = FindFirstObjectByType<PlayerCoins>();
-        detailName.text = journal ? "Journal" : $"Wubucks: {(coins != null ? coins.Count : 0)}";
+        purse.gameObject.SetActive(!journal);
+        purseCount.text = (coins != null ? coins.Count : 0).ToString();
+        detailName.text = "";
         detailText.text = items.Length == 0
             ? (journal ? "[Memories and lore you find are written here.]" : "[Your satchel is empty.]")
-            : "Select an entry to read it.";
-        float y = 0f;
-        foreach (var item in items)
+            : "";
+        // A grid of icon tiles (4 across); the count badge shows stacks. Selecting a tile reads its lore.
+        const float tile = 96f, gap = 12f;
+        for (int i = 0; i < items.Length; i++)
         {
+            var item = items[i];
+            var button = UIKit.Button(list, "", new Vector2(tile, tile),
+                new Vector2((i % 4) * (tile + gap), -(i / 4) * (tile + gap)), new Vector2(0f, 1f), () => Select(item));
+            UIKit.ItemGlyph(button.transform, item, 52f);
             int count = inventory.Count(item);
-            string label = count > 1 ? $"{item.displayName}  x{count}" : item.displayName;
-            var captured = item;
-            var button = UIKit.Button(list, label, new Vector2(420f, 56f), new Vector2(0f, y), new Vector2(0.5f, 1f), () => Select(captured));
-            button.GetComponentInChildren<TMP_Text>().fontSize = 20f;
-            y -= 64f;
+            if (count > 1)
+                UIKit.Text(button.transform, "Count", count.ToString(), 20f, new Vector2(40f, 24f), new Vector2(-10f, 8f), new Vector2(1f, 0f),
+                    FantasyUI.Parchment, TextAlignmentOptions.BottomRight).fontStyle = FontStyles.Bold;
         }
+        if (items.Length > 0) Select(items[0]);
     }
 
     private void Select(ItemData item)

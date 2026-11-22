@@ -11,11 +11,7 @@ public class ElementUnlockNotification : MonoBehaviour
     private RectTransform card;
     private CanvasGroup cardGroup;
     private TMP_Text title;
-    private TMP_Text activeElement;
-    private RectTransform activeHUD;
-    private ElementIcon equippedIcon;
     private ElementIcon icon;
-    private UnityEngine.UI.Image equippedGlow;
     private UnityEngine.UI.Image glow;
     private Coroutine notificationRoutine;
     private bool ready;
@@ -30,37 +26,22 @@ public class ElementUnlockNotification : MonoBehaviour
             return;
         }
         var content = responsive.Content;
-        card = CreateRect(content, "ElementUnlockNotification", new Vector2(372f, 96f), Vector2.zero);
-        card.anchorMin = card.anchorMax = card.pivot = Vector2.one;
-        card.anchoredPosition = new Vector2(-24f, -96f);
-        FantasyUI.Panel(card);
+        // Unlock toast, top centre (where the boss bar was: a new element only ever follows a guardian's fall).
+        card = CreateRect(content, "ElementUnlockNotification", new Vector2(250f, 72f), Vector2.zero);
+        card.anchorMin = card.anchorMax = card.pivot = new Vector2(0.5f, 1f);
+        card.anchoredPosition = new Vector2(0f, CardY);
+        UIKit.Backing(card);
         cardGroup = card.gameObject.AddComponent<CanvasGroup>();
         cardGroup.blocksRaycasts = false;
         cardGroup.interactable = false;
-        icon = Medallion(card, 64f, new Vector2(16f, -16f), out glow);
-        CreateText(card, "Caption", "A New Power Awakens", 12f, new Vector2(94f, -14f), new Vector2(260f, 18f), FantasyUI.Gold);
-        title = CreateText(card, "Title", "", 24f, new Vector2(94f, -32f), new Vector2(260f, 30f), FantasyUI.Parchment);
-        title.fontStyle = FontStyles.Bold;
-        Divider(card, new Vector2(94f, -62f), 200f);
-        CreateText(card, "Description", "Inscribed in your spellbook", 12f, new Vector2(94f, -70f), new Vector2(260f, 18f), FantasyUI.Muted);
+        icon = Medallion(card, 64f, new Vector2(4f, -4f), out glow);
+        title = CreateText(card, "Title", "", 30f, new Vector2(84f, -18f), new Vector2(170f, 38f), FantasyUI.Parchment);
+        title.fontStyle = FontStyles.Bold | FontStyles.SmallCaps;
         card.gameObject.SetActive(false);
-
-        activeHUD = CreateRect(content, "ActiveElementHUD", new Vector2(276f, 92f), Vector2.zero);
-        activeHUD.anchorMin = activeHUD.anchorMax = activeHUD.pivot = Vector2.zero;
-        activeHUD.anchoredPosition = new Vector2(24f, 24f);
-        FantasyUI.Panel(activeHUD);
-        equippedIcon = Medallion(activeHUD, 62f, new Vector2(15f, -15f), out equippedGlow);
-        CreateText(activeHUD, "Caption", "Attuned Element", 12f, new Vector2(90f, -13f), new Vector2(176f, 18f), FantasyUI.Muted);
-        activeElement = CreateText(activeHUD, "ElementName", "", 24f, new Vector2(90f, -30f), new Vector2(176f, 32f), Color.white);
-        activeElement.fontStyle = FontStyles.Bold;
-        Divider(activeHUD, new Vector2(90f, -54f), 168f);
-        // Q / E keycaps either side of the label, matching every other input hint.
-        UIKit.Keycap(activeHUD, "Q", new Vector2(90f, -60f), new Vector2(0f, 1f));
-        CreateText(activeHUD, "SwitchHint", "Switch", 13f, new Vector2(124f, -65f), new Vector2(98f, 22f), FantasyUI.Muted).alignment = TextAlignmentOptions.Top;
-        UIKit.Keycap(activeHUD, "E", new Vector2(226f, -60f), new Vector2(0f, 1f));
-        activeElement.outlineWidth = 0.2f;
-        activeElement.outlineColor = new Color32(12, 7, 4, 255);
+        // The attuned element itself is the centre of the spell ring (CombatHUD).
     }
+
+    private const float CardY = -120f;
 
     // Gold-rimmed socket with an element-coloured halo behind the vector icon.
     private static ElementIcon Medallion(RectTransform parent, float size, Vector2 position, out UnityEngine.UI.Image halo)
@@ -79,21 +60,11 @@ public class ElementUnlockNotification : MonoBehaviour
         return element;
     }
 
-    private static void Divider(RectTransform parent, Vector2 position, float width)
-    {
-        var image = CreateRect(parent, "Divider", new Vector2(width, 12f), position).gameObject.AddComponent<UnityEngine.UI.Image>();
-        image.sprite = FantasyUI.Divider;
-        image.raycastTarget = false;
-    }
-
     private void OnEnable()
     {
         affinity = PlayerMagicAffinity.Instance;
         if (affinity == null) return;
         affinity.OnElementUnlocked += ShowUnlocked;
-        affinity.OnActiveElementChanged += UpdateActiveElement;
-        if (activeHUD != null) activeHUD.gameObject.SetActive(true);
-        UpdateActiveElement(affinity.ActiveElement);
     }
 
     private void Start() => ready = true;
@@ -103,19 +74,16 @@ public class ElementUnlockNotification : MonoBehaviour
         if (affinity != null)
         {
             affinity.OnElementUnlocked -= ShowUnlocked;
-            affinity.OnActiveElementChanged -= UpdateActiveElement;
         }
         if (notificationRoutine != null) StopCoroutine(notificationRoutine);
         notificationRoutine = null;
         pending.Clear();
         if (card != null) card.gameObject.SetActive(false);
-        if (activeHUD != null) activeHUD.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
     {
         if (card != null) Destroy(card.gameObject);
-        if (activeHUD != null) Destroy(activeHUD.gameObject);
     }
 
     private void ShowUnlocked(ElementType element)
@@ -131,7 +99,7 @@ public class ElementUnlockNotification : MonoBehaviour
         while (pending.Count > 0)
         {
             var element = pending.Dequeue();
-            title.text = $"{element} Unlocked";
+            title.text = element.ToString();
             icon.Element = element;
             icon.color = ElementVisuals.ColorFor(element);
             glow.color = icon.color * new Color(1f, 1f, 1f, 0.55f);
@@ -154,22 +122,13 @@ public class ElementUnlockNotification : MonoBehaviour
             float progress = Mathf.SmoothStep(0f, 1f, t / animationDuration);
             float visibility = entering ? progress : 1f - progress;
             cardGroup.alpha = visibility;
-            card.anchoredPosition = new Vector2(-24f + (1f - visibility) * 20f, -96f);
+            card.anchoredPosition = new Vector2(0f, CardY + (1f - visibility) * 20f);
             yield return null;
         }
         cardGroup.alpha = entering ? 1f : 0f;
-        card.anchoredPosition = new Vector2(entering ? -24f : -4f, -96f);
+        card.anchoredPosition = new Vector2(0f, entering ? CardY : CardY + 20f);
     }
 
-    private void UpdateActiveElement(ElementType element)
-    {
-        if (activeElement == null) return;
-        equippedIcon.Element = element;
-        equippedIcon.color = ElementVisuals.ColorFor(element);
-        equippedGlow.color = element == ElementType.None ? Color.clear : equippedIcon.color * new Color(1f, 1f, 1f, 0.5f);
-        string hex = ColorUtility.ToHtmlStringRGB(ElementVisuals.ColorFor(element));
-        activeElement.text = $"<color=#{hex}>{(element == ElementType.None ? "None" : element.ToString())}</color>";
-    }
 
 
     private static RectTransform CreateRect(Transform parent, string objectName, Vector2 size, Vector2 position)

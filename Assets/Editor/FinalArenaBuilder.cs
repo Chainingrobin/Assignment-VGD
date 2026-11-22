@@ -87,8 +87,10 @@ public static class FinalArenaBuilder
         var arena = new GameObject("Final encounter").transform;
         arena.SetParent(root.transform, false);
         arena.position = center;
-        var abe = Place(BossSetup.AbePrefab, arena, center, Quaternion.Euler(0f, 180f, 0f));
+        // Abe sits at his camps; here he stands to make the offer (still gesturing as he talks).
+        var abe = Place(BossSetup.AbePrefab, arena, center + Vector3.up * 0.07f, Quaternion.Euler(0f, 180f, 0f));
         abe.name = "Abe (disguise)";
+        abe.GetComponentInChildren<Animator>().runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorOverrideController>(BossSetup.StandingAbe);
         Object.DestroyImmediate(abe.GetComponent<Merchant>());
         Object.DestroyImmediate(abe.GetComponent<Interactable>());
         var ganfaul = Place(BossSetup.FinalBoss, arena, center + Vector3.up * 0.1f, Quaternion.Euler(0f, 180f, 0f));

@@ -31,7 +31,7 @@ public static class SnowBiomeBuilder
     private static readonly Vector2[] RidgeEast = { new(715f, 185f), new(760f, 225f), new(800f, 262f), new(845f, 300f) };
     private static readonly Vector2[] Ponds = { new(555f, 300f), new(728f, 296f), new(805f, 195f) };
     private const float PondRadius = 9f;
-    private static readonly Vector2[] TrailToArena = { new(655f, 326f), new(652f, 298f), new(650f, 270f) };
+    internal static readonly Vector2[] TrailToArena = { new(655f, 326f), new(652f, 298f), new(650f, 270f) };
     private static readonly Vector2[] TrailEast = { new(668f, 248f), new(705f, 252f), new(745f, 262f), new(790f, 280f) };
     private static readonly Vector2[] TrailWest = { new(630f, 248f), new(600f, 262f), new(565f, 282f) };
     private static readonly float[] Entrances = { 90f, 0f, 180f }; // degrees: north to the landing, east, west

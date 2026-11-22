@@ -111,6 +111,47 @@ public static class BiomeCinematicSetup
         return "Smooth banking flights, lens moves and handheld noise authored for both previews and the freeze reveal.";
     }
 
+    const string IntroFlight = "Forest Arrival";
+
+    // The opening cutscene: a drone flight over the sick land (the smoking volcano, the frozen south)
+    // that comes down to where Wulang wakes by the armory. RegionManager plays it under the Chapter I
+    // card on a fresh New Game, the same way every chapter transition plays its flight. Re-runnable.
+    [MenuItem("Wulang/Cinematics/Build intro flight and tidy cutscenes")]
+    public static string Intro()
+    {
+        if (Application.isPlaying) throw new InvalidOperationException("Build the intro in Edit mode.");
+        var terrain = Terrain.activeTerrain;
+        Vector3 At(float x, float z, float height) =>
+            new(x, terrain.SampleHeight(new Vector3(x, 0f, z)) + terrain.transform.position.y + height, z);
+        float ground = At(566f, 600f, 0f).y;
+        var positions = new[] { new Vector3(690f, 150f, 770f), new Vector3(620f, 120f, 640f), At(560f, 640f, 60f), At(572f, 622f, 14f), At(568f, 611f, 3f) };
+        var targets = new[] { new Vector3(795f, 60f, 642f), new Vector3(640f, 10f, 300f), At(566f, 600f, 0f), new Vector3(566f, ground + 1f, 602f), new Vector3(566f, ground + 1.6f, 600f) };
+        if (GameObject.Find(IntroFlight) == null)
+        {
+            var source = GameObject.Find("FreezeRevealCutscene").GetComponent<FreezeRevealCutscene>();
+            // Built like a landmark preview, minus the look trigger: this flight is story-driven.
+            UnityEngine.Object.DestroyImmediate(Preview(IntroFlight, source, new Transform[0], terrain.transform, 0f, positions, targets));
+        }
+        AuthorFlight(IntroFlight, new[] { 0f, 3f, 6.5f, 9.5f, 12f }, positions, targets, new[] { 55f, 58f, 56f, 50f, 46f });
+        var manager = new SerializedObject(UnityEngine.Object.FindFirstObjectByType<RegionManager>());
+        var forest = manager.FindProperty("regions").GetArrayElementAtIndex(0);
+        UnityEngine.Assertions.Assert.AreEqual("Forest", forest.FindPropertyRelative("scene").stringValue, "Region 0 should be the Forest.");
+        forest.FindPropertyRelative("cutscene").objectReferenceValue = GameObject.Find(IntroFlight).GetComponent<FreezeRevealCutscene>();
+        // Every cutscene earns its place: the statue's freeze reveal already shows the way into the Frozen
+        // Reach, so crossing the lake plays only the chapter card over live play (no second fly-over), and
+        // the look-triggered "F to view area" previews, which repeated the chapter flights and popped up
+        // mid-fight, are disconnected. The Volcano flight still plays once, as its chapter transition.
+        var ice = manager.FindProperty("regions").GetArrayElementAtIndex(1);
+        UnityEngine.Assertions.Assert.AreEqual("Ice", ice.FindPropertyRelative("scene").stringValue, "Region 1 should be the Ice.");
+        ice.FindPropertyRelative("cutscene").objectReferenceValue = null;
+        manager.ApplyModifiedPropertiesWithoutUndo();
+        var interaction = new SerializedObject(UnityEngine.Object.FindFirstObjectByType<PlayerInteract>());
+        interaction.FindProperty("biomePreviews").arraySize = 0;
+        interaction.ApplyModifiedPropertiesWithoutUndo();
+        AssetDatabase.SaveAssets(); EditorSceneManager.SaveScene(terrain.gameObject.scene);
+        return "Intro flight authored (no terrain or geometry clipping) and set as the Forest's opening cutscene.";
+    }
+
     // Rebuilds a preview's drone flight and timing; asserts the camera never clips terrain or colliders.
     internal static void AuthorFlight(string name, float[] times, Vector3[] positions, Vector3[] targets, float[] fieldOfView)
     {

@@ -13,7 +13,8 @@ public class TransitionOverlay : MonoBehaviour
     private UnityEngine.UI.Image fade;
     private CanvasGroup captionGroup;
     private RectTransform topBar, bottomBar;
-    private TMP_Text title, recap, progress, skipHint;
+    private TMP_Text title, recap, progress;
+    private RectTransform skipHint;
     private int skipHolders;
 
     // Space skips any cutscene, caption or ending card (the assignment guide: always let the player skip).
@@ -68,8 +69,7 @@ public class TransitionOverlay : MonoBehaviour
         overlay.recap.textWrappingMode = TextWrappingModes.Normal;
         overlay.progress = UIKit.Text(captionRoot, "Progress", "", 18f, new Vector2(400f, 30f), new Vector2(0f, 30f), center,
             FantasyUI.Muted, TextAlignmentOptions.Center);
-        overlay.skipHint = UIKit.Text(root, "SkipHint", "<color=#E8C77F>Space</color>   Skip", 20f, new Vector2(300f, 30f),
-            new Vector2(-40f, 40f), new Vector2(1f, 0f), FantasyUI.Parchment, TextAlignmentOptions.BottomRight);
+        overlay.skipHint = UIKit.Hint(root, "Space", "Skip", new Vector2(-40f, 40f), new Vector2(1f, 0f), 20f);
         overlay.skipHint.gameObject.SetActive(false);
         overlay.SetBars(0f);
         return overlay;

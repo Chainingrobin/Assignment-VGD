@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   lines:
   - speaker: '[Abe]'
-    portrait: {fileID: -2228601193727439884, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
+    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
     text: '[Swear it, Wulang. When the time comes, you will kneel.]'
   - speaker: Wulang
-    portrait: {fileID: -6136380630663778560, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
+    portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
     text: '[I swear.]'
   - speaker: Wulang
-    portrait: {fileID: -6136380630663778560, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
+    portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
     text: '[That throne... I''ve seen it in the sky. These memories... are they even
       mine?]'
   choices: []

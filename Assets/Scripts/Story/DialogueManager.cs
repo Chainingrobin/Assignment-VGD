@@ -36,6 +36,8 @@ public class DialogueManager : MonoBehaviour
 
     public bool IsTalking { get; private set; }
     public event Action<DialogueData> Finished;
+    // Each line as it starts, so speakers can gesture while they talk (NpcGestures).
+    public event Action<DialogueData.Line> LineStarted;
 
     public void Play(DialogueData dialogue, Action onComplete = null)
     {
@@ -48,6 +50,10 @@ public class DialogueManager : MonoBehaviour
     {
         IsTalking = true;
         PlayerLock.Push();
+        // The HUD steps aside while someone speaks: the box takes the bottom of the screen.
+        var hud = UIKit.HUDRoot() != null ? UIKit.HUDRoot().GetComponentInParent<Canvas>() : null;
+        bool hudWasOn = hud != null && hud.enabled;
+        if (hud != null) hud.enabled = false;
         ui.Show(true);
         while (queue.Count > 0)
         {
@@ -70,6 +76,7 @@ public class DialogueManager : MonoBehaviour
             done?.Invoke();
         }
         ui.Show(false);
+        if (hud != null) hud.enabled = hudWasOn;
         PlayerLock.Pop();
         IsTalking = false;
     }
@@ -77,6 +84,7 @@ public class DialogueManager : MonoBehaviour
     private IEnumerator Say(DialogueData.Line line)
     {
         ui.SetLine(line.speaker, line.portrait);
+        LineStarted?.Invoke(line);
         yield return null;
         advance = false; // ignore the key press that opened the conversation or ended the last line
         // Typewriter: reveal characters over time; a press shows the whole line at once.

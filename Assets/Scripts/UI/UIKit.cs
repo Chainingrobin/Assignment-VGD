@@ -96,6 +96,61 @@ public static class UIKit
         return cap;
     }
 
+    // An input hint, [Key] Verb: the keycap carries the key, the word only the action.
+    public static RectTransform Hint(Transform parent, string key, string verb, Vector2 position, Vector2 anchor, float fontSize = 18f)
+    {
+        var hint = Rect(parent, "Hint " + verb, Vector2.zero, position, anchor);
+        var middle = new Vector2(0f, 0.5f);
+        var cap = Keycap(hint, key, Vector2.zero, middle);
+        float gap = cap.sizeDelta.x + 10f;
+        var label = Text(hint, "Verb", verb, fontSize, new Vector2(400f, 28f), new Vector2(gap, 0f), middle, FantasyUI.Parchment,
+            TextAlignmentOptions.MidlineLeft);
+        float width = label.GetPreferredValues(verb).x + 4f;
+        label.rectTransform.sizeDelta = new Vector2(width, 28f);
+        hint.sizeDelta = new Vector2(gap + width, 28f);
+        return hint;
+    }
+
+    // An item's picture, centred in `parent`: its own icon if it has one, otherwise the matching vector
+    // glyph (a flask for potions, the element's sigil for tomes, a scroll for lore, a scroll in a
+    // ghost-blue glow for memories).
+    public static void ItemGlyph(Transform parent, ItemData item, float size)
+    {
+        var center = new Vector2(0.5f, 0.5f);
+        if (item.icon != null)
+        {
+            var image = Rect(parent, "Icon", Vector2.one * size, Vector2.zero, center).gameObject.AddComponent<Image>();
+            image.sprite = item.icon;
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+            return;
+        }
+        if (item.category == ItemCategory.Tome)
+        {
+            var sigil = Rect(parent, "Icon", Vector2.one * size, Vector2.zero, center).gameObject.AddComponent<ElementIcon>();
+            sigil.Element = item.element;
+            sigil.color = ElementVisuals.ColorFor(item.element);
+            sigil.raycastTarget = false;
+            return;
+        }
+        if (item.category == ItemCategory.Memory)
+            Fill(Rect(parent, "Memory glow", Vector2.one * size * 1.6f, Vector2.zero, center), new Color(0.45f, 0.7f, 1f, 0.8f)).sprite = FantasyUI.Glow;
+        HUDIcon.Create(parent, item.category == ItemCategory.Consumable ? HUDIcon.Shape.Potion : HUDIcon.Shape.Quest, size, Vector2.zero, center);
+    }
+
+    // A soft dark halo behind a frameless HUD widget, so it reads over bright sky or snow without a box.
+    public static Image Backing(RectTransform widget, float spread = 22f, float alpha = 0.5f)
+    {
+        var halo = Stretch(widget, "Backing");
+        halo.offsetMin = new Vector2(-spread, -spread);
+        halo.offsetMax = new Vector2(spread, spread);
+        halo.SetAsFirstSibling();
+        var image = Fill(halo, new Color(0f, 0f, 0f, alpha));
+        image.sprite = FantasyUI.Soft;
+        image.type = Image.Type.Sliced;
+        return image;
+    }
+
     public static void SetBar(RectTransform fill, float fraction) =>
         fill.anchorMax = new Vector2(Mathf.Clamp01(fraction), 1f);
 

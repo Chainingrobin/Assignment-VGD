@@ -10,7 +10,7 @@ public class BossHealthBar : MonoBehaviour
     private CombatTarget target;
     private RectTransform fill;
     private UnityEngine.UI.Image fillImage;
-    private TMP_Text title, element;
+    private TMP_Text title;
     private ElementIcon icon;
 
     public static void Show(CombatTarget target, string name)
@@ -19,18 +19,17 @@ public class BossHealthBar : MonoBehaviour
         {
             var hud = UIKit.HUDRoot();
             if (hud == null) return;
+            // Frameless, top centre: the name, then the bar in the boss's element colour, with that
+            // element's glyph beside the name (no element word: the colour and glyph say it).
             var top = new Vector2(0.5f, 1f);
-            var panel = UIKit.Rect(hud, "BossBar", new Vector2(760f, 84f), new Vector2(0f, -20f), top);
-            FantasyUI.Panel(panel);
+            var panel = UIKit.Rect(hud, "BossBar", new Vector2(720f, 52f), new Vector2(0f, -30f), top);
+            UIKit.Backing(panel);
             instance = panel.gameObject.AddComponent<BossHealthBar>();
-            instance.title = UIKit.Text(panel, "Name", "", 26f, new Vector2(520f, 32f), new Vector2(-90f, -10f), top,
+            instance.title = UIKit.Text(panel, "Name", "", 26f, new Vector2(620f, 32f), Vector2.zero, top,
                 FantasyUI.Gold, TextAlignmentOptions.Center);
             instance.title.fontStyle = FontStyles.Bold | FontStyles.SmallCaps;
-            instance.element = UIKit.Text(panel, "Element", "", 16f, new Vector2(200f, 24f), new Vector2(-24f, -16f),
-                Vector2.one, FantasyUI.Parchment, TextAlignmentOptions.TopRight);
-            instance.fill = UIKit.Bar(panel, "Health", new Vector2(712f, 16f), new Vector2(0f, -50f), top, Color.white);
-            // The element emblem tells the player what the boss is weak to at a glance.
-            instance.icon = UIKit.Rect(panel, "ElementIcon", new Vector2(28f, 28f), new Vector2(26f, -12f), new Vector2(0f, 1f))
+            instance.fill = UIKit.Bar(panel, "Health", new Vector2(720f, 12f), new Vector2(0f, -40f), top, Color.white);
+            instance.icon = UIKit.Rect(panel, "ElementIcon", new Vector2(30f, 30f), new Vector2(0f, -1f), new Vector2(0f, 1f))
                 .gameObject.AddComponent<ElementIcon>();
             instance.icon.raycastTarget = false;
             instance.fillImage = instance.fill.GetComponent<UnityEngine.UI.Image>();
@@ -53,6 +52,5 @@ public class BossHealthBar : MonoBehaviour
         fillImage.color = color;
         icon.Element = target.Affinity;
         icon.color = color;
-        element.text = $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{target.Affinity}</color>";
     }
 }

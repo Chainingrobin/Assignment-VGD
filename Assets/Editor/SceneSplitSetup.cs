@@ -201,8 +201,8 @@ public static class SceneSplitSetup
         Region(regions.GetArrayElementAtIndex(0), "Forest", "Chapter I  -  [The Forest]",
             "[Placeholder recap: Wulang wakes in the lowlands with only the spark of Lightning.]", "", null, false, default, "");
         Region(regions.GetArrayElementAtIndex(1), "Ice", "Chapter II  -  [The Frozen Reach]",
-            "[Placeholder recap: The Earth Guardian has fallen. The statue froze the lake.]", Flags.BossEarth,
-            Cutscene("Ice Biome Preview"), false, IceDomain, "[The ice will not carry me yet.]");
+            "[Placeholder recap: The Earth Guardian has fallen. The statue froze the lake.]", Flags.LakeFrozen,
+            null, false, IceDomain, "[The ice will not carry me yet.]"); // no flight: the statue's freeze reveal just showed this ground
         Region(regions.GetArrayElementAtIndex(2), "Volcano", "Chapter III  -  [The Burning Peak]",
             "[Placeholder recap: With Ice in hand, the Fire Guardian's seal finally weakens.]", Flags.BossIce,
             Cutscene("Volcano Preview"), false, VolcanoDomain, "[The Fire Guardian's seal burns me back. Not yet.]");

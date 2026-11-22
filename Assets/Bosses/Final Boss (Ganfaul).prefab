@@ -106278,6 +106278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RootMotionBody
   footWeight: 1
   footReach: 0.6
+  groundOffset: -0.1388579
 --- !u!1 &8350441443972767101
 GameObject:
   m_ObjectHideFlags: 0

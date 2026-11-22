@@ -11,8 +11,9 @@ public class PlayerInteract : MonoBehaviour
     [SerializeField] BiomePreview[] biomePreviews;
 
     Interactable current;
-    Collider lastHit;
     BiomePreview currentPreview;
+    RectTransform promptKey;
+    string shownPrompt;
 
     void Awake()
     {
@@ -25,14 +26,19 @@ public class PlayerInteract : MonoBehaviour
         {
             promptText.richText = true;
             promptText.alignment = TextAlignmentOptions.Center;
-            promptText.fontSize = 28f;
+            promptText.fontSize = 24f;
+            promptText.color = FantasyUI.Parchment;
             promptText.raycastTarget = false;
+            promptText.textWrappingMode = TextWrappingModes.NoWrap;
+            promptText.outlineWidth = 0.2f;
+            promptText.outlineColor = new Color32(12, 7, 4, 255);
 
             var promptRect = (RectTransform)promptText.transform;
             promptRect.anchorMin = promptRect.anchorMax = new Vector2(0.5f, 0.5f);
             promptRect.pivot = new Vector2(0.5f, 0.5f);
-            promptRect.anchoredPosition = new Vector2(0f, -48f);
-            promptRect.sizeDelta = new Vector2(440f, 56f);
+            promptRect.anchoredPosition = new Vector2(0f, -52f);
+            promptRect.sizeDelta = new Vector2(700f, 40f);
+            promptKey = UIKit.Keycap(promptRect, "F", Vector2.zero, new Vector2(0.5f, 0.5f));
             promptRect.localPosition = new Vector3(promptRect.localPosition.x, promptRect.localPosition.y, 0f);
             promptRect.localRotation = Quaternion.identity;
             promptRect.localScale = Vector3.one;
@@ -68,25 +74,7 @@ public class PlayerInteract : MonoBehaviour
                             QueryTriggerInteraction.Ignore))
         {
             var found = hit.collider.GetComponentInParent<Interactable>();
-
-            if (hit.collider != lastHit)
-            {
-                lastHit = hit.collider;
-
-                // print the chain the script searched: hit object -> its parents
-                string chain = "";
-                for (Transform t = hit.collider.transform; t != null; t = t.parent)
-                    chain += t.name + " > ";
-                Debug.Log($"Ray hit: {chain}| Interactable found: {(found != null)}", hit.collider);
-
-                Debug.Log($"Interactables in scene: {FindObjectsByType<Interactable>(FindObjectsSortMode.None).Length}");
-            }
-
             if (found != null && found.CanInteract) target = found;
-        }
-        else if (lastHit != null)
-        {
-            lastHit = null;
         }
 
         if (target != current)
@@ -101,16 +89,24 @@ public class PlayerInteract : MonoBehaviour
         if (current == null && biomePreviews != null)
             foreach (var preview in biomePreviews)
                 if (preview != null && preview.CanView(cam)) { currentPreview = preview; break; }
-        promptText.gameObject.SetActive(current != null || currentPreview != null);
-        if (current != null)
-            promptText.text = current.Prompt.Replace("F", "<mark=#245A8D><b> F </b></mark>");
-        else if (currentPreview != null)
-            promptText.text = "Press <mark=#245A8D><b> F </b></mark> to view area";
+        string prompt = current != null ? current.Prompt : currentPreview != null ? "Press F to view area" : null;
+        promptText.gameObject.SetActive(prompt != null);
+        if (prompt != null && prompt != shownPrompt) ShowPrompt(prompt);
+    }
+
+    // "Press F to read the ledger" becomes [F] Read the ledger: the keycap carries the key, the text
+    // only the action (and no other capital F gets mistaken for the key).
+    void ShowPrompt(string prompt)
+    {
+        shownPrompt = prompt;
+        const string lead = "Press F to ";
+        string action = prompt.StartsWith(lead) ? prompt.Substring(lead.Length) : prompt;
+        promptText.text = action.Length > 0 ? char.ToUpper(action[0]) + action.Substring(1) : action;
+        promptKey.anchoredPosition = new Vector2(-promptText.GetPreferredValues(promptText.text).x * 0.5f - promptKey.sizeDelta.x * 0.5f - 10f, 0f);
     }
 
     void OnInteract(InputAction.CallbackContext ctx)
     {
-        Debug.Log($"F pressed. Target: {(current != null ? current.name : "none")}");
         if (current != null) current.Interact();
         else if (currentPreview != null && currentPreview.CanView(cam)) currentPreview.View();
     }
