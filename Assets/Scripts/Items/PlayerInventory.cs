@@ -84,9 +84,9 @@ public class PlayerInventory : MonoBehaviour
     {
         if (PlayerLock.IsLocked || healingPotion == null) return;
         var health = PlayerHealth.Instance;
-        if (Count(healingPotion) == 0) Subtitle.Show("[No potions left. Abe sells them for Wubucks.]", 2.5f);
-        else if (health != null && health.Heal(healingPotion.healAmount)) Consume(healingPotion);
-        else Subtitle.Show("[I'm already at full strength.]", 2f);
+        if (Count(healingPotion) == 0) Subtitle.Show("No potions left. Abe sells them for Wubucks.", 2.5f);
+        else if (health != null && health.Heal(healingPotion.healAmount)) { Consume(healingPotion); GameAudio.Play("Sfx/Potion", null, 0.7f); }
+        else Subtitle.Show("Wulang: I'm fine. Save it.", 2f);
     }
 
     private void Refresh() => Changed?.Invoke();

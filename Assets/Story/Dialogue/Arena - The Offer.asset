@@ -13,28 +13,35 @@ MonoBehaviour:
   m_Name: Arena - The Offer
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   lines:
-  - speaker: '[Abe]'
+  - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: '[You''ve done well, Wulang. All four elements, gathered in one vessel.
-      Just as I raised you to.]'
+    text: 'There you are. Look at you: earth, frost, flame and storm, all in one
+      pair of hands. I knew you could carry them.'
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: '[The guardians warned me. Every memory you gave me had you at its centre.]'
-  - speaker: '[Abe]'
+    text: You said you'd tell me who I was.
+  - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: '[Because I am your past. Give me the elements and I''ll give you all of
-      it back: a home, a family, a life where you mattered.]'
+    text: I'll do better. I'll give it back. A name people bow to. A life that mattered.
+      Every memory so far was a down payment.
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: '[And if I refuse?]'
-  - speaker: '[Ganfaul]'
-    portrait: {fileID: 21300000, guid: 924f016cfae1d9841a3816716934f22b, type: 3}
-    text: '[Then you lose everything you never had.]'
+    text: A down payment on what?
+  - speaker: Abe
+    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
+    text: The elements can't be taken, spark. Only given. So give them to me, freely,
+      and I'll write you a past worth having.
+  - speaker: Wulang
+    portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
+    text: And if I say no?
+  - speaker: Abe
+    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
+    text: Then I stop pretending to be Abe.
   choices:
-  - text: '[Kneel and give him the elements]'
+  - text: Kneel and give him the elements
     setFlag: choseSubmission
     next: {fileID: 0}
-  - text: '[Refuse. Your past is a lie]'
+  - text: Refuse. My past isn't for sale.
     setFlag: refusedOffer
     next: {fileID: 0}
   flagToSetWhenFinished: 

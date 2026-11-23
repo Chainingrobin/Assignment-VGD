@@ -76,11 +76,20 @@ public class PlayerHealth : MonoBehaviour
         if (flash != null && flash.alpha > 0f) flash.alpha = Mathf.MoveTowards(flash.alpha, 0f, Time.deltaTime * 2.5f);
     }
 
+    // Story mode (main menu): half damage, for players who are here for the story (Lecture 4).
+    public static bool StoryMode
+    {
+        get => PlayerPrefs.GetInt("storyMode", 0) == 1;
+        set { PlayerPrefs.SetInt("storyMode", value ? 1 : 0); PlayerPrefs.Save(); }
+    }
+
     public void TakeDamage(float amount, ElementType element)
     {
         // No damage during cutscenes, dialogue or the shop.
         if (IsDead || Invulnerable || PlayerLock.IsLocked || !float.IsFinite(amount) || amount <= 0f) return;
+        if (StoryMode) amount *= 0.5f;
         Health = Mathf.Max(0f, Health - amount);
+        GameAudio.Play("Sfx/Hurt", null, 0.7f);
         if (flash != null) flash.alpha = 1f;
         Refresh();
         if (Health <= 0f) StartCoroutine(Die());
@@ -104,6 +113,7 @@ public class PlayerHealth : MonoBehaviour
     {
         IsDead = true;
         Died?.Invoke();
+        GameAudio.Play("Sfx/Death", null, 0.8f);
         PlayerLock.Push();
         var overlay = TransitionOverlay.Instance;
         yield return overlay.FadeTo(1f, 1.2f, Color.black);

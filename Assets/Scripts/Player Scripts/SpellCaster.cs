@@ -67,6 +67,7 @@ public class SpellCaster : MonoBehaviour
         if (Vector3.Dot(dir, camT.forward) < 0.1f) dir = camT.forward; // wall right in your face
 
         var go = Instantiate(spell.projectilePrefab, projectileCastPoint.position, Quaternion.LookRotation(dir));
+        GameAudio.Play("Sfx/Cast", null, 0.45f, spell.element == ElementType.Earth ? 0.7f : spell.element == ElementType.Ice ? 1.25f : 1f);
 
         var projectileColliders = go.GetComponentsInChildren<Collider>();
         
@@ -112,6 +113,7 @@ public class SpellCaster : MonoBehaviour
             nextAreaTime = Time.time + areaInterval;
             var rotation = Quaternion.Euler(0f, player.eulerAngles.y, 0f);
             var go = Instantiate(spell.aoePrefab, hit.point + Vector3.up * 0.02f, rotation);
+            GameAudio.PlayOwn(go);
             TerrainAoE.AddTo(go, spell.element, player, aoeGroundMask);
             SpellElementLight.AddTo(go, spell.element, true);
             AoESpellHitbox.Create(go, player, spell.element, aoeRadius, aoeImpulse, aoeDamage, chainMaterial);

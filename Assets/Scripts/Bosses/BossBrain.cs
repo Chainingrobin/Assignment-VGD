@@ -252,6 +252,7 @@ public class BossBrain : MonoBehaviour
         switch (attack.kind)
         {
             case AttackKind.Melee:
+                GameAudio.Play("Sfx/Swing", transform.position + Vector3.up * 2f, 1f, 0.7f);
                 if (distance <= attack.radius + 1f && Vector3.Angle(transform.forward, toPlayer) < 75f && health != null)
                     health.TakeDamage(attack.damage, element);
                 break;
@@ -283,6 +284,7 @@ public class BossBrain : MonoBehaviour
             var effect = Instantiate(prefab, point + Vector3.up * 0.02f, Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f));
             effect.transform.localScale *= attack.radius / 5f;
             UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(effect, gameObject.scene);
+            GameAudio.PlayOwn(effect);
             TerrainAoE.AddTo(effect, element, transform, spells.GroundMask);
             SpellElementLight.AddTo(effect, element, true);
             Destroy(effect, 5f);
@@ -351,6 +353,7 @@ public class BossBrain : MonoBehaviour
     private void Play(string state, float blend)
     {
         if (animator == null || string.IsNullOrEmpty(state)) return;
+        if (state == roarState) GameAudio.Play("Sfx/Roar", transform.position + Vector3.up * 2f, 1f, 1.15f - transform.localScale.y * 0.1f);
         if (animator.HasState(0, Animator.StringToHash("Base Layer." + state))) animator.CrossFadeInFixedTime(state, blend, 0);
     }
 }

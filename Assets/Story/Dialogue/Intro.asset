@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae0ddb8bfdb069c4ca9c82f8b9852d11, type: 3}
+  m_Name: Intro
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  lines:
+  - speaker: 
+    portrait: {fileID: 0}
+    text: Before the sickness, the Vale had four guardians, and not one of them ever
+      asked for anything.
+  - speaker: 
+    portrait: {fileID: 0}
+    text: Earth kept the roots and the harvest. Frost kept the long rest of winter.
+  - speaker: 
+    portrait: {fileID: 0}
+    text: Flame kept every hearth from the hills to the sea. And the Storm brought
+      the rain.
+  - speaker: 
+    portrait: {fileID: 0}
+    text: Then someone began to count what they were worth. One by one, the guardians
+      went mad.
+  - speaker: 
+    portrait: {fileID: 0}
+    text: The Storm alone slipped free. It fled across the sky, looking for somewhere
+      to hide...
+  - speaker: 
+    portrait: {fileID: 0}
+    text: ...and it found a girl walking home in the rain.
+  - speaker: Abe
+    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
+    text: Easy. Easy, spark. Open your eyes.
+  choices: []
+  flagToSetWhenFinished: 

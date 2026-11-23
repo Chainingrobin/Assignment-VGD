@@ -52,6 +52,6 @@ public class ElementPhases : MonoBehaviour
         target.Invulnerable = true;
         invulnerableUntil = Time.time + changeDuration;
         brain.Interlude(blockState, changeDuration);
-        Subtitle.Show($"[Ganfaul draws on {element}!]", 2.5f);
+        Subtitle.Show($"Ganfaul takes up {element}.", 2.5f);
     }
 }

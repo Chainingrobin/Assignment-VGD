@@ -12,10 +12,10 @@ public class MainMenu : MonoBehaviour
 {
     private static readonly (string scene, string number, string name)[] Chapters =
     {
-        ("Forest", "I", "[The Forest]"),
-        ("Ice", "II", "[The Frozen Reach]"),
-        ("Volcano", "III", "[The Burning Peak]"),
-        ("FinalArena", "IV", "[The Sanctum]"),
+        ("Forest", "I", "The Spark"),
+        ("Ice", "II", "What the Cold Keeps"),
+        ("Volcano", "III", "The Price of Fire"),
+        ("FinalArena", "IV", "The Sanctum"),
     };
 
     // Drone path over the world: (camera position, point it looks at).
@@ -44,6 +44,7 @@ public class MainMenu : MonoBehaviour
         if (FindFirstObjectByType<EventSystem>() == null)
             new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
         droneCamera = Camera.main;
+        GameAudio.Mood("Menu");
         BuildUI();
         StartCoroutine(LoadBackdrop());
     }
@@ -136,6 +137,14 @@ public class MainMenu : MonoBehaviour
         Button(mainPanel, "New Game", ref y, () => StartAt("Forest", false));
         Button(mainPanel, "Chapters", ref y, () => ShowChapters(true));
         if (StoryStateManager.NewGamePlusUnlocked) Button(mainPanel, "New Game+", ref y, () => StartAt("Forest", true));
+        // Story mode halves the damage Wulang takes; the choice is remembered.
+        TMP_Text storyMode = null;
+        storyMode = UIKit.Button(mainPanel, StoryModeLabel(), new Vector2(400f, 62f), new Vector2(0f, y), new Vector2(0.5f, 1f), () =>
+        {
+            PlayerHealth.StoryMode = !PlayerHealth.StoryMode;
+            storyMode.text = StoryModeLabel();
+        }).GetComponentInChildren<TMP_Text>();
+        y -= 76f;
         Button(mainPanel, "Quit", ref y, Quit);
 
         chapterPanel = UIKit.Rect(column, "Chapters", new Vector2(520f, 460f), new Vector2(0f, -380f), center);
@@ -156,6 +165,8 @@ public class MainMenu : MonoBehaviour
         UIKit.Text(root, "Footer", "A prototype for GUC  DMET 909  -  Youssef Yasser", 16f, new Vector2(900f, 24f), new Vector2(40f, 28f),
             Vector2.zero, FantasyUI.Muted);
     }
+
+    private static string StoryModeLabel() => PlayerHealth.StoryMode ? "Story Mode: On" : "Story Mode: Off";
 
     private static void Button(RectTransform parent, string label, ref float y, System.Action onClick)
     {

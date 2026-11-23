@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Earth Tome
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Tome of Earth
-  description: '[Placeholder lore: torn from the Earth Guardian. The forest grew
-    quiet after.]'
+  description: Pried from the Earth guardian's grip. The ink inside has faded to
+    nothing, and the pages smell of rain and turned soil.
   icon: {fileID: 0}
   category: 1
   price: 0

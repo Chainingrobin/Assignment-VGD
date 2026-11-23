@@ -13,15 +13,20 @@ MonoBehaviour:
   m_Name: True memory lines
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   lines:
+  - speaker: Young Wulang
+    portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
+    text: Rain on the roof, rain on the hill, the kettle's warm and the world is
+      still...
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: '[I remember now. Not his version. Mine.]'
+    text: Nan's song. She sang it whenever it rained. I was walking home from the
+      market with her bread, singing it badly.
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: '[I wasn''t his vessel. I was the one who tried to stop him, and lost my
-      memory doing it.]'
+    text: That's all it was. No destiny. No debt. Just a girl on the hill road, and
+      a storm that needed somewhere to hide.
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: '[Whoever I was, I choose who I am now.]'
+    text: It was a small life. It was mine. And it isn't for sale.
   choices: []
   flagToSetWhenFinished: 

@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Ice-carved verse
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Ice-carved verse
-  description: '[Carved in the ice: The cold keeps what the warm forget. Ask it who
-    carried the tomes, and who paid them.]'
+  description: 'Cut deep into the ice: THE COLD KEEPS WHAT THE WARM FORGET. Beneath
+    it, in a child''s scratches: ''Nan says winter is just the world remembering
+    to rest.'''
   icon: {fileID: 0}
   category: 3
   price: 0

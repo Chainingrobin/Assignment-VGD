@@ -79,7 +79,7 @@ public class InventoryUI : MonoBehaviour
         purseCount.text = (coins != null ? coins.Count : 0).ToString();
         detailName.text = "";
         detailText.text = items.Length == 0
-            ? (journal ? "[Memories and lore you find are written here.]" : "[Your satchel is empty.]")
+            ? (journal ? "Memories and pages you find are written here." : "Your satchel is empty.")
             : "";
         // A grid of icon tiles (4 across); the count badge shows stacks. Selecting a tile reads its lore.
         const float tile = 96f, gap = 12f;

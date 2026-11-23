@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Runestone inscription
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Runestone inscription
-  description: '[Runestone: Four guardians, four gifts, freely given to the land.
-    Let no single hand gather them all.]'
+  description: 'Carved in the old script: FOUR GUARDIANS, FOUR GIFTS, GIVEN FREELY
+    TO THE VALE. LET NO ONE HAND HOLD THEM ALL.'
   icon: {fileID: 0}
   category: 3
   price: 0

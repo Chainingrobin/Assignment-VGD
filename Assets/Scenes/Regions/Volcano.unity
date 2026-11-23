@@ -440,7 +440,7 @@ MonoBehaviour:
   lines: {fileID: 11400000, guid: 041d751fbd7075d439e063164a9b0265, type: 2}
   volume: {fileID: 312631993}
   journalEntry: {fileID: 11400000, guid: 70c0147eadf17b94e8fd9069accf1804, type: 2}
-  title: '[A Memory Returns]'
+  title: A Memory Returns
   fade: 1.2
 --- !u!4 &43048793
 Transform:
@@ -1765,7 +1765,7 @@ MonoBehaviour:
   captionBody: 
   memory: {fileID: 0}
   dialogue: {fileID: 0}
-  subtitle: '[Added to journal: Scorched decree]'
+  subtitle: 'Added to your journal: Scorched rhyme sheet'
   giveItem: {fileID: 11400000, guid: accf81a442663cc4b93a3783c44746a2, type: 2}
   setFlag: 
 --- !u!114 &264044283
@@ -1780,7 +1780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d67ec862283fc8741a8a58aa253da036, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
-  prompt: Press F to read Scorched decree
+  prompt: Press F to read the scorched rhyme sheet
   singleUse: 1
   onInteract:
     m_PersistentCalls:
@@ -6899,11 +6899,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RegionObjectives
   objectives:
-  - text: Enter the caldera through the lava tube and defeat the Fire Guardian
+  - text: Follow the lava tube into the caldera and face the Fire guardian
     showWhen: 
     doneWhen: bossFireDefeated
     marker: {x: 795, y: 9.9, z: 642}
-  - text: Claim the Tome of Fire
+  - text: Take up the Fire tome
     showWhen: bossFireDefeated
     doneWhen: hasFire
     marker: {x: 795, y: 9.9, z: 642}
@@ -7329,7 +7329,7 @@ MonoBehaviour:
   captionBody: 
   memory: {fileID: 0}
   dialogue: {fileID: 0}
-  subtitle: '[Wulang: The air burns. Ice will have to carry me through this.]'
+  subtitle: 'Wulang: The air itself is burning. I''ll have to keep the cold close.'
   giveItem: {fileID: 0}
   setFlag: 
 --- !u!1 &334575644
@@ -10144,9 +10144,12 @@ PrefabInstance:
       value: Helper (Abe)
       objectReference: {fileID: 0}
     - target: {fileID: 1550390771398671439, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
+      propertyPath: npcName
+      value: Abe
+      objectReference: {fileID: 0}
+    - target: {fileID: 1550390771398671439, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
       propertyPath: greeting
-      value: '[Abe: The Fire Guardian waits inside the caldera. Ice will tame it.
-        Go, I''ll be close.]'
+      value: 'Abe: Last shop before the mountain. I''d stock up, spark.'
       objectReference: {fileID: 0}
     - target: {fileID: 1550390771398671439, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
       propertyPath: portrait
@@ -21099,15 +21102,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossEncounter
   boss: {fileID: 842858276}
-  displayName: '[The Fire Guardian]'
+  displayName: The Fire Guardian
   defeatFlag: bossFireDefeated
   rewardPrefab: {fileID: 8989730382196996532, guid: 49688005b3319404986ae4ce9b29ede4, type: 3}
   engageRadius: 13
   autoEngage: 1
   disguise: {fileID: 0}
   revealEffect: {fileID: 0}
-  introLine: '[Fire Guardian: Burn, little vessel. Burn before he fills you.]'
-  dyingLine: '[Fire Guardian (dying): Four elements... one throne. Do not kneel...]'
+  introLine: 'Fire Guardian: Ash on the road. Ink on the stone. Turn back, storm-girl.'
+  dyingLine: 'Fire Guardian: When they offer you a past... ask what it costs.'
 --- !u!1001 &1706148659
 PrefabInstance:
   m_ObjectHideFlags: 0

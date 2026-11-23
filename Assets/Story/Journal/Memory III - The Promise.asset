@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Memory III - The Promise
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Memory III - The Promise
-  description: '[Placeholder memory: Wulang swearing an oath to Abe before a gilded
-    throne. The throne is the one in her nightmares.]'
+  displayName: 'Memory III: The Oath'
+  description: 'An oath at the armory forge: what is given freely cannot be taken.
+    Halfway through it, young Wulang hums a song that Abe does not know.'
   icon: {fileID: 0}
   category: 2
   price: 0

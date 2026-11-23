@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Watchman's last note
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Watchman's last note
-  description: '[Watchman''s note: The guardian came down the mountain screaming.
-    Behind it walked an old man, whistling.]'
+  description: The guardian came down the mountain screaming, all fire. Behind it,
+    in no hurry at all, came an old man carrying a kettle.
   icon: {fileID: 0}
   category: 3
   price: 0

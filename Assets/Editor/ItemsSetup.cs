@@ -19,13 +19,13 @@ public static class ItemsSetup
         if (!AssetDatabase.IsValidFolder(ItemFolder)) AssetDatabase.CreateFolder("Assets", "Items");
 
         var potion = Item(PotionPath, "Healing Potion", ItemCategory.Consumable,
-            "[Placeholder lore: a draught Abe brews from forest moss. Restores 40 vitality.]", 5, 40f, ElementType.None);
+            StoryScript.Lore["Healing Potion"], 5, 40f, ElementType.None);
         var tomes = new[]
         {
-            Tome(ElementType.Lightning, "[Placeholder lore: the spark Wulang woke with. Abe says it was always hers.]"),
-            Tome(ElementType.Earth, "[Placeholder lore: torn from the Earth Guardian. The forest grew quiet after.]"),
-            Tome(ElementType.Ice, "[Placeholder lore: the Frozen Reach's heart, cold enough to still a volcano.]"),
-            Tome(ElementType.Fire, "[Placeholder lore: the last element. Abe smiled when she took it.]"),
+            Tome(ElementType.Lightning),
+            Tome(ElementType.Earth),
+            Tome(ElementType.Ice),
+            Tome(ElementType.Fire),
         };
 
         var world = EditorSceneManager.OpenScene(SceneSplitSetup.WorldPath, OpenSceneMode.Single);
@@ -64,8 +64,8 @@ public static class ItemsSetup
         Debug.Log("ItemsSetup: items, inventory, vampire loot and lake hazard ready.");
     }
 
-    private static ItemData Tome(ElementType element, string lore) =>
-        Item($"{ItemFolder}/{element} Tome.asset", $"Tome of {element}", ItemCategory.Tome, lore, 0, 0f, element);
+    private static ItemData Tome(ElementType element) =>
+        Item($"{ItemFolder}/{element} Tome.asset", $"Tome of {element}", ItemCategory.Tome, StoryScript.Lore[$"{element} Tome"], 0, 0f, element);
 
     private static ItemData Item(string path, string name, ItemCategory category, string lore, int price, float heal, ElementType element)
     {
@@ -104,7 +104,7 @@ public static class ItemsSetup
         settings.FindProperty("element").enumValueIndex = (int)ElementType.Ice;
         settings.FindProperty("returnAfter").floatValue = 1.5f;
         settings.FindProperty("safeWhenFlag").stringValue = Flags.LakeFrozen;
-        settings.FindProperty("firstTimeLine").stringValue = "[The water is freezing. I can't swim this.]";
+        settings.FindProperty("firstTimeLine").stringValue = StoryScript.LakeLine;
         settings.ApplyModifiedPropertiesWithoutUndo();
     }
 }

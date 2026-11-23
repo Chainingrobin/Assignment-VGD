@@ -115,7 +115,7 @@ public class ShopUI : MonoBehaviour
         if (coins == null || inventory == null) return;
         if (!coins.Spend(item.price)) { StopAllCoroutines(); StartCoroutine(FlashPurse()); return; }
         inventory.Add(item);
-        Subtitle.Show($"[{item.displayName} +1]", 1.2f);
+        Subtitle.Show($"{item.displayName} +1", 1.2f);
         RefreshWallet();
     }
 

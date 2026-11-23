@@ -34454,6 +34454,119 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 808474172911093344, guid: ef280c69dddfa034d87f6504dccc42ba, type: 3}
+--- !u!1 &94898625
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 94898626}
+  - component: {fileID: 94898629}
+  - component: {fileID: 94898628}
+  - component: {fileID: 94898627}
+  m_Layer: 3
+  m_Name: Causeway joint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &94898626
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 94898625}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.05, z: -2.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 896707151}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &94898627
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 94898625}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 21437572e92b8aa48bc52f0f2f90d422, type: 2}
+--- !u!23 &94898628
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 94898625}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: be0de4d8848b360488c1a1609fdbdda7, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &94898629
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 94898625}
+  m_Mesh: {fileID: 4300000, guid: 21437572e92b8aa48bc52f0f2f90d422, type: 2}
 --- !u!1001 &96274178
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -67949,9 +68062,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RegionManager
   regions:
   - scene: Forest
-    title: 'Chapter I  -  [The Forest]'
-    recap: '[Placeholder recap: Wulang wakes in the lowlands with only the spark
-      of Lightning.]'
+    title: Chapter I  -  The Spark
+    recap: Something drove the guardians of the Vale mad. The Storm alone got away,
+      and hid in a girl on the hill road. She wakes with lightning in her hands and
+      nothing else.
     requiredFlag: 
     cutscene: {fileID: 1268960879}
     whiteFade: 0
@@ -67960,31 +68074,31 @@ MonoBehaviour:
     seal: {fileID: 0}
     lockedLine: 
   - scene: Ice
-    title: 'Chapter II  -  [The Frozen Reach]'
-    recap: '[Placeholder recap: The Earth Guardian has fallen. The statue froze the
-      lake.]'
+    title: Chapter II  -  What the Cold Keeps
+    recap: The Earth guardian rests at last, and the statue has frozen the lake.
+      Abe says the Frozen Reach is next, and that he will meet her there.
     requiredFlag: lakeFrozen
     cutscene: {fileID: 0}
     whiteFade: 0
     domainMin: {x: 420, y: 130}
     domainMax: {x: 890, y: 360}
     seal: {fileID: 0}
-    lockedLine: '[The ice will not carry me yet.]'
+    lockedLine: 'Wulang: The lake won''t hold me. Not yet.'
   - scene: Volcano
-    title: 'Chapter III  -  [The Burning Peak]'
-    recap: '[Placeholder recap: With Ice in hand, the Fire Guardian''s seal finally
-      weakens.]'
+    title: Chapter III  -  The Price of Fire
+    recap: Frost answers to Wulang now. Past the mountain pass, the Fire guardian
+      has sealed the Burning Peak, and Abe is already waiting at its foot.
     requiredFlag: bossIceDefeated
     cutscene: {fileID: 339848174}
     whiteFade: 0
     domainMin: {x: 640, y: 450}
     domainMax: {x: 900, y: 840}
     seal: {fileID: 0}
-    lockedLine: '[The Fire Guardian''s seal burns me back. Not yet.]'
+    lockedLine: 'Wulang: The heat throws me back. The mountain is sealed.'
   - scene: FinalArena
-    title: 'Chapter IV  -  [The Sanctum]'
-    recap: '[Placeholder recap: Every element answers to Wulang now. The rift leads
-      to the one who sent her.]'
+    title: Chapter IV  -  The Sanctum
+    recap: Three guardians rest. Four gifts burn in one pair of hands. The rift opens
+      on a sanctum in the sky, and Abe has gone ahead, the way he always does.
     requiredFlag: bossFireDefeated
     cutscene: {fileID: 0}
     whiteFade: 1
@@ -67992,6 +68106,7 @@ MonoBehaviour:
     domainMax: {x: 0, y: 0}
     seal: {fileID: 0}
     lockedLine: 
+  introNarration: {fileID: 11400000, guid: 97237666bed801e43a1abf6eae9d19f3, type: 2}
   minimumCaptionTime: 3
 --- !u!4 &172129004
 Transform:
@@ -98205,7 +98320,7 @@ MonoBehaviour:
   damagePerSecond: 20
   element: 2
   returnAfter: 0
-  firstTimeLine: '[The lava sears through my boots!]'
+  firstTimeLine: 'Wulang: Lava. Not my best idea.'
   surface: {fileID: 0}
   safeWhenFlag: 
 --- !u!65 &302926030
@@ -142667,7 +142782,7 @@ MonoBehaviour:
   damagePerSecond: 20
   element: 2
   returnAfter: 0
-  firstTimeLine: '[The lava sears through my boots!]'
+  firstTimeLine: 'Wulang: Lava. Not my best idea.'
   surface: {fileID: 0}
   safeWhenFlag: 
 --- !u!65 &502787526
@@ -217498,7 +217613,7 @@ MonoBehaviour:
   damagePerSecond: 20
   element: 2
   returnAfter: 0
-  firstTimeLine: '[The lava sears through my boots!]'
+  firstTimeLine: 'Wulang: Lava. Not my best idea.'
   surface: {fileID: 0}
   safeWhenFlag: 
 --- !u!65 &766390812
@@ -218234,6 +218349,7 @@ GameObject:
   m_Component:
   - component: {fileID: 785415720}
   - component: {fileID: 785415721}
+  - component: {fileID: 785415722}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -218321,6 +218437,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &785415722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785415719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &789209168
 GameObject:
   m_ObjectHideFlags: 0
@@ -226914,6 +227059,7 @@ Transform:
   - {fileID: 1418171308}
   - {fileID: 1179582342}
   - {fileID: 1478516143}
+  - {fileID: 94898626}
   m_Father: {fileID: 217591076}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &897020582
@@ -271232,7 +271378,7 @@ MonoBehaviour:
   damagePerSecond: 20
   element: 2
   returnAfter: 0
-  firstTimeLine: '[The lava sears through my boots!]'
+  firstTimeLine: 'Wulang: Lava. Not my best idea.'
   surface: {fileID: 0}
   safeWhenFlag: 
 --- !u!65 &1040475662
@@ -299653,7 +299799,7 @@ MonoBehaviour:
   damagePerSecond: 12
   element: 1
   returnAfter: 1.5
-  firstTimeLine: '[The water is freezing. I can''t swim this.]'
+  firstTimeLine: 'Wulang: The water''s like knives. I can''t swim this.'
   surface: {fileID: 0}
   safeWhenFlag: lakeFrozen
 --- !u!65 &1171614209
@@ -311146,6 +311292,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 11d9fac4d0110db44a546743d3c7995e, type: 2}
   - {fileID: 11400000, guid: 172f07868d716fb44978f3c545beae81, type: 2}
   - {fileID: 11400000, guid: 0c84590ce3af6664fabc3ee0357d75b7, type: 2}
+--- !u!114 &1223496414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472278201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a116adce0e751b438b1dfcd4b21a9b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Footsteps
+  stride: 2.2
+  volume: 0.35
 --- !u!1001 &1223728306
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -341347,6 +341507,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1332995683}
   - component: {fileID: 1332995684}
+  - component: {fileID: 1332995685}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -341434,6 +341595,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1332995685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332995682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1001 &1335301004
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -393059,6 +393249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1520075360}
   - component: {fileID: 1520075361}
+  - component: {fileID: 1520075362}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -393146,6 +393337,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1520075362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1520075359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1520287730
 GameObject:
   m_ObjectHideFlags: 0
@@ -410165,6 +410385,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1566357780}
   - component: {fileID: 1566357781}
+  - component: {fileID: 1566357782}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -410252,6 +410473,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1566357782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1566357779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1001 &1566890312
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -411257,6 +411507,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1585758662}
   - component: {fileID: 1585758663}
+  - component: {fileID: 1585758664}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -411344,6 +411595,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1585758664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585758661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1585824990
 GameObject:
   m_ObjectHideFlags: 0
@@ -459755,6 +460035,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1770080692}
   - component: {fileID: 1770080693}
+  - component: {fileID: 1770080694}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -459842,6 +460123,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1770080694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770080691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1001 &1771012719
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -466843,6 +467153,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1830083946}
   - component: {fileID: 1830083947}
+  - component: {fileID: 1830083948}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -466930,6 +467241,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1830083948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830083945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1001 &1830208453
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -488724,6 +489064,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1895471900}
   - component: {fileID: 1895471901}
+  - component: {fileID: 1895471902}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -488811,6 +489152,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1895471902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1895471899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1001 &1898436474
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -489596,6 +489966,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1916820822}
   - component: {fileID: 1916820823}
+  - component: {fileID: 1916820824}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -489683,6 +490054,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1916820824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1916820821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1917102184
 GameObject:
   m_ObjectHideFlags: 0
@@ -573509,6 +573909,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8616685848737228372, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1223496413}
+    - targetCorrespondingSourceObject: {fileID: 8616685848737228372, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1223496414}
   m_SourcePrefab: {fileID: 100100000, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
 --- !u!1001 &2063282813
 PrefabInstance:

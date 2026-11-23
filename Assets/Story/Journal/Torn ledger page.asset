@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Torn ledger page
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Torn ledger page
-  description: '[Placeholder lore: a ledger in Abe''s hand, listing four guardians
-    and a fifth line scratched out: ''the vessel''.]'
+  description: 'A page from the armory''s ledger, in a neat and patient hand. Iron,
+    forty bars. Lamp oil, six casks. Rain on the hill road: not for sale. Someone
+    has struck out ''not for sale'' and written beside it, very small: ''yet.'''
   icon: {fileID: 0}
   category: 3
   price: 0

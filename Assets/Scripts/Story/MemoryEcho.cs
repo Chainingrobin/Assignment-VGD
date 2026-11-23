@@ -16,7 +16,7 @@ public class MemoryEcho : MonoBehaviour
     [SerializeField] private DialogueData lines;
     [SerializeField] private Volume volume;
     [SerializeField] private ItemData journalEntry;
-    [SerializeField] private string title = "[A Memory Returns]";
+    [SerializeField] private string title = "A Memory Returns";
     [SerializeField, Min(0.1f)] private float fade = 1.2f;
 
     public bool Playing { get; private set; }
@@ -31,6 +31,9 @@ public class MemoryEcho : MonoBehaviour
     {
         Playing = true;
         PlayerLock.Push();
+        string mood = GameAudio.CurrentMood;
+        GameAudio.Play("Sfx/Memory", null, 0.6f);
+        GameAudio.Mood("Memory", 1.5f);
         var shot = FrameActors();
         var overlay = TransitionOverlay.Instance;
         StartCoroutine(overlay.ShowCaption(title, ""));
@@ -54,6 +57,7 @@ public class MemoryEcho : MonoBehaviour
         if (actors != null) actors.SetActive(false);
         if (shot != null) Destroy(shot.gameObject); // the brain blends back to the player's view
         if (journalEntry != null && PlayerInventory.Instance != null) PlayerInventory.Instance.Add(journalEntry);
+        if (GameAudio.CurrentMood == "Memory") GameAudio.Mood(mood); // an ending may have taken over the music meanwhile
         PlayerLock.Pop();
         Playing = false;
     }

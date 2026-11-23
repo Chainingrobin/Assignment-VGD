@@ -297,7 +297,7 @@ public static partial class VolcanoBiomeBuilder
         Vector2[] profile = { new(-4.6f, -3f), new(-4.2f, -1f), new(-3.7f, 0), new(0, .2f), new(3.7f, 0), new(4.2f, -1f), new(4.6f, -3f) };
         bridge.Grid(12, profile.Length - 1, (i, k) =>
         {
-            float z = Mathf.Lerp(TunnelInner + 2f, -12.5f, i / 12f), wobble = (Perlin(z * .4f, k) - .5f) * .6f * (k == 3 ? 0 : 1);
+            float z = Mathf.Lerp(TunnelInner - .5f, -12.5f, i / 12f), wobble = (Perlin(z * .4f, k) - .5f) * .6f * (k == 3 ? 0 : 1);
             return new Vector3(WalkwayX + profile[k].x + wobble, ArenaLevel + profile[k].y, z);
         });
         Solid(arena, "Causeway", bridge.Build("Caldera causeway", p => new Vector3(p.x - WalkwayX, Mathf.Abs(p.x - WalkwayX) < 3.8f ? 4 : 0, 0)), arenaFloor);

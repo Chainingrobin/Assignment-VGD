@@ -13,26 +13,39 @@ MonoBehaviour:
   m_Name: Forest - Meet Abe
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   lines:
-  - speaker: '[Abe]'
+  - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: '[Wulang! Thank the stars, you''re awake. Do you remember me? No... the
-      corruption took that too.]'
+    text: There she is. Sit, sit. You took a storm to the head, spark. Most people
+      don't get up from that.
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: '[I remember... nothing. Only this spark.]'
-  - speaker: '[Abe]'
+    text: You know me?
+  - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: '[That spark is Lightning, and it''s yours. A guardian gone mad holds the
-      Earth north of here. Earth fears the storm: strike it with Lightning.]'
-  - speaker: '[Abe]'
-    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: '[Bring me Wubucks from those vampires and I''ll keep you in potions. Press
-      H to drink one.]'
+    text: Abe. I keep this old armory, and I've kept an eye on you since you were
+      knee-high. ...You don't remember. That's all right. It'll come back.
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: '[And you? Will you fight with me?]'
-  - speaker: '[Abe]'
+    text: There's lightning in my hands. Is that normal?
+  - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: '[Me? I can''t touch the elements, child. That''s why I need you.]'
+    text: 'Not in the least. The Storm chose you. The elements are proud: they only
+      go where they''re given. You can''t steal them, and you can''t buy them.'
+  - speaker: Abe
+    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
+    text: That's why the other guardians went sour. The Earth guardian has been tearing
+      up the Blossom Glade for a month. Put it to rest, and its gift goes to whoever
+      freed it.
+  - speaker: Wulang
+    portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
+    text: And you're sending me, because...?
+  - speaker: Abe
+    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
+    text: Because I'm old, and magic and I had a falling out years ago. Earth hates
+      the storm. Hit it with what you've got.
+  - speaker: Abe
+    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
+    text: Bring me Wubucks off those vampires and I'll keep you in potions. Nothing's
+      free, spark. Not even me.
   choices: []
   flagToSetWhenFinished: metAbe

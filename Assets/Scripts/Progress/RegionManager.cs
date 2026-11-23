@@ -37,6 +37,8 @@ public class RegionManager : MonoBehaviour
     }
 
     [SerializeField] private Region[] regions;
+    [Tooltip("The opening narration (IntroCutscene): narrator lines, then Abe's wake-up line.")]
+    [SerializeField] private DialogueData introNarration;
     [SerializeField, Min(0f)] private float minimumCaptionTime = 3f;
 
     // Set by the main menu before loading the World: which region to start in.
@@ -106,8 +108,8 @@ public class RegionManager : MonoBehaviour
         bool intro = alreadyLoaded.Count == 0 && !story.NewGamePlus && opening?.cutscene != null && !story.HasFlag(Flags.IntroSeen);
         if (intro) story.SetFlag(Flags.IntroSeen); // before the checkpoint, so Continue doesn't replay it
         Arrived();
-        if (intro) StartCoroutine(Enter(opening));
-        yield return TransitionOverlay.Instance.FadeTo(0f, 0.8f);
+        if (intro) StartCoroutine(introNarration != null ? Opening(opening) : Enter(opening));
+        if (!intro || introNarration == null) yield return TransitionOverlay.Instance.FadeTo(0f, 0.8f);
         RefreshSeals();
     }
 
@@ -141,6 +143,7 @@ public class RegionManager : MonoBehaviour
         if (sealCooldown > 0f) return;
         sealCooldown = 1f;
         if (PlayerHealth.Instance != null) PlayerHealth.Instance.TakeDamage(5f, ElementType.None);
+        GameAudio.Play("Sfx/Seal", null, 0.7f);
         if (!string.IsNullOrEmpty(region.lockedLine) && warned.Add(region.scene)) Subtitle.Show(region.lockedLine);
     }
 
@@ -225,6 +228,14 @@ public class RegionManager : MonoBehaviour
         Busy = false;
     }
 
+    // A new game's intro cutscene; nothing else moves the player meanwhile.
+    private IEnumerator Opening(Region opening)
+    {
+        Busy = true;
+        yield return IntroCutscene.Play(introNarration, opening.cutscene, opening.title, RecapFor(opening), opening.scene);
+        Busy = false;
+    }
+
     // Pause menu "Restart Region": reload the current region scene from its start.
     public void RestartRegion()
     {
@@ -257,7 +268,7 @@ public class RegionManager : MonoBehaviour
         RegionEntered?.Invoke(Current);
     }
 
-    // Placeholder recap built from story flags; the narrative pass replaces the wording.
+    // The chapter recap (StoryScript writes it).
     private static string RecapFor(Region region) => region.recap;
 
     public Transform CurrentSpawn

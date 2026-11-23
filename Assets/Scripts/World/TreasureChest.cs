@@ -60,8 +60,9 @@ public class TreasureChest : MonoBehaviour
                     PlayerInventory.Instance.Add(item);
                     found.Add(item.category == ItemCategory.Lore ? "Journal: " + item.displayName : item.displayName + " +1");
                 }
-        if (found.Count > 0) Subtitle.Show("[" + string.Join("]  [", found) + "]", 4f);
+        if (found.Count > 0) Subtitle.Show(string.Join("   ", found), 4f);
         if (openEffect != null) Destroy(Instantiate(openEffect, transform.position + Vector3.up * 0.6f, Quaternion.identity), 4f);
+        GameAudio.Play("Sfx/Chest", transform.position, 0.9f);
     }
 
     private void Update()

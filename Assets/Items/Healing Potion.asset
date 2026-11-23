@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Healing Potion
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Healing Potion
-  description: '[Placeholder lore: a draught Abe brews from forest moss. Restores
-    40 vitality.]'
+  description: Abe's own brew, bitter as bark. He swears by it and charges accordingly.
+    Restores 40 vitality.
   icon: {fileID: 0}
   category: 0
   price: 5

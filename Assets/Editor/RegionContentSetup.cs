@@ -25,14 +25,12 @@ public static class RegionContentSetup
         // A tree-free meadow at the forest's north edge: a short trek from the armory.
         // The Blossom Glade built by ForestBiomeBuilder: between the armory and the lake statue.
         var forestArena = SceneSplitSetup.Ground(ForestBiomeBuilder.ArenaCenter);
-        Encounter(forestRoot, "Earth Guardian arena", forestArena, BossSetup.EarthBoss, "[The Earth Guardian]", Flags.BossEarth,
-            "Earth Book", 20f, 24f,
-            "[Earth Guardian: Another book-bearer, sent to take what is mine...]",
-            "[Earth Guardian (dying): You carry us... to him? Then you are already lost...]");
+        Encounter(forestRoot, "Earth Guardian arena", forestArena, BossSetup.EarthBoss, StoryScript.Bosses[Flags.BossEarth].name, Flags.BossEarth,
+            "Earth Book", 20f, 24f, StoryScript.Bosses[Flags.BossEarth].intro, StoryScript.Bosses[Flags.BossEarth].dying);
         // Abe's camp sits beside the armory path, between its two arches: walking in from where
         // Wulang wakes, the player meets his face across the fire.
         Camp(forestRoot, new Vector2(556f, 586f), new Vector2(566f, 588f),
-            "[Abe: Wulang! You're awake. Strike the beast with Lightning; earth fears the storm.]", wagon: true);
+            StoryScript.Greetings["Forest"], wagon: true);
         // Two vampires guard the trail from the armory to the glade (the tutorial's first fights),
         // and Earth packs roam the meadows, with Lightning strays near the glade.
         Vampire(forestRoot, "Earth", SceneSplitSetup.Flattest(new Vector2(546f, 530f), 6f));
@@ -53,11 +51,10 @@ public static class RegionContentSetup
         var iceArena = SceneSplitSetup.Ground(SnowBiomeBuilder.ArenaCenter);
         FaceSpawn(ice, iceArena);
         Encounter(iceRoot, "Ice Guardian arena", iceArena, BossSetup.IceBoss,
-            "[The Ice Guardian]", Flags.BossIce, "Ice Book", 18f, 22f,
-            "[Ice Guardian: The cold remembers your face, thief.]",
-            "[Ice Guardian (dying): He wears a kind face. He always has...]");
+            StoryScript.Bosses[Flags.BossIce].name, Flags.BossIce, "Ice Book", 18f, 22f,
+            StoryScript.Bosses[Flags.BossIce].intro, StoryScript.Bosses[Flags.BossIce].dying);
         Camp(iceRoot, new Vector2(iceSpawn.x + 6f, iceSpawn.z - 4f), new Vector2(iceSpawn.x, iceSpawn.z),
-            "[Abe: Fire would melt it, but you have none. Ground it with Earth, then call the storm.]");
+            StoryScript.Greetings["Ice"]);
         foreach (var p in new[] { new Vector2(600f, 262f), new Vector2(712f, 252f), new Vector2(770f, 300f) })
             Pack(iceRoot, "Ice", p, 2);
         foreach (var p in new[] { new Vector2(520f, 300f), new Vector2(800f, 232f), new Vector2(690f, 185f) })
@@ -70,12 +67,10 @@ public static class RegionContentSetup
         var volcano = Open("Volcano", out var volcanoRoot);
         var volcanoSpawn = RegionStartSpawn(volcano);
         var caldera = GameObject.Find("Redwood Lava Cavern/Boss caldera/Boss spawn point").transform.position;
-        Encounter(volcanoRoot, "Fire Guardian arena", new Vector3(795f, caldera.y, 642f), BossSetup.FireBoss, "[The Fire Guardian]",
-            Flags.BossFire, "Fire Book", 13f, 14f,
-            "[Fire Guardian: Burn, little vessel. Burn before he fills you.]",
-            "[Fire Guardian (dying): Four elements... one throne. Do not kneel...]", caldera);
+        Encounter(volcanoRoot, "Fire Guardian arena", new Vector3(795f, caldera.y, 642f), BossSetup.FireBoss, StoryScript.Bosses[Flags.BossFire].name,
+            Flags.BossFire, "Fire Book", 13f, 14f, StoryScript.Bosses[Flags.BossFire].intro, StoryScript.Bosses[Flags.BossFire].dying, caldera);
         Camp(volcanoRoot, new Vector2(volcanoSpawn.x + 4f, volcanoSpawn.z + 5f), new Vector2(volcanoSpawn.x, volcanoSpawn.z),
-            "[Abe: The Fire Guardian waits inside the caldera. Ice will tame it. Go, I'll be close.]");
+            StoryScript.Greetings["Volcano"]);
         foreach (var p in new[] { new Vector2(680f, 720f), new Vector2(700f, 780f), new Vector2(665f, 650f) })
             Pack(volcanoRoot, "Fire", p, 2);
         foreach (var p in new[] { new Vector2(700f, 560f), new Vector2(660f, 805f), new Vector2(725f, 690f) })
@@ -412,7 +407,7 @@ public static class RegionContentSetup
             hazard.FindProperty("damagePerSecond").floatValue = 20f;
             hazard.FindProperty("element").enumValueIndex = (int)ElementType.Fire;
             hazard.FindProperty("surface").objectReferenceValue = surface;
-            hazard.FindProperty("firstTimeLine").stringValue = "[The lava sears through my boots!]";
+            hazard.FindProperty("firstTimeLine").stringValue = StoryScript.LavaLine;
             hazard.ApplyModifiedPropertiesWithoutUndo();
         }
     }

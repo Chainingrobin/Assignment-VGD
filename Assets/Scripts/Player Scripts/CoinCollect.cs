@@ -12,6 +12,7 @@ public class CoinCollect : MonoBehaviour
         if (wallet == null) return;
         collected = true;
         wallet.Add(amount);
+        GameAudio.Play("Sfx/Coin", null, 0.5f);
         Destroy(gameObject);
     }
 }

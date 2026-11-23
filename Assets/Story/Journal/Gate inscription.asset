@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Gate inscription
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Gate inscription
-  description: '[Gate inscription: Here the guardians slept, until the book-bearers
-    came bearing gifts.]'
+  description: Here the Frost guardian slept through the long winters, and the travellers'
+    road ran safe beneath it. Then the book-bearers came, carrying gifts.
   icon: {fileID: 0}
   category: 3
   price: 0

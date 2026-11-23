@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Frozen traveller's journal
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Frozen traveller's journal
-  description: '[Placeholder lore: a book-bearer''s journal. ''The old man paid well
-    for the Ice tome. He never touched it himself. Strange.'']'
+  description: A book-bearer's journal, frozen shut at the last page. 'Our patron
+    met us at the armory and paid in old silver. He would not touch the tome, not
+    even to count the pages. Said he and books had an understanding. Cold tonight.
+    The tome is heavier than it looks.'
   icon: {fileID: 0}
   category: 3
   price: 0

@@ -15,10 +15,10 @@ public class EndingController : MonoBehaviour
     [SerializeField] private DialogueData reOffer;
     [SerializeField] private DialogueData submissionLines;
     [SerializeField] private MemoryEcho trueMemory;
-    [SerializeField] private string submissionTitle = "Ending: [The Gilded Past]";
-    [SerializeField, TextArea] private string submissionText = "[Placeholder: Wulang kneels. The past Abe gives her is warm, and false.]";
-    [SerializeField] private string truthTitle = "Ending: [Elements of the Past]";
-    [SerializeField, TextArea] private string truthText = "[Placeholder: Wulang chooses who she is now. The elements answer only to her.]";
+    [SerializeField] private string submissionTitle = "Ending: The Gilded Past";
+    [SerializeField, TextArea] private string submissionText = "Wulang knelt, and was given a past that was warm, and perfect, and not hers.";
+    [SerializeField] private string truthTitle = "Ending: Freely Given";
+    [SerializeField, TextArea] private string truthText = "Wulang refused, and remembered who she really was.";
     [SerializeField, Min(500f)] private float fallFloor = 660f;
 
     private int deaths;
@@ -94,6 +94,7 @@ public class EndingController : MonoBehaviour
     {
         ending = true;
         PlayerLock.Push();
+        GameAudio.Mood("Gilded", 4f);
         if (submissionLines != null)
         {
             bool done = false;
@@ -106,7 +107,7 @@ public class EndingController : MonoBehaviour
         {
             if (affinity == null) break;
             affinity.Revoke(element);
-            Subtitle.Show($"[{element} leaves you.]", 1.4f);
+            Subtitle.Show($"{element} leaves you.", 1.4f);
             yield return new WaitForSeconds(1.5f);
         }
         yield return EndCard(submissionTitle, submissionText, Color.white);
@@ -116,6 +117,7 @@ public class EndingController : MonoBehaviour
     {
         ending = true;
         StoryStateManager.Instance.SetFlag(Flags.EndingTruth);
+        GameAudio.Mood("Truth", 5f);
         yield return new WaitForSeconds(3f);
         if (trueMemory != null) yield return trueMemory.Play();
         PlayerLock.Push();
@@ -126,7 +128,7 @@ public class EndingController : MonoBehaviour
     {
         var overlay = TransitionOverlay.Instance;
         yield return overlay.FadeTo(1f, 2f, fade);
-        yield return overlay.ShowCaption(title, text + "\n\n[Credits placeholder: Youssef Yasser, GUC DMET 909]");
+        yield return overlay.ShowCaption(title, text + "\n\n<size=70%>Wulang: Elements of the Past  -  a prototype by Youssef Yasser, GUC DMET 909, 2026. Third-party art, animation and sound are credited in the README.</size>");
         StoryStateManager.NewGamePlusUnlocked = true;
         overlay.ShowSkipHint(true);
         float until = Time.unscaledTime + 7f;

@@ -122,5 +122,24 @@ public class TransitionOverlay : MonoBehaviour
         SetBars(0f);
     }
 
+    // Changes the caption's lines in place, the letterbox staying up: the text fades out and back in.
+    public IEnumerator SwapCaption(string chapterTitle, string recapLine, float duration = 0.6f)
+    {
+        if (captionGroup.alpha < 1f) { yield return ShowCaption(chapterTitle, recapLine, duration); yield break; }
+        for (float t = 0f; t < duration * 0.5f; t += Time.unscaledDeltaTime)
+        {
+            title.alpha = recap.alpha = 1f - t / (duration * 0.5f);
+            yield return null;
+        }
+        title.text = chapterTitle;
+        recap.text = recapLine;
+        for (float t = 0f; t < duration * 0.5f; t += Time.unscaledDeltaTime)
+        {
+            title.alpha = recap.alpha = t / (duration * 0.5f);
+            yield return null;
+        }
+        title.alpha = recap.alpha = 1f;
+    }
+
     public void SetProgress(string text) => progress.text = text;
 }

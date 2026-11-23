@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Forge ledger
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Forge ledger
-  description: '[Forge ledger: Forty chains for the horned master. The same words
-    engraved on each: FOR THE VESSEL, SHOULD SHE REFUSE.]'
+  description: 'Order, paid in old silver: forty chains, black iron, extra long.
+    Purpose, in the buyer''s words: ''in case of a refusal.'' The smith has added
+    underneath: ''Refusal of WHAT? He only smiled.'''
   icon: {fileID: 0}
   category: 3
   price: 0

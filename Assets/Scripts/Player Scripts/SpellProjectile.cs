@@ -42,6 +42,7 @@ public class SpellProjectile : MonoBehaviour
         hasHit = true;
 
         var contact = c.GetContact(0);
+        GameAudio.Play("Sfx/Impact", contact.point, 0.7f, 1.3f);
         if (hitPrefab)
         {
             var fx = Instantiate(hitPrefab, contact.point,

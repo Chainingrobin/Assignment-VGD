@@ -108,6 +108,7 @@ public class VampireMelee : MonoBehaviour
             if (!swipeLanded && elapsed >= 1.2f)
             {
                 swipeLanded = true;
+                GameAudio.Play("Sfx/Swing", transform.position + Vector3.up, 0.8f);
                 if (distance <= 2.2f && Vector3.Angle(transform.forward, direction) < 60f && PlayerHealth.Instance != null)
                     PlayerHealth.Instance.TakeDamage(swipeDamage, target.Affinity);
             }

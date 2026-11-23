@@ -46,7 +46,7 @@ public static class LandmarksBuilder
     // A chest (with its guards) for the region pass, positioned by the World pass.
     private class Cache
     {
-        public string region, id, title, lore, guardElement;
+        public string region, id, title, guardElement;
         public Vector3 at;
         public Quaternion facing;
         public bool vitality;
@@ -111,7 +111,7 @@ public static class LandmarksBuilder
             Look(knoll - p) * Quaternion.Euler(Range(-6f, 6f), 0f, Range(-6f, 6f)), Range(1.6f, 2.1f)));
         Scatter(crown, knoll, 4f, 7f, 5, Nature + "FlowerMeadow_White.prefab", 1f);
         Add("Forest", "Runestone crown", knoll + toward * 2.2f, toward, vitality: true, wubucks: 15, potions: 0,
-            "Runestone inscription", "[Runestone: Four guardians, four gifts, freely given to the land. Let no single hand gather them all.]",
+            "Runestone inscription",
             "Earth", knoll + toward * 16f, 2);
 
         // An abandoned camp by the creek's head: the book-bearer who carried the Earth tome.
@@ -133,7 +133,7 @@ public static class LandmarksBuilder
         Place(camp, Props + "Scroll/Scroll.002.prefab", Floor(near + new Vector2(0.9f, -1.4f)) + Vector3.up * 0.02f, 50f, 1f, solid: false);
         var campFacing = Dir(near, new Vector2(450f, 700f));
         Add("Forest", "Book-bearer's camp", near + campFacing * 2.4f + Perp(campFacing) * 2f, campFacing, vitality: false, wubucks: 30, potions: 2,
-            "Book-bearer's diary", "[Diary: The old man at the armory pays in gold for every tome we carry into a guardian's glade. He never opens them. Tomorrow I take the Earth tome north. If I don't come back, burn this.]",
+            "Book-bearer's diary",
             "Lightning", near + new Vector2(14f, -10f), 2);
 
         // A shrine by the glade's pond to someone the land remembers and the player doesn't.
@@ -149,7 +149,7 @@ public static class LandmarksBuilder
         Place(shrine, NatureDemo + "FloatingLeafs_Pink.prefab", floor + Vector3.up * 4f, 0f, 1.2f, solid: false);
         Place(shrine, Nature + "GodRays.prefab", floor + Vector3.up * 9f, 0f, 0.6f, solid: false);
         Add("Forest", "Blossom shrine", shrineAt + facePond * 2.6f, -facePond, vitality: true, wubucks: 0, potions: 1,
-            "Shrine plaque", "[Shrine plaque: For the village girl who stood between the guardians and the horned one. Her name has been chiselled away.]",
+            "Shrine plaque",
             null, default, 0);
     }
 
@@ -182,7 +182,7 @@ public static class LandmarksBuilder
             Spire(caravan, Rocks + "Cliff_ice.prefab", p, Range(4f, 8f), Range(1.2f, 1.8f), outward: Flat(p - at).normalized * 16f);
         }
         Add("Ice", "Frozen caravan", at - away * 2.5f, -away, vitality: false, wubucks: 30, potions: 1,
-            "Caravan manifest", "[Manifest: Cargo, one Ice tome, for the Amphitheater. Paid in full by 'A.' Do not open the tome. Do not linger.]",
+            "Caravan manifest",
             "Ice", at + away * 18f, 2);
 
         // A crown of crystal on the eastern terraces, the relic at its heart.
@@ -196,7 +196,7 @@ public static class LandmarksBuilder
         Motes(crown, crownFloor + Vector3.up * 2f, "Snowflake", new Color(0.75f, 0.92f, 1f), 8f, 6f);
         var toLanding = Dir(crownAt, new Vector2(655f, 328f));
         Add("Ice", "Crystal crown", crownAt, toLanding, vitality: true, wubucks: 10, potions: 0,
-            "Ice-carved verse", "[Carved in the ice: The cold keeps what the warm forget. Ask it who carried the tomes, and who paid them.]",
+            "Ice-carved verse",
             "Ice", crownAt + toLanding * 16f, 2, standOn: Top(crownDais));
 
         // The sealed gate behind the Amphitheater, flanked by the old stone watchers.
@@ -212,7 +212,7 @@ public static class LandmarksBuilder
             Place(gate, Statues + "Statues_Moak/Prefab/Statues_Moak.prefab", Floor(gateAt + side * s * 6.5f + north * 0.5f) - Vector3.up * 0.1f, Look(north), 1.9f);
         Glow(gate, Floor(gateAt) + Vector3.up * 3f, new Color(0.5f, 0.8f, 1f), 10f, 1f);
         Add("Ice", "Glacier gate", gateAt + north * 1.2f, north, vitality: true, wubucks: 0, potions: 1,
-            "Gate inscription", "[Gate inscription: Here the guardians slept, until the book-bearers came bearing gifts.]",
+            "Gate inscription",
             null, default, 0);
     }
 
@@ -250,7 +250,7 @@ public static class LandmarksBuilder
         }
         Steps(forge, mesa, new Vector2(-1f, 0f));
         Add("Volcano", "Chain forge", mesa + toSpawn * 1.2f, toSpawn, vitality: true, wubucks: 20, potions: 0,
-            "Forge ledger", "[Forge ledger: Forty chains for the horned master. The same words engraved on each: FOR THE VESSEL, SHOULD SHE REFUSE.]",
+            "Forge ledger",
             "Fire", mesa + toSpawn * 22f, 2);
 
         // A bronze idol on the rim of the great cinder cone, where pilgrims begged the guardian's pardon.
@@ -269,7 +269,7 @@ public static class LandmarksBuilder
             Spire(shrine, Rocks + "Rock_infernal.prefab", p, Range(2.5f, 4.5f), 1.2f, outward: Flat(p - rim).normalized * 12f);
         }
         Add("Volcano", "Ember shrine", rim + outward * 2.8f, outward, vitality: false, wubucks: 35, potions: 2,
-            "Scorched prayer", "[A prayer scratched into the bronze: Forgive us, guardian of fire. We sold the old man the road to your heart.]",
+            "Scorched prayer",
             "Fire", rim + outward * 15f, 2);
 
         // A watch post at the burnt forest's edge, the last thing the watchman saw.
@@ -285,7 +285,7 @@ public static class LandmarksBuilder
         Place(watch, Props + "Weapon Racks/WeaponRack.003.prefab", Floor(post - along * 3.4f), Look(toCone), Vector3.one);
         Brazier(watch, Floor(post + along * 1.6f - toCone * 1.2f), 0.7f, light: true);
         Add("Volcano", "Burnt watch post", post - toCone * 0.8f, toCone, vitality: true, wubucks: 10, potions: 1,
-            "Watchman's last note", "[Watchman's note: The guardian came down the mountain screaming. Behind it walked an old man, whistling.]",
+            "Watchman's last note",
             "Fire", post - toCone * 16f, 1);
     }
 
@@ -446,12 +446,12 @@ public static class LandmarksBuilder
 
     // A chest at `at` (on the ground, or on a dais top at `standOn`), opening toward `facing`.
     private static void Add(string region, string id, Vector2 at, Vector2 facing, bool vitality, int wubucks, int potions,
-        string title, string lore, string guardElement, Vector2 guardsNear, int guards, float standOn = float.NaN)
+        string title, string guardElement, Vector2 guardsNear, int guards, float standOn = float.NaN)
     {
         caches.Add(new Cache
         {
             region = region, id = id, at = float.IsNaN(standOn) ? Floor(at) : new Vector3(at.x, standOn, at.y), facing = Look(facing),
-            vitality = vitality, wubucks = wubucks, potions = potions, title = title, lore = lore,
+            vitality = vitality, wubucks = wubucks, potions = potions, title = title,
             guardElement = guardElement, guardsNear = guardsNear, guards = guards,
         });
     }
@@ -479,7 +479,7 @@ public static class LandmarksBuilder
         var items = new List<ItemData>();
         var potion = AssetDatabase.LoadAssetAtPath<ItemData>(ItemsSetup.PotionPath);
         for (int i = 0; i < cache.potions; i++) items.Add(potion);
-        if (!string.IsNullOrEmpty(cache.lore)) items.Add(StorySetup.Journal(cache.title, cache.lore));
+        if (StoryScript.Lore.ContainsKey(cache.title)) items.Add(StorySetup.Journal(cache.title)); // wording in StoryScript
         var list = chest.FindProperty("items");
         list.arraySize = items.Count;
         for (int i = 0; i < items.Count; i++) list.GetArrayElementAtIndex(i).objectReferenceValue = items[i];

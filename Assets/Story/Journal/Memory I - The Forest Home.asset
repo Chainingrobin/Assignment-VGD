@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Memory I - The Forest Home
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Memory I - The Forest Home
-  description: '[Placeholder memory: Wulang as a child, Abe teaching her to listen
-    to the soil. His shadow looks wrong in it.]'
+  displayName: 'Memory I: The Apprentice'
+  description: A summer evening at the armory. Abe teaches a young Wulang to hear
+    the ground speak. She remembers it exactly the way he tells it, down to the words.
   icon: {fileID: 0}
   category: 2
   price: 0

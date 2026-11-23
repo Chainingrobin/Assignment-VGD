@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Memory II - The Frozen Lesson
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Memory II - The Frozen Lesson
-  description: '[Placeholder memory: Abe pulling Wulang from the frozen lake. He
-    says she owes him her life.]'
+  displayName: 'Memory II: Through the Ice'
+  description: Winter. Young Wulang falls through the ice, and Abe pulls her out.
+    He tells her that one day he will ask for something in return. In the memory,
+    the water is warm.
   icon: {fileID: 0}
   category: 2
   price: 0

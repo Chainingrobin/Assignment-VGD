@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Caravan manifest
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Caravan manifest
-  description: '[Manifest: Cargo, one Ice tome, for the Amphitheater. Paid in full
-    by ''A.'' Do not open the tome. Do not linger.]'
+  description: 'Cargo: one tome, sealed, for the Amphitheater. Paid in full, in old
+    silver. Do not open it. Do not read it. Do not stop for anything in the snow
+    that calls you by name.'
   icon: {fileID: 0}
   category: 3
   price: 0

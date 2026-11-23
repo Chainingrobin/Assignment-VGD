@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Shrine plaque
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Shrine plaque
-  description: '[Shrine plaque: For the village girl who stood between the guardians
-    and the horned one. Her name has been chiselled away.]'
+  description: 'Raised by the people of Lowmere for those the Storm took on the hill
+    road: the miller''s boy, the Fenn sisters, and the baker''s granddaughter, who
+    went out for bread and was never found.'
   icon: {fileID: 0}
   category: 3
   price: 0

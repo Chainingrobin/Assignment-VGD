@@ -198,16 +198,16 @@ public static class SceneSplitSetup
         var settings = new SerializedObject(manager);
         var regions = settings.FindProperty("regions");
         regions.arraySize = 4;
-        Region(regions.GetArrayElementAtIndex(0), "Forest", "Chapter I  -  [The Forest]",
-            "[Placeholder recap: Wulang wakes in the lowlands with only the spark of Lightning.]", "", null, false, default, "");
-        Region(regions.GetArrayElementAtIndex(1), "Ice", "Chapter II  -  [The Frozen Reach]",
-            "[Placeholder recap: The Earth Guardian has fallen. The statue froze the lake.]", Flags.LakeFrozen,
-            null, false, IceDomain, "[The ice will not carry me yet.]"); // no flight: the statue's freeze reveal just showed this ground
-        Region(regions.GetArrayElementAtIndex(2), "Volcano", "Chapter III  -  [The Burning Peak]",
-            "[Placeholder recap: With Ice in hand, the Fire Guardian's seal finally weakens.]", Flags.BossIce,
-            Cutscene("Volcano Preview"), false, VolcanoDomain, "[The Fire Guardian's seal burns me back. Not yet.]");
-        Region(regions.GetArrayElementAtIndex(3), "FinalArena", "Chapter IV  -  [The Sanctum]",
-            "[Placeholder recap: Every element answers to Wulang now. The rift leads to the one who sent her.]",
+        Region(regions.GetArrayElementAtIndex(0), "Forest", StoryScript.ChapterTitle("Forest"),
+            StoryScript.Regions["Forest"].recap, "", null, false, default, "");
+        Region(regions.GetArrayElementAtIndex(1), "Ice", StoryScript.ChapterTitle("Ice"),
+            StoryScript.Regions["Ice"].recap, Flags.LakeFrozen,
+            null, false, IceDomain, StoryScript.Regions["Ice"].locked); // no flight: the statue's freeze reveal just showed this ground
+        Region(regions.GetArrayElementAtIndex(2), "Volcano", StoryScript.ChapterTitle("Volcano"),
+            StoryScript.Regions["Volcano"].recap, Flags.BossIce,
+            Cutscene("Volcano Preview"), false, VolcanoDomain, StoryScript.Regions["Volcano"].locked);
+        Region(regions.GetArrayElementAtIndex(3), "FinalArena", StoryScript.ChapterTitle("FinalArena"),
+            StoryScript.Regions["FinalArena"].recap,
             Flags.BossFire, null, true, default, "");
         settings.ApplyModifiedPropertiesWithoutUndo();
     }

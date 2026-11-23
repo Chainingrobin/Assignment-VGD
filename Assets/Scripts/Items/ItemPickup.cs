@@ -12,7 +12,7 @@ public class ItemPickup : MonoBehaviour
         if (taken || item == null || other.GetComponentInParent<PlayerCoins>() == null || PlayerInventory.Instance == null) return;
         taken = true;
         PlayerInventory.Instance.Add(item);
-        Subtitle.Show($"[{item.displayName} +1]", 1.5f);
+        Subtitle.Show($"{item.displayName} +1", 1.5f);
         Destroy(gameObject);
     }
 }

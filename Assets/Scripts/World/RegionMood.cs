@@ -14,6 +14,8 @@ public class RegionMood : MonoBehaviour
     {
         volume = GetComponent<Volume>();
         volume.weight = 0f;
+        // The region's music and ambience arrive with it (Resources/Audio/Music|Ambience/<scene>).
+        GameAudio.Mood(gameObject.scene.name);
     }
 
     private void Update()

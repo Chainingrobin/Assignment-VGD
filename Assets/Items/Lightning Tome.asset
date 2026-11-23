@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Lightning Tome
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Tome of Lightning
-  description: '[Placeholder lore: the spark Wulang woke with. Abe says it was always
-    hers.]'
+  description: The Storm's gift. It came to her without any book, on a wet road,
+    and it has never once felt like it belonged to anyone else.
   icon: {fileID: 0}
   category: 1
   price: 0

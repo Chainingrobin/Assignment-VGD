@@ -89,6 +89,7 @@ public class PlayerMagicAffinity : MonoBehaviour
         {
             StoryStateManager.Instance.SetFlag(Flags.Has(element));
             OnElementUnlocked?.Invoke(element);
+            GameAudio.Play("Sfx/Claim", null, 0.8f);
 
             // First book you ever pick up auto-equips, so the player
             // isn't stuck with "None" and no way to cast anything.

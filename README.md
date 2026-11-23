@@ -8,7 +8,9 @@ Wulang explores a world damaged by elemental corruption. Collectible books unloc
 **Repository:** https://github.com/Chainingrobin/Assignment-VGD  
 **Gameplay video:** Link to be added after recording.
 
-This branch is the **Assignment 3** prototype: the open world is split into a persistent World scene plus streamed story regions, with boss fights, a dialogue/objective/memory story layer, a final choice and two endings. All story text is a `[placeholder]` for the narrative pass.
+This is the **Assignment 3** prototype: the open world is split into a persistent World scene plus streamed story regions, with boss fights, a dialogue/objective/memory story layer, an intro cutscene, a final choice and two endings.
+
+**The story.** The Vale's four elemental guardians went mad when someone began to put a price on what they gave freely. The Storm escaped and hid in an ordinary girl walking home in the rain. Wulang wakes at an old armory with lightning in her hands and no memory; Abe, the kindly armorer, says he raised her and sends her to put the guardians to rest, one element at a time. Every element she claims "returns" a memory, and every memory puts Abe at its centre, with one small thing wrong in it. In the Sanctum Abe asks for the elements, freely given, in exchange for a past worth having: kneel (the Gilded Past ending) or refuse, and Abe becomes Ganfaul, the Tallyman (the Freely Given ending, and her true, ordinary memory). Every line of the script lives in `Assets/Editor/StoryScript.cs`.
 
 ## Quick start
 
@@ -33,23 +35,24 @@ Any region scene in `Assets/Scenes/Regions/` can also be played directly: it loa
 |---|---|---|
 | 0 | `Scenes/MainMenu.unity` | Continue (back to the start of the region last entered), New Game, chapter select in story order, New Game+ (after an ending), Quit |
 | 1 | `Scenes/World.unity` | The whole terrain, sky, day/night, player, HUD, statue/lake freeze and landmark cinematics |
-| 2 | `Scenes/Regions/Forest.unity` | Chapter I: Abe's armory camp, training and field vampires, Earth Guardian (Maw J Laygo) |
-| 3 | `Scenes/Regions/Ice.unity` | Chapter II: Ice Guardian (Mutant), Ice vampires, mountain-pass waystone |
-| 4 | `Scenes/Regions/Volcano.unity` | Chapter III: Fire Guardian (Warrok) in the caldera, Fire vampires, rift |
-| 5 | `Scenes/Regions/FinalArena.unity` | Chapter IV: floating sanctum, Abe/Ganfaul, the offer and both endings |
+| 2 | `Scenes/Regions/Forest.unity` | Chapter I, *The Spark*: Abe's armory camp, training and field vampires, Earth Guardian (Maw J Laygo) |
+| 3 | `Scenes/Regions/Ice.unity` | Chapter II, *What the Cold Keeps*: Ice Guardian (Mutant), Ice vampires, mountain-pass waystone |
+| 4 | `Scenes/Regions/Volcano.unity` | Chapter III, *The Price of Fire*: Fire Guardian (Warrok) in the caldera, Fire vampires, rift |
+| 5 | `Scenes/Regions/FinalArena.unity` | Chapter IV, *The Sanctum*: floating sanctum, Abe/Ganfaul, the offer and both endings |
 
 The World stays loaded, so every region remains visible on the horizon. `RegionManager` streams region scenes additively: walking into the next region (only once its story flag is set) plays a landmark flight with the chapter title and recap while the region really loads and the previous one unloads. Locked regions push the player back with an elemental seal instead of a UI border; the unfrozen lake drowns (damage, then back to shore) and lava burns.
 
 ## Story progression
 
+0. **Intro (New Game):** a narrated cutscene: drifting shots of the forest, the volcano and the Frozen Reach, a storm sky, the flight down to the armory, then black, Abe's voice and Wulang opening her eyes, then the chapter card. Space skips it.
 1. **Forest:** wake with Lightning, meet Abe, follow the trail past two vampires to the **Blossom Glade**, defeat the **Earth Guardian** (weak to Lightning) and claim Earth. The ice statue then freezes the lake.
 2. **Ice:** cross the frozen lake to the **Frozen Reach**, defeat the **Ice Guardian** in the **Frozen Amphitheater** with the Earth + Lightning **Storm Quake** combo, claim Ice, take the mountain-pass waystone.
 3. **Volcano:** enter the caldera through the lava tube, defeat the **Fire Guardian** (weak to Ice), claim Fire, step into the rift.
-4. **Final arena:** Abe offers Wulang her past in exchange for the elements. **Kneel** for the Submission ending, or **refuse** to fight **Ganfaul**, whose element changes every quarter of his health (only the current weakness hurts him), for the Truth ending.
+4. **Final arena:** Abe offers Wulang her past in exchange for the elements. **Kneel** for the Submission ending, or **refuse**: a short reveal cutscene (the camera holds on Abe, the disguise burns away, Ganfaul roars) and the fight with **Ganfaul**, whose element changes every quarter of his health (only the current weakness hurts him), for the Truth ending.
 
 Each region hides three **points of interest** off the main path, each with its own landmark, a small story told by its props, usually a guard pack, and a chest under a light beam (rose for a vitality relic, gold for supplies). Six reliquaries each raise maximum health by 10, and every chest adds a journal page that hints at who Abe really is. Forest: the runestone crown on the knoll, the book-bearer's camp, the blossom shrine by the pond. Frozen Reach: the frozen caravan, the crystal crown, the glacier gate. Volcano: the chain forge on the plateau (jump up the slabs on its west side), the ember shrine, the burnt watch post. Opened chests are story flags, so they stay looted after a restart or Continue.
 
-Each element claim replays a **memory echo** (the world desaturates, the camera cuts to a framed shot of ghosts of Wulang and Abe acting it out). Abe sits by a camp fire in every region: F talks to him (that region's conversation, with gestures), then F trades. His camps are safe ground: vampires give up the chase there. Vampires of each biome's element roam in packs and drop Wubucks; coin piles, Wubucks bags and potions are scattered off the paths.
+Abe's horned shadow only appears at the last camp, by the volcano. Each element claim replays a **memory echo** (the world desaturates, the camera cuts to a framed shot of ghosts of Wulang and Abe acting it out). Abe sits by a camp fire in every region: F talks to him (that region's conversation, with gestures), then F trades. His camps are safe ground: vampires give up the chase there. Vampires of each biome's element roam in packs and drop Wubucks; coin piles, Wubucks bags and potions are scattered off the paths.
 
 ## Controls
 
@@ -63,8 +66,9 @@ Each element claim replays a **memory echo** (the world desaturates, the camera 
 | H | Drink a healing potion |
 | Tab | Satchel and journal (items, memories and lore) |
 | Esc | Pause: Resume, Restart Region, Main Menu, Quit |
+| Story Mode (main menu) | Halves the damage Wulang takes; remembered between sessions |
 | Space / Enter / F / click | Advance dialogue; 1-9 or click to pick a choice |
-| Space (during cutscenes) | Skip the flight, freeze reveal, chapter caption or ending card |
+| Space (during cutscenes) | Skip the intro, Ganfaul's reveal, a flight, the freeze reveal, a chapter caption or an ending card |
 
 ## Systems (Assignment 3)
 
@@ -74,7 +78,9 @@ Each element claim replays a **memory echo** (the world desaturates, the camera 
 | Level streaming | `Progress/RegionManager`, `RegionTravel`, `UI/TransitionOverlay` |
 | Dialogue | `Story/DialogueData` (ScriptableObject per conversation), `DialogueManager` (logic, typewriter, choices), `DialogueUI` (view) |
 | Objectives | `Story/ObjectiveManager` (HUD tracker), `RegionObjectives` (per-region list derived from flags) |
-| Narrative beats | `Story/NarrativeTrigger` (zone / interact / start / flag, fires once), `MemoryEcho`, `EndingController` |
+| Narrative beats | `Story/NarrativeTrigger` (zone / interact / start / flag, fires once), `MemoryEcho`, `IntroCutscene`, `EndingController`, the reveal in `BossEncounter` |
+| Story script | `Editor/StoryScript` (every line of dialogue, journal page, boss line, recap and objective; **Wulang > Story > Apply story script** writes it into the assets and scenes) |
+| Audio | `World/GameAudio` (one-shots by name; music and ambience that crossfade per region, boss fight, memory and ending), `World/Footsteps` |
 | Bosses | `Bosses/BossBrain` (attack lists: melee, element projectiles, element ground attacks with warnings), `BossEncounter`, `BossProjectile`, `ElementPhases`, `UI/BossHealthBar` |
 | Combat additions | `Combat/StormQuake` (Earth + Lightning combo), `CombatTarget` death event, stagger, status scaling, resistance |
 | Player | `PlayerHealth` (HP, death and respawn), `Items/PlayerInventory` (potions on H, tomes), `ItemData`, `LootDrop`, `Merchant`, `World/HazardZone` |
@@ -93,7 +99,8 @@ Each element claim replays a **memory echo** (the world desaturates, the camera 
 | **Wulang > Combat > Apply root motion and foot IK** | Gait-based locomotion, foot IK and smooth attack blends for vampires and bosses |
 | **Wulang > Scenes > Populate regions** | Guardian arenas, Abe camps, field vampires, waystone and rift, lava hazards |
 | **Wulang > Scenes > Build final arena** | The floating sanctum, element pillars and final encounter |
-| **Wulang > Story > Lay placeholder story onto regions** | Dialogue, portraits, objectives, triggers, lore notes, memory echoes, endings (run after the arena builder) |
+| **Wulang > Story > Lay story onto regions** | Dialogue, portraits, objectives, triggers, lore notes, memory echoes, endings (run after the arena builder) |
+| **Wulang > Story > Apply story script** | Rewrites every line from `StoryScript` into the existing dialogue and journal assets and the five scenes without rebuilding anything; also the intro narration, footsteps and the boss-shot trail material |
 | **Wulang > Bosses > Fix animation roots** | Bakes boss and Abe clip roots (no floating or body sliding) and grounds each rig's idle pose |
 | **Wulang > Bosses > Abe sitting and gestures** | Abe's sitting idle and upper-body Gestures Pack layer; the standing variant for the Sanctum |
 | **Wulang > Characters > Tune skin materials** | Per-element skin smoothness, specular maps where models have them, Maw's glow map |
@@ -142,9 +149,15 @@ Imported environment and effects include Idyllic Fantasy Nature, Stylized Fantas
 - **No visible time progression while working in another app:** focus the Game view; the project is not configured to run in the background.
 - **Import or compilation errors:** check the Console, editor version, and Package Manager resolution before testing the scene.
 
-Run **Wulang > Checks > Prototype structure (edit mode)** and, in Play mode, **Wulang > Checks > Combat and story rules (Play mode)** for the Assignment 3 systems. `Assets/Editor/` also contains targeted checks for area visuals, cinematic wiring/playback, terrain, volcanic traversal, and character animation. These are Editor helper methods with individual Edit/Play mode requirements, rather than a single automated acceptance suite. Read each method's preconditions before invoking it. A complete verification pass should also include the demonstration route above and a launch test of the selected build target.
+Run **Wulang > Checks > Prototype structure (edit mode)** and, in Play mode, **Wulang > Checks > Combat and story rules (Play mode)** for the Assignment 3 systems. **Wulang > Checks > Full story path (Play mode)** (start Play mode on the World scene first) plays the whole game without input: the intro, every beat in order with the objective checked at each step, all four chapters, the refusal, reveal and Truth ending, then chapter select into the Sanctum and the Submission ending, then Continue. Read the outcome from `StoryPathCheck.Result`. `Assets/Editor/` also contains targeted checks for area visuals, cinematic wiring/playback, terrain, volcanic traversal, and character animation. These are Editor helper methods with individual Edit/Play mode requirements, rather than a single automated acceptance suite. Read each method's preconditions before invoking it. A complete verification pass should also include the demonstration route above and a launch test of the selected build target.
 
 Keep `Assets`, `Packages`, `ProjectSettings`, and their `.meta` files in source control. Generated folders such as `Library`, `Temp`, `Logs`, and `Builds` are ignored. Large binary asset types use Git LFS through `.gitattributes`.
 
 
-Known issue: **Wulang > Volcano > Run volcano checks** reports that the walking route crosses lava at (774, 8.7, 644.4), just past the lava-tube walkway. This predates the Assignment 3 branch (it fails on the original `SampleScene` too).
+## Audio
+
+Every sound plays by name from `Assets/Resources/Audio` through `GameAudio`. `Music/<region>` and `Ambience/<region>` crossfade in when a region loads (`RegionMood`); `Music/Boss` plays during guardian fights, `Music/Memory` under memory echoes, `Music/Truth` or `Music/Gilded` for the endings, and `Music/Menu` behind the menu and the intro. Effects cover spell casts and impacts (the AoE pack's own clips play from each effect), boss roars, swings, projectile whooshes, hurt, death, chests, coins, potions, element claims, the seal, thunder in the intro and the reveal swell. Footsteps and the landing thump are Starter Assets clips; the memory, death and victory stingers come from Paramnesia.
+
+The music, ambience and most effects are **synthesised placeholders** made by `Tools/make_placeholder_audio.py` (numpy and scipy; the rain-song melody is the shared theme). To use a real recording, save it over the placeholder with the same name, or add more clips to a folder such as `Sfx/Footstep` for random variants.
+
+The volcano route used to cross a 1 m strip of lava between the lava-tube walkway and the causeway, at (774, 8.7, 644.4); a causeway joint now covers it, and `VolcanoBiomeBuilder` starts the causeway at the walkway. The held-jump part of **Run volcano checks** still needs the Editor window focused.

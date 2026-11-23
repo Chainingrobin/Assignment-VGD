@@ -106,14 +106,14 @@ public static class FinalArenaBuilder
         var encounter = arena.gameObject.AddComponent<BossEncounter>();
         var settings = new SerializedObject(encounter);
         settings.FindProperty("boss").objectReferenceValue = ganfaul.GetComponent<BossBrain>();
-        settings.FindProperty("displayName").stringValue = "[Ganfaul]";
+        settings.FindProperty("displayName").stringValue = StoryScript.Bosses[Flags.BossFinal].name;
         settings.FindProperty("defeatFlag").stringValue = Flags.BossFinal;
         settings.FindProperty("autoEngage").boolValue = false;
         settings.FindProperty("disguise").objectReferenceValue = abe;
         settings.FindProperty("revealEffect").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(Reveal);
         settings.FindProperty("engageRadius").floatValue = Radius;
-        settings.FindProperty("introLine").stringValue = "[Ganfaul: Then I will take them from your corpse.]";
-        settings.FindProperty("dyingLine").stringValue = "[Ganfaul: The elements... chose a nobody over me...]";
+        settings.FindProperty("introLine").stringValue = StoryScript.Bosses[Flags.BossFinal].intro;
+        settings.FindProperty("dyingLine").stringValue = StoryScript.Bosses[Flags.BossFinal].dying;
         settings.ApplyModifiedPropertiesWithoutUndo();
         var ending = arena.gameObject.AddComponent<EndingController>();
         var endingSettings = new SerializedObject(ending);

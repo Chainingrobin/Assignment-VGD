@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Book-bearer's diary
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Book-bearer's diary
-  description: '[Diary: The old man at the armory pays in gold for every tome we
-    carry into a guardian''s glade. He never opens them. Tomorrow I take the Earth
-    tome north. If I don''t come back, burn this.]'
+  description: 'Third trip this month. The patron pays in old silver for every tome
+    we carry into a guardian''s glade, and he never asks for one back. Marta says
+    the tomes are ledgers: he writes down what the land is worth, and the land hates
+    being counted. Marta talks too much. Tomorrow the Earth tome goes north.'
   icon: {fileID: 0}
   category: 3
   price: 0

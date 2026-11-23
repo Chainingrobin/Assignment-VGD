@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Fire Tome
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Tome of Fire
-  description: '[Placeholder lore: the last element. Abe smiled when she took it.]'
+  description: Still warm. Someone has written a price on the flyleaf and underlined
+    it twice.
   icon: {fileID: 0}
   category: 1
   price: 0

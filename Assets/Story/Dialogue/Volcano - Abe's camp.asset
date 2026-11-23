@@ -13,15 +13,22 @@ MonoBehaviour:
   m_Name: Volcano - Abe's camp
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   lines:
-  - speaker: '[Abe]'
+  - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: '[The last guardian. Once you hold all four, everything will be as it should
-      be.]'
+    text: Last one, spark. After this I'll tell you everything you were. I promise
+      you'll like it.
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: '[As it should be for whom, Abe?]'
-  - speaker: '[Abe]'
+    text: You could tell me now.
+  - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: '[For us, of course. Go. Ice tames fire.]'
+    text: And spoil it? A past is better earned.
+  - speaker: Wulang
+    portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
+    text: In the memories, I always say yes to you. Was I ever any good at saying
+      no?
+  - speaker: Abe
+    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
+    text: Ha. Never once. Go on. Ice tames fire, and I'll be close.
   choices: []
   flagToSetWhenFinished: 
