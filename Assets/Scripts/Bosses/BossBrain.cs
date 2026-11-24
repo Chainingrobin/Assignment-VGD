@@ -275,19 +275,31 @@ public class BossBrain : MonoBehaviour
         }
     }
 
-    // The ground strike: the player's own area effect for that element, scaled to the blast.
+    // The ground strike: the player's own area effect for that element, scaled to the blast. Earth's
+    // effect is a line of spikes running forward, so it is aimed away from the boss (a spike line runs
+    // toward the player), and a slam centred on the boss repeats it all the way round to fill its ring.
+    // The other elements' effects are round.
     private void Blast(Vector3 point, BossAttack attack, ElementType element)
     {
         var prefab = spells != null ? spells.AreaPrefab(element) : null;
         if (prefab != null)
         {
-            var effect = Instantiate(prefab, point + Vector3.up * 0.02f, Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f));
-            effect.transform.localScale *= attack.radius / 5f;
-            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(effect, gameObject.scene);
-            GameAudio.PlayOwn(effect);
-            TerrainAoE.AddTo(effect, element, transform, spells.GroundMask);
-            SpellElementLight.AddTo(effect, element, true);
-            Destroy(effect, 5f);
+            var away = Vector3.ProjectOnPlane(point - transform.position, Vector3.up);
+            var facing = Quaternion.LookRotation(away.sqrMagnitude > 1f ? away : transform.forward);
+            int copies = element == ElementType.Earth && attack.atSelf ? 6 : 1;
+            for (int i = 0; i < copies; i++)
+            {
+                var effect = Instantiate(prefab, point + Vector3.up * 0.02f, facing * Quaternion.Euler(0f, i * 360f / copies, 0f));
+                effect.transform.localScale *= attack.radius / 5f;
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(effect, gameObject.scene);
+                TerrainAoE.AddTo(effect, element, transform, spells.GroundMask);
+                if (i == 0)
+                {
+                    GameAudio.PlayOwn(effect);
+                    SpellElementLight.AddTo(effect, element, true);
+                }
+                Destroy(effect, 5f);
+            }
         }
         var health = PlayerHealth.Instance;
         if (health != null && Vector3.ProjectOnPlane(player.position - point, Vector3.up).magnitude <= attack.radius &&
@@ -297,20 +309,26 @@ public class BossBrain : MonoBehaviour
 
     private ElementType ElementOf(BossAttack attack) => attack.element != ElementType.None ? attack.element : target.Affinity;
 
+    // The warning ring: the element's colour over a dark rim, so it reads on bright grass, snow and dark rock alike.
     private GameObject Telegraph(Vector3 point, float radius, ElementType element)
+    {
+        var ring = Ring(point + Vector3.up * 0.12f, radius * 2f, ElementVisuals.ColorFor(element), "Boss telegraph");
+        Ring(point + Vector3.up * 0.1f, radius * 2.12f, new Color(0f, 0f, 0f, 0.55f), "Rim").transform.SetParent(ring.transform, true);
+        return ring;
+    }
+
+    private GameObject Ring(Vector3 at, float size, Color color, string name)
     {
         var ring = GameObject.CreatePrimitive(PrimitiveType.Quad);
         Destroy(ring.GetComponent<Collider>());
-        ring.name = "Boss telegraph";
+        ring.name = name;
         UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(ring, gameObject.scene);
-        ring.transform.SetPositionAndRotation(point + Vector3.up * 0.1f, Quaternion.Euler(90f, 0f, 0f));
-        ring.transform.localScale = Vector3.one * radius * 2f;
+        ring.transform.SetPositionAndRotation(at, Quaternion.Euler(90f, 0f, 0f));
+        ring.transform.localScale = Vector3.one * size;
         var renderer = ring.GetComponent<MeshRenderer>();
         if (telegraphMaterial != null) renderer.sharedMaterial = telegraphMaterial;
         var block = new MaterialPropertyBlock();
-        var color = ElementVisuals.ColorFor(element);
-        block.SetColor("_BaseColor", new Color(color.r, color.g, color.b, 0.75f));
-        block.SetColor("_Color", new Color(color.r, color.g, color.b, 0.75f));
+        block.SetColor("_BaseColor", color);
         renderer.SetPropertyBlock(block);
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         return ring;

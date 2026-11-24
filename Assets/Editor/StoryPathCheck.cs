@@ -7,8 +7,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // Assignment Step 11, automated: plays the whole story in Play mode with no one at the keyboard.
-// Start Play mode on the World scene, then run "Wulang > Checks > Full story path (Play mode)".
-// It skips the intro, talks to Abe, beats each guardian, takes each tome (the real BookCollect),
+// Enter Play mode (it opens on the main menu), then run "Wulang > Checks > Full story path (Play mode)".
+// It presses New Game, skips the intro, talks to Abe, beats each guardian, takes each tome (the real BookCollect),
 // sits through each memory, wakes the statue, walks over the frozen lake, takes the waystone and
 // the rift, and in the Sanctum refuses the offer, sits through the reveal and beats Ganfaul for the
 // Truth ending. Back at the menu it checks New Game+, then starts the Sanctum from chapter select
@@ -25,7 +25,7 @@ public static class StoryPathCheck
     [MenuItem("Wulang/Checks/Full story path (Play mode)")]
     public static void Begin()
     {
-        if (!EditorApplication.isPlaying) throw new System.InvalidOperationException("Enter Play mode on the World scene first.");
+        if (!EditorApplication.isPlaying) throw new System.InvalidOperationException("Enter Play mode first.");
         log.Clear();
         Result = "running";
         TransitionOverlay.Instance.StartCoroutine(Run());
@@ -84,6 +84,10 @@ public static class StoryPathCheck
 
     private static IEnumerator Path()
     {
+        // From the main menu, as a player would: New Game.
+        if (RegionManager.MenuPreview || SceneManager.GetActiveScene().name == RegionManager.MenuScene)
+            typeof(MainMenu).GetMethod("StartAt", Hidden).Invoke(null, new object[] { "Forest", false });
+        yield return Until(() => RegionManager.Instance != null && !RegionManager.MenuPreview, 30f, "New Game to load the World");
         var story = StoryStateManager.Instance;
         // The intro sets introSeen as it starts; then wait for it to hand control back.
         yield return Until(() => story.HasFlag(Flags.IntroSeen) && RegionManager.Instance.Current == "Forest" && !RegionManager.Instance.Busy && !PlayerLock.IsLocked,

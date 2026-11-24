@@ -124,15 +124,17 @@ public static class BiomeCinematicSetup
         Vector3 At(float x, float z, float height) =>
             new(x, terrain.SampleHeight(new Vector3(x, 0f, z)) + terrain.transform.position.y + height, z);
         float ground = At(566f, 600f, 0f).y;
-        var positions = new[] { new Vector3(690f, 150f, 770f), new Vector3(620f, 120f, 640f), At(560f, 640f, 60f), At(572f, 622f, 14f), At(568f, 611f, 3f) };
-        var targets = new[] { new Vector3(795f, 60f, 642f), new Vector3(640f, 10f, 300f), At(566f, 600f, 0f), new Vector3(566f, ground + 1f, 602f), new Vector3(566f, ground + 1.6f, 600f) };
+        // The intro's own shots have already shown the volcano and the Frozen Reach, so the flight only
+        // comes down to the armory, looking at it the whole way: no whip-pans between landmarks.
+        var positions = new[] { new Vector3(640f, 95f, 700f), new Vector3(612f, 62f, 664f), At(588f, 636f, 26f), At(574f, 620f, 9f), At(568f, 611f, 3f) };
+        var targets = new[] { At(566f, 600f, 4f), At(566f, 600f, 3f), At(566f, 600f, 2f), new Vector3(566f, ground + 1.4f, 601f), new Vector3(566f, ground + 1.6f, 600f) };
         if (GameObject.Find(IntroFlight) == null)
         {
             var source = GameObject.Find("FreezeRevealCutscene").GetComponent<FreezeRevealCutscene>();
             // Built like a landmark preview, minus the look trigger: this flight is story-driven.
             UnityEngine.Object.DestroyImmediate(Preview(IntroFlight, source, new Transform[0], terrain.transform, 0f, positions, targets));
         }
-        AuthorFlight(IntroFlight, new[] { 0f, 3f, 6.5f, 9.5f, 12f }, positions, targets, new[] { 55f, 58f, 56f, 50f, 46f });
+        AuthorFlight(IntroFlight, Paced(positions, 13f), positions, targets, new[] { 50f, 50f, 48f, 46f, 46f });
         var manager = new SerializedObject(UnityEngine.Object.FindFirstObjectByType<RegionManager>());
         var forest = manager.FindProperty("regions").GetArrayElementAtIndex(0);
         UnityEngine.Assertions.Assert.AreEqual("Forest", forest.FindPropertyRelative("scene").stringValue, "Region 0 should be the Forest.");
@@ -174,13 +176,32 @@ public static class BiomeCinematicSetup
             foreach (var timelineClip in track.GetClips())
             {
                 timelineClip.duration = end;
-                // Short blends: a long one swings the camera across the map between the player and the drone.
-                if (track is CinemachineTrack) { timelineClip.easeInDuration = .5; timelineClip.easeOutDuration = .5; }
+                // Hard cuts: RegionManager and the intro dip to black around a flight, so the camera never
+                // swings across the map between the player and the drone.
+                if (track is CinemachineTrack) { timelineClip.easeInDuration = 0; timelineClip.easeOutDuration = 0; }
             }
         drone.transform.position = positions[0];
         drone.transform.LookAt(targets[0]);
         Handheld(drone, .6f);
         EditorUtility.SetDirty(clip); EditorUtility.SetDirty(timeline);
+    }
+
+    // Key times for a flight through these points at a steady speed, eased in and out at the ends. Fixed
+    // times per leg made long legs rush and short legs crawl, which read as whiplash.
+    internal static float[] Paced(Vector3[] positions, float duration)
+    {
+        var along = new float[positions.Length];
+        for (int i = 1; i < positions.Length; i++) along[i] = along[i - 1] + Vector3.Distance(positions[i - 1], positions[i]);
+        // Share of the path covered by time share u: 0.55x the average speed at the ends, 1.45x mid-flight.
+        static float Covered(float u) => u - .45f * Mathf.Sin(2f * Mathf.PI * u) / (2f * Mathf.PI);
+        var times = new float[positions.Length];
+        for (int i = 0; i < positions.Length; i++)
+        {
+            float lo = 0f, hi = 1f;
+            for (int k = 0; k < 30; k++) { float mid = (lo + hi) * .5f; if (Covered(mid) < along[i] / along[^1]) lo = mid; else hi = mid; }
+            times[i] = duration * (lo + hi) * .5f;
+        }
+        return times;
     }
 
     // Dense drone flight: unclamped splines through position and aim keys, sampled at 30 Hz, banking into turns.

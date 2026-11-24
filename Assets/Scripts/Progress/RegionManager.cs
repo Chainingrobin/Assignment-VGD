@@ -39,7 +39,8 @@ public class RegionManager : MonoBehaviour
     [SerializeField] private Region[] regions;
     [Tooltip("The opening narration (IntroCutscene): narrator lines, then Abe's wake-up line.")]
     [SerializeField] private DialogueData introNarration;
-    [SerializeField, Min(0f)] private float minimumCaptionTime = 3f;
+    [Tooltip("Seconds the chapter card stays up at least, long enough to read its recap.")]
+    [SerializeField, Min(0f)] private float minimumCaptionTime = 5.5f;
 
     // Set by the main menu before loading the World: which region to start in.
     public static string PendingRegion = "Forest";
@@ -190,7 +191,13 @@ public class RegionManager : MonoBehaviour
         // card plays over the live view and the player stays where they walked to. No black screen,
         // no teleport, and no fly-over of ground they have just seen.
         bool live = walked && !flight;
-        if (flight) region.cutscene.PlayTransition();
+        if (flight)
+        {
+            // Dip to black around the flight: the camera cuts to the drone and back unseen, never swinging across the map.
+            yield return overlay.FadeTo(1f, 0.35f, Color.black);
+            region.cutscene.PlayTransition();
+            StartCoroutine(overlay.FadeTo(0f, 0.7f));
+        }
         else if (!live) yield return overlay.FadeTo(1f, 0.8f, region.whiteFade ? Color.white : Color.black);
         if (!revisit) yield return overlay.ShowCaption(region.title, RecapFor(region));
 
@@ -213,7 +220,17 @@ public class RegionManager : MonoBehaviour
             Arrived();
         }
 
-        while (flight && region.cutscene.IsPlaying) yield return null;
+        bool closing = false;
+        while (flight && region.cutscene.IsPlaying)
+        {
+            if (!closing && region.cutscene.Remaining < 0.45)
+            {
+                closing = true;
+                StartCoroutine(overlay.FadeTo(1f, 0.4f, Color.black));
+            }
+            yield return null;
+        }
+        if (flight) StartCoroutine(overlay.FadeTo(0f, 0.7f));
         if (!revisit)
         {
             // Hold the caption long enough to read, unless the player skips.

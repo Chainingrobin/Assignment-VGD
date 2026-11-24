@@ -62,14 +62,15 @@ public class MemoryEcho : MonoBehaviour
         Playing = false;
     }
 
-    // A side-on two-shot at eye level from the player's side of the scene, high enough to clear the ground.
+    // A side-on two-shot from the player's side of the scene, slightly above and aimed low, so the
+    // ghosts stand in the upper middle of the frame, clear of the dialogue box along the bottom.
     private CinemachineCamera FrameActors()
     {
         var player = Camera.main != null ? Camera.main.transform.position : transform.position - transform.forward * 5f;
-        var center = transform.position + Vector3.up * 1.3f;
+        var center = transform.position + Vector3.up * 0.45f;
         var side = Vector3.ProjectOnPlane(player - center, Vector3.up);
         side = Vector3.Project(side, Vector3.forward).sqrMagnitude > 0.01f ? Vector3.Project(side, Vector3.forward).normalized : Vector3.forward;
-        var position = center + side * 4.5f + Vector3.up * 0.3f;
+        var position = center + side * 5f + Vector3.up * 1.2f;
         if (Physics.Raycast(position + Vector3.up * 5f, Vector3.down, out var hit, 10f, ~0, QueryTriggerInteraction.Ignore))
             position.y = Mathf.Max(position.y, hit.point.y + 1.4f);
         var shot = new GameObject("Memory camera").AddComponent<CinemachineCamera>();

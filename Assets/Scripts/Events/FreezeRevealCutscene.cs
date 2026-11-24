@@ -30,6 +30,8 @@ public class FreezeRevealCutscene : MonoBehaviour
     private Vector3 droneVelocity;
 
     public bool IsPlaying => playing;
+    // Seconds left in the flight, so a transition can fade out just before it hands back to the player.
+    public double Remaining => playing && director != null ? director.duration - director.time : 0;
     public bool CanPlay => !played && !playing;
 
     private void Awake() => director = GetComponent<PlayableDirector>();

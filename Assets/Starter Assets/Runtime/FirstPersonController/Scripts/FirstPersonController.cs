@@ -271,6 +271,15 @@ namespace StarterAssets
 			}
 		}
 
+		// Turns the view toward a point (a conversation partner), keeping the pitch the controller tracks.
+		public void LookAt(Vector3 point)
+		{
+			var to = point - CinemachineCameraTarget.transform.position;
+			transform.rotation = Quaternion.Euler(0.0f, Mathf.Atan2(to.x, to.z) * Mathf.Rad2Deg, 0.0f);
+			_cinemachineTargetPitch = ClampAngle(-Mathf.Atan2(to.y, new Vector2(to.x, to.z).magnitude) * Mathf.Rad2Deg, BottomClamp, TopClamp);
+			CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
+		}
+
 		private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
 		{
 			if (lfAngle < -360f) lfAngle += 360f;

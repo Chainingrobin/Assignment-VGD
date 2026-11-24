@@ -87,7 +87,12 @@ public static class IntroCutscene
             if (brain != null) brain.DefaultBlend = blend;
             flight.PlayTransition();
             overlay.StartCoroutine(overlay.FadeTo(0f, 1f, Color.black));
-            while (flight.IsPlaying) yield return null; // the flight stops itself on Space
+            bool closing = false;
+            while (flight.IsPlaying) // the flight stops itself on Space
+            {
+                if (!closing && flight.Remaining < 0.45) { closing = true; overlay.StartCoroutine(overlay.FadeTo(1f, 0.4f, Color.black)); }
+                yield return null;
+            }
         }
 
         // Black, Abe's voice, and her eyes opening.

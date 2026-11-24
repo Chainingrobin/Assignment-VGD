@@ -47,9 +47,27 @@ public class Merchant : MonoBehaviour
         {
             StoryStateManager.Instance.SetFlag(TalkedFlag);
             DialogueManager.Instance.Play(conversation, UpdatePrompt);
+            StartCoroutine(FaceHim());
             return;
         }
         Open();
+    }
+
+    // He sits low, so turn the view onto his chest as he starts talking: his face sits above the dialogue box.
+    private System.Collections.IEnumerator FaceHim()
+    {
+        var player = FindFirstObjectByType<StarterAssets.FirstPersonController>();
+        var animator = GetComponentInChildren<Animator>();
+        var chest = animator != null ? animator.GetBoneTransform(HumanBodyBones.Chest) : null;
+        if (player == null || chest == null || Camera.main == null) yield break;
+        var eye = Camera.main.transform;
+        var from = eye.position + eye.forward * Vector3.Distance(eye.position, chest.position);
+        for (float t = 0f; t < 0.5f; t += Time.deltaTime)
+        {
+            player.LookAt(Vector3.Lerp(from, chest.position, Mathf.SmoothStep(0f, 1f, t / 0.5f)));
+            yield return null;
+        }
+        player.LookAt(chest.position);
     }
 
     private void UpdatePrompt() => interactable.SetPrompt((HasTalked ? "Press F to trade with " : "Press F to talk to ") + npcName);

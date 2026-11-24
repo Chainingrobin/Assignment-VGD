@@ -294,7 +294,6 @@ public static class StoryScript
             EditorUtility.SetDirty(item);
             items++;
         }
-        TrailMaterial();
         AssetDatabase.SaveAssets();
 
         var world = EditorSceneManager.OpenScene(SceneSplitSetup.WorldPath, OpenSceneMode.Single);
@@ -402,24 +401,6 @@ public static class StoryScript
             }
         // The wreckage wagon's WheelColliders need a rigidbody and only printed warnings.
         foreach (var wheel in Get<WheelCollider>()) Object.DestroyImmediate(wheel);
-    }
-
-    // Boss shots' trail and glowing core (BossProjectile): additive and unlit, coloured per shot.
-    private static void TrailMaterial()
-    {
-        const string path = "Assets/Resources/BossTrail.mat";
-        if (AssetDatabase.LoadAssetAtPath<Material>(path) != null) return;
-        var material = new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit")) { name = "BossTrail" };
-        material.SetFloat("_Surface", 1f);
-        material.SetFloat("_Blend", 2f); // additive
-        material.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha);
-        material.SetFloat("_DstBlend", (float)BlendMode.One);
-        material.SetFloat("_ZWrite", 0f);
-        material.SetOverrideTag("RenderType", "Transparent");
-        material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-        material.SetColor("_BaseColor", Color.white);
-        AssetDatabase.CreateAsset(material, path);
     }
 
     private static void Set(Object target, string property, string value)

@@ -68107,7 +68107,7 @@ MonoBehaviour:
     seal: {fileID: 0}
     lockedLine: 
   introNarration: {fileID: 11400000, guid: 97237666bed801e43a1abf6eae9d19f3, type: 2}
-  minimumCaptionTime: 3
+  minimumCaptionTime: 5.5
 --- !u!4 &172129004
 Transform:
   m_ObjectHideFlags: 0
@@ -326447,8 +326447,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1251826606}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.08298496, y: 0.91254985, z: -0.23200749, w: 0.3264029}
-  m_LocalPosition: {x: 690, y: 150, z: 770}
+  m_LocalRotation: {x: -0.097258195, y: 0.90273803, z: -0.29493234, w: -0.2976909}
+  m_LocalPosition: {x: 640, y: 95, z: 700}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -3,8 +3,8 @@ using UnityEngine.SceneManagement;
 
 // A boss's element shot (fireball, ice shard, boulder). Reuses the player's projectile prefab
 // for that element as the visual, but flies and hits on its own: straight or lobbed toward
-// where Wulang stood, splashing on impact and damaging her through PlayerHealth. Every shot also
-// gets a glowing core and an element-coloured trail, so it reads in flight against any sky.
+// where Wulang stood, splashing on impact and damaging her through PlayerHealth. It looks exactly
+// like Wulang's own shot of that element (trails included), only larger.
 public class BossProjectile : MonoBehaviour
 {
     private const float Speed = 18f;
@@ -36,45 +36,14 @@ public class BossProjectile : MonoBehaviour
         {
             var visual = Instantiate(visualPrefab, go.transform);
             visual.transform.localPosition = Vector3.zero;
-            visual.transform.localScale *= 1.6f;
+            visual.transform.localScale *= 2f;
             // Strip the player-projectile behaviour; this object owns flight and damage.
             foreach (var spell in visual.GetComponentsInChildren<SpellProjectile>()) Destroy(spell);
             foreach (var body in visual.GetComponentsInChildren<Rigidbody>()) Destroy(body);
             foreach (var collider in visual.GetComponentsInChildren<Collider>()) Destroy(collider);
         }
         SpellElementLight.AddTo(go, element, false);
-        Glow(go, element);
         GameAudio.Play("Sfx/Whoosh", origin, 0.8f, lobbed ? 0.8f : 1.1f);
-    }
-
-    private static Material glowMaterial;
-
-    private static void Glow(GameObject go, ElementType element)
-    {
-        if (glowMaterial == null) glowMaterial = Resources.Load<Material>("BossTrail");
-        var color = ElementVisuals.ColorFor(element);
-        var trail = go.AddComponent<TrailRenderer>();
-        trail.sharedMaterial = glowMaterial;
-        trail.time = 0.45f;
-        trail.minVertexDistance = 0.15f;
-        trail.widthCurve = new AnimationCurve(new Keyframe(0f, 0.7f), new Keyframe(1f, 0f));
-        trail.colorGradient = new Gradient
-        {
-            colorKeys = new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(color, 0.25f), new GradientColorKey(color, 1f) },
-            alphaKeys = new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) },
-        };
-        trail.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        var core = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        Destroy(core.GetComponent<Collider>());
-        core.name = "Core";
-        core.transform.SetParent(go.transform, false);
-        core.transform.localScale = Vector3.one * 0.45f;
-        var renderer = core.GetComponent<MeshRenderer>();
-        renderer.sharedMaterial = glowMaterial;
-        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        var block = new MaterialPropertyBlock();
-        block.SetColor("_BaseColor", Color.Lerp(color, Color.white, 0.4f) * 2f); // HDR, so bloom picks it up
-        renderer.SetPropertyBlock(block);
     }
 
     private void Update()

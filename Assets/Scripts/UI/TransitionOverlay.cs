@@ -93,8 +93,11 @@ public class TransitionOverlay : MonoBehaviour
         fadeGroup.alpha = alpha;
     }
 
-    public IEnumerator ShowCaption(string chapterTitle, string recapLine, float duration = 0.6f)
+    // card: an ending card, centred on the black screen with room for a paragraph and the credits,
+    // instead of a chapter caption on the bottom letterbox.
+    public IEnumerator ShowCaption(string chapterTitle, string recapLine, float duration = 0.6f, bool card = false)
     {
+        Layout(card);
         title.text = chapterTitle;
         recap.text = recapLine;
         progress.text = "";
@@ -107,6 +110,22 @@ public class TransitionOverlay : MonoBehaviour
         }
         captionGroup.alpha = 1f;
         SetBars(110f);
+    }
+
+    private void Layout(bool card)
+    {
+        var anchor = card ? new Vector2(0.5f, 0.5f) : new Vector2(0.5f, 0f);
+        Place(title.rectTransform, anchor, card ? new Vector2(0f, 170f) : new Vector2(0f, 150f), new Vector2(1400f, 70f));
+        Place(recap.rectTransform, anchor, card ? new Vector2(0f, -40f) : new Vector2(0f, 90f), card ? new Vector2(1100f, 340f) : new Vector2(1300f, 70f));
+        recap.fontSize = card ? 30f : 26f;
+        recap.lineSpacing = card ? 12f : 0f;
+    }
+
+    private static void Place(RectTransform rect, Vector2 anchor, Vector2 position, Vector2 size)
+    {
+        rect.anchorMin = rect.anchorMax = rect.pivot = anchor;
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
     }
 
     public IEnumerator HideCaption(float duration = 0.6f)

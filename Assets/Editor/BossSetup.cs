@@ -201,7 +201,8 @@ public static class BossSetup
         var layers = npc.layers;
         layers[1].avatarMask = mask;
         layers[1].defaultWeight = 1f;
-        layers[1].blendingMode = AnimatorLayerBlendingMode.Override;
+        // Additive: the gestures are standing clips, and overriding the seated arms put his hands in the ground.
+        layers[1].blendingMode = AnimatorLayerBlendingMode.Additive;
         npc.layers = layers;
         var gestureMachine = npc.layers[1].stateMachine;
         var empty = gestureMachine.AddState("Empty");

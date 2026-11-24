@@ -789,8 +789,9 @@ public static partial class VolcanoBiomeBuilder
             new(0, 92, 0), new(10, 75, -15), new(45, 20, -50), new(5, 8, -82),
             new(WalkwayX, PortalFloor + 2.7f, -74), new(WalkwayX, PortalFloor + 2.8f, -60), new(WalkwayX, TubeFloor(-25) + 2.4f, -25), new(0, 18, 18), new(0, 30, 24)
         };
-        BiomeCinematicSetup.AuthorFlight("Volcano Preview", new[] { 0, 2f, 4f, 5.6f, 7f, 7.9f, 9.4f, 10.7f, 12.6f },
-            positions.Select(root.TransformPoint).ToArray(), targets.Select(root.TransformPoint).ToArray(),
+        var world = positions.Select(root.TransformPoint).ToArray();
+        BiomeCinematicSetup.AuthorFlight("Volcano Preview", BiomeCinematicSetup.Paced(world, 20f),
+            world, targets.Select(root.TransformPoint).ToArray(),
             new[] { 62f, 56f, 52f, 50f, 52f, 58f, 66f, 72f, 74f });
     }
 

@@ -27,7 +27,7 @@ This is the **Assignment 3** prototype: the open world is split into a persisten
 3. In Unity Hub, choose **Add project from disk**, select the repository root, and open it with the specified editor.
 4. Open **`Assets/Scenes/MainMenu.unity`** and press **Play**, then choose **New Game** (or **Chapters** to start at any region).
 
-Any region scene in `Assets/Scenes/Regions/` can also be played directly: it loads the shared World scene underneath and grants the story progress that region assumes (elements, defeated guardians).
+Pressing Play always starts at the main menu, as a build does. To play a region scene in `Assets/Scenes/Regions/` directly, untick **Wulang > Play from main menu**: the region then loads the shared World scene underneath and grants the story progress it assumes (elements, defeated guardians).
 
 ## Scenes and level streaming
 
@@ -100,13 +100,13 @@ Abe's horned shadow only appears at the last camp, by the volcano. Each element 
 | **Wulang > Scenes > Populate regions** | Guardian arenas, Abe camps, field vampires, waystone and rift, lava hazards |
 | **Wulang > Scenes > Build final arena** | The floating sanctum, element pillars and final encounter |
 | **Wulang > Story > Lay story onto regions** | Dialogue, portraits, objectives, triggers, lore notes, memory echoes, endings (run after the arena builder) |
-| **Wulang > Story > Apply story script** | Rewrites every line from `StoryScript` into the existing dialogue and journal assets and the five scenes without rebuilding anything; also the intro narration, footsteps and the boss-shot trail material |
+| **Wulang > Story > Apply story script** | Rewrites every line from `StoryScript` into the existing dialogue and journal assets and the five scenes without rebuilding anything; also the intro narration and footsteps |
 | **Wulang > Bosses > Fix animation roots** | Bakes boss and Abe clip roots (no floating or body sliding) and grounds each rig's idle pose |
-| **Wulang > Bosses > Abe sitting and gestures** | Abe's sitting idle and upper-body Gestures Pack layer; the standing variant for the Sanctum |
+| **Wulang > Bosses > Abe sitting and gestures** | Abe's sitting idle and an additive upper-body Gestures Pack layer (the standing gestures add onto his seated arms instead of replacing them, so his hands stay off the ground); the standing variant for the Sanctum |
 | **Wulang > Characters > Tune skin materials** | Per-element skin smoothness, specular maps where models have them, Maw's glow map |
 | **Wulang > Forest > Dress the armory compound** | Fence, braziers, training ground, smithy and supply corner around the armory tower |
 | **Wulang > Terrain > Add gentle ground variation** | Small undulation on open ground only (run after the biome builders, before Populate regions) |
-| **Wulang > Cinematics > Build intro flight and tidy cutscenes** | The New Game intro flight; no Ice fly-over (the freeze reveal shows it); no "view area" previews |
+| **Wulang > Cinematics > Build intro flight and tidy cutscenes** | The New Game intro flight (a slow descent onto the armory); no Ice fly-over (the freeze reveal shows it); no "view area" previews. Flights are timed by distance (`BiomeCinematicSetup.Paced`): a steady speed, eased at both ends, and the transitions dip to black around them instead of swinging the camera across the map |
 | **Wulang > Story > Re-render portraits** | The three dialogue portraits only |
 | **Wulang > World > Build landmarks, rewards and arenas** | Nine points of interest with chests, guards and journal pages; arena dressing for all four guardians; the snow's own palette (run last: after the biome builders, Populate regions and the story setup) |
 
@@ -149,7 +149,7 @@ Imported environment and effects include Idyllic Fantasy Nature, Stylized Fantas
 - **No visible time progression while working in another app:** focus the Game view; the project is not configured to run in the background.
 - **Import or compilation errors:** check the Console, editor version, and Package Manager resolution before testing the scene.
 
-Run **Wulang > Checks > Prototype structure (edit mode)** and, in Play mode, **Wulang > Checks > Combat and story rules (Play mode)** for the Assignment 3 systems. **Wulang > Checks > Full story path (Play mode)** (start Play mode on the World scene first) plays the whole game without input: the intro, every beat in order with the objective checked at each step, all four chapters, the refusal, reveal and Truth ending, then chapter select into the Sanctum and the Submission ending, then Continue. Read the outcome from `StoryPathCheck.Result`. `Assets/Editor/` also contains targeted checks for area visuals, cinematic wiring/playback, terrain, volcanic traversal, and character animation. These are Editor helper methods with individual Edit/Play mode requirements, rather than a single automated acceptance suite. Read each method's preconditions before invoking it. A complete verification pass should also include the demonstration route above and a launch test of the selected build target.
+Run **Wulang > Checks > Prototype structure (edit mode)** and, in Play mode, **Wulang > Checks > Combat and story rules (Play mode)** for the Assignment 3 systems. **Wulang > Checks > Full story path (Play mode)** (enter Play mode first) plays the whole game without input: the intro, every beat in order with the objective checked at each step, all four chapters, the refusal, reveal and Truth ending, then chapter select into the Sanctum and the Submission ending, then Continue. Read the outcome from `StoryPathCheck.Result`. `Assets/Editor/` also contains targeted checks for area visuals, cinematic wiring/playback, terrain, volcanic traversal, and character animation. These are Editor helper methods with individual Edit/Play mode requirements, rather than a single automated acceptance suite. Read each method's preconditions before invoking it. A complete verification pass should also include the demonstration route above and a launch test of the selected build target.
 
 Keep `Assets`, `Packages`, `ProjectSettings`, and their `.meta` files in source control. Generated folders such as `Library`, `Temp`, `Logs`, and `Builds` are ignored. Large binary asset types use Git LFS through `.gitattributes`.
 

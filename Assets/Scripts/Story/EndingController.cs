@@ -128,7 +128,7 @@ public class EndingController : MonoBehaviour
     {
         var overlay = TransitionOverlay.Instance;
         yield return overlay.FadeTo(1f, 2f, fade);
-        yield return overlay.ShowCaption(title, text + "\n\n<size=70%>Wulang: Elements of the Past  -  a prototype by Youssef Yasser, GUC DMET 909, 2026. Third-party art, animation and sound are credited in the README.</size>");
+        yield return overlay.ShowCaption(title, text + "\n\n<size=70%>Wulang: Elements of the Past  -  a prototype by Youssef Yasser, GUC DMET 909, 2026. Third-party art, animation and sound are credited in the README.</size>", card: true);
         StoryStateManager.NewGamePlusUnlocked = true;
         overlay.ShowSkipHint(true);
         float until = Time.unscaledTime + 7f;
