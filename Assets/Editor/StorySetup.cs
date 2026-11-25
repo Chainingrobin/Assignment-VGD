@@ -141,17 +141,10 @@ public static class StorySetup
         Objectives(root, "FinalArena",
             ("", Flags.ChoseSubmission + "|" + EndingController.RefusedOffer, center),
             (EndingController.RefusedOffer, Flags.BossFinal, Vector3.zero));
-        var choices = new[]
-        {
-            new DialogueData.Choice { text = StoryScript.OfferChoices[0], setFlag = Flags.ChoseSubmission },
-            new DialogueData.Choice { text = StoryScript.OfferChoices[1], setFlag = EndingController.RefusedOffer },
-        };
         var offer = Dialogue("Arena - The Offer", "");
-        offer.choices = choices;
-        EditorUtility.SetDirty(offer);
+        OfferChoices(offer);
         var reOffer = Dialogue("Arena - The Offer Again", "");
-        reOffer.choices = choices;
-        EditorUtility.SetDirty(reOffer);
+        OfferChoices(reOffer);
         var submission = Dialogue("Arena - Submission", "");
         var truth = Memory(root, "True memory", center + new Vector3(0f, 0f, 6f), ghost, profile, null, Journal("The True Memory"), withAbe: false);
         Trigger(root, "The offer", center, NarrativeTrigger.Mode.Zone, radius: 12f, once: "offerHeard", dialogue: offer);
@@ -300,29 +293,35 @@ public static class StorySetup
 
     // ---------- builders ----------
 
+    // A conversation is a DialogueData asset whose lines (speaker, portrait, text) are written in the Inspector.
+    // This only creates a missing asset and wires the flag it sets; it never overwrites the writing.
     private static DialogueData Dialogue(string name, string flag)
     {
-        var lines = StoryScript.Conversations[name];
         string path = $"{DialogueFolder}/{name}.asset";
         var data = AssetDatabase.LoadAssetAtPath<DialogueData>(path);
         if (data == null)
         {
             data = ScriptableObject.CreateInstance<DialogueData>();
+            data.lines = new DialogueData.Line[0];
             AssetDatabase.CreateAsset(data, path);
         }
-        data.lines = lines.Select(l => new DialogueData.Line
-        {
-            speaker = StoryScript.Speaker(l.who),
-            portrait = l.who == StoryScript.Abe ? abeFace : l.who == StoryScript.Gan ? ganfaulFace : wulangFace,
-            text = l.text,
-        }).ToArray();
-        data.choices = null;
         data.flagToSetWhenFinished = flag;
         EditorUtility.SetDirty(data);
         return data;
     }
 
-    // A journal entry, its wording from StoryScript.Lore (LandmarksBuilder's chest pages included).
+    // The offer's two answers, kneel or refuse. Their wording lives on the asset; this wires the flag each one sets.
+    private static void OfferChoices(DialogueData dialogue)
+    {
+        var flags = new[] { Flags.ChoseSubmission, EndingController.RefusedOffer };
+        if (dialogue.choices == null || dialogue.choices.Length != flags.Length)
+            dialogue.choices = flags.Select(_ => new DialogueData.Choice()).ToArray();
+        for (int i = 0; i < flags.Length; i++) dialogue.choices[i].setFlag = flags[i];
+        EditorUtility.SetDirty(dialogue);
+    }
+
+    // A journal entry: an ItemData asset whose title and text are written in the Inspector (LandmarksBuilder's
+    // chest pages included). A new one starts titled after its file.
     internal static ItemData Journal(string name)
     {
         string path = $"{JournalFolder}/{name}.asset";
@@ -330,10 +329,9 @@ public static class StorySetup
         if (item == null)
         {
             item = ScriptableObject.CreateInstance<ItemData>();
+            item.displayName = name;
             AssetDatabase.CreateAsset(item, path);
         }
-        item.displayName = StoryScript.Title(name);
-        item.description = StoryScript.Lore[name];
         item.category = name.StartsWith("Memory") || name.StartsWith("The True") ? ItemCategory.Memory : ItemCategory.Lore;
         EditorUtility.SetDirty(item);
         return item;

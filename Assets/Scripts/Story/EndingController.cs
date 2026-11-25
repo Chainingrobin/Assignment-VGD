@@ -15,10 +15,11 @@ public class EndingController : MonoBehaviour
     [SerializeField] private DialogueData reOffer;
     [SerializeField] private DialogueData submissionLines;
     [SerializeField] private MemoryEcho trueMemory;
-    [SerializeField] private string submissionTitle = "Ending: The Gilded Past";
-    [SerializeField, TextArea] private string submissionText = "Wulang knelt, and was given a past that was warm, and perfect, and not hers.";
-    [SerializeField] private string truthTitle = "Ending: Freely Given";
-    [SerializeField, TextArea] private string truthText = "Wulang refused, and remembered who she really was.";
+    // The end cards' wording, written from the Story Text asset (Wulang > Story > Apply story text).
+    [SerializeField] private string submissionTitle;
+    [SerializeField, TextArea] private string submissionText;
+    [SerializeField] private string truthTitle;
+    [SerializeField, TextArea] private string truthText;
     [SerializeField, Min(500f)] private float fallFloor = 660f;
 
     private int deaths;

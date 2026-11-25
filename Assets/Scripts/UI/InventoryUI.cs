@@ -5,9 +5,19 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 
-// Tab opens Wulang's satchel: a Satchel page (potions, elemental tomes) and a Journal page
-// (memories and lore found). Selecting an entry shows its lore description, so items carry
-// the story as well as the mechanics.
+/// <summary>
+/// The satchel and journal screen (Tab): the inventory with lore descriptions, plus the journal/codex of story
+/// discoveries that the assignment brief's UI features ask for.
+/// </summary>
+/// <remarks>
+/// <para><b>Two pages.</b> <i>Satchel</i>: potions and elemental tomes, with the Wubucks purse. <i>Journal</i>: every
+/// memory and found page (ledger pages, plaques, the Tallyman rhyme). Selecting an icon shows its title and its lore
+/// text from the item's <see cref="ItemData"/> asset, so items carry the story as well as the mechanics.</para>
+/// <para><b>Story role (GDD section 5).</b> The journal is where backstory and clues accumulate at the player's own
+/// pace; every page points at who Abe really is, so the player can piece the twist together before the Sanctum.</para>
+/// <para>Opening it pauses the player and frees the cursor; Tab closes it. It won't open over a cutscene or a
+/// conversation.</para>
+/// </remarks>
 public class InventoryUI : MonoBehaviour
 {
     private Canvas canvas;
@@ -16,6 +26,7 @@ public class InventoryUI : MonoBehaviour
     private RectTransform purse;
     private bool journal;
 
+    // Builds the screen in code (title, page tabs, icon list, lore panel, purse), hidden until Tab.
     private void Start()
     {
         canvas = UIKit.Canvas("Inventory", 320);
@@ -43,6 +54,7 @@ public class InventoryUI : MonoBehaviour
         canvas.enabled = false;
     }
 
+    // Tab toggles the screen; it only opens when nothing else (cutscene, dialogue, pause) holds the player.
     private void Update()
     {
         var keyboard = Keyboard.current;
@@ -66,6 +78,8 @@ public class InventoryUI : MonoBehaviour
         PlayerLock.Pop(showCursor: true);
     }
 
+    // Fills the list with the chosen page's items (journal: memories and lore; satchel: potions and tomes) and
+    // selects the first one.
     private void Show(bool journalPage)
     {
         journal = journalPage;
@@ -97,6 +111,7 @@ public class InventoryUI : MonoBehaviour
         if (items.Length > 0) Select(items[0]);
     }
 
+    // Shows an item's title and lore (both edited on its ItemData asset).
     private void Select(ItemData item)
     {
         detailName.text = item.displayName;

@@ -5,22 +5,37 @@ using StarterAssets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Level streaming for Wulang's open world. The World scene (terrain, sky, player, HUD) stays
-// loaded; each story level is its own region scene loaded on top of it. Walking into a
-// region's domain is the level transition: if its story flag is set, a cutscene plays with
-// the chapter title and recap while the region scene really loads (additively) and the
-// finished one unloads. If the flag isn't set, the region's elemental seal pushes the
-// player back instead, so there are no UI world-border messages.
+/// <summary>
+/// Level transitions for Wulang's streamed chapters (assignment brief, "Level Transition Implementation"; guide
+/// Step 8).
+/// </summary>
+/// <remarks>
+/// <para><b>Structure.</b> The World scene (terrain, sky, player, HUD) stays loaded; each story level (Forest, Ice,
+/// Volcano, FinalArena) is its own region scene loaded on top of it with <c>SceneManager.LoadSceneAsync</c>, so the
+/// next chapter is always visible on the horizon.</para>
+/// <para><b>Conditioned on story state, not position.</b> Walking into a region's domain is the transition only if its
+/// <c>requiredFlag</c> is set (Ice needs <c>lakeFrozen</c>, Volcano needs <c>bossIceDefeated</c>); the Sanctum is reached
+/// only through the rift (<see cref="RegionTravel"/>) once <c>bossFireDefeated</c> opens it. A locked region's elemental
+/// seal pushes the player back with a line from Wulang instead of a UI border.</para>
+/// <para><b>What the player sees.</b> A landmark flight (or the live view) under the chapter card: the chapter title, a
+/// recap of the story so far and the loading percentage, while the region really loads and the finished one unloads.
+/// Space skips. Each arrival checkpoints the story (<see cref="StoryStateManager.Save"/>) and raises
+/// <see cref="RegionEntered"/>, which refreshes the objective tracker.</para>
+/// <para>Also runs the New Game intro (<c>IntroCutscene</c>), the pause menu's Restart Region, and the main menu's live
+/// backdrop.</para>
+/// </remarks>
 [DefaultExecutionOrder(-100)]
 public class RegionManager : MonoBehaviour
 {
     public const string WorldScene = "World";
     public const string MenuScene = "MainMenu";
 
+    /// <summary>One chapter's scene, its chapter card text, the flag that unlocks it, and where it begins on the map.</summary>
     [Serializable]
     public class Region
     {
         public string scene;
+        // Chapter card title and recap, written from the Story Text asset (Wulang > Story > Apply story text).
         public string title;
         [TextArea] public string recap;
         [Tooltip("Story flag needed to enter. Empty = always open.")]
@@ -48,8 +63,11 @@ public class RegionManager : MonoBehaviour
     public static bool MenuPreview;
 
     public static RegionManager Instance { get; private set; }
+    /// <summary>The region scene the player is in (e.g. "Ice").</summary>
     public string Current { get; private set; }
+    /// <summary>True during a transition, the intro or a restart; triggers and exits wait for it.</summary>
     public bool Busy { get; private set; }
+    /// <summary>Raised with the region's name after every arrival (and its checkpoint).</summary>
     public event Action<string> RegionEntered;
 
     private Transform player;
@@ -61,6 +79,7 @@ public class RegionManager : MonoBehaviour
     private void Awake() => Instance = this;
     private void OnDestroy() { if (Instance == this) Instance = null; }
 
+    // Loads the starting region (or every region in New Game+), places the player, and plays the intro on a New Game.
     private IEnumerator Start()
     {
         SceneManager.SetActiveScene(gameObject.scene);
@@ -114,6 +133,7 @@ public class RegionManager : MonoBehaviour
         RefreshSeals();
     }
 
+    // Walking into another region's domain: enter it if its story flag is set, otherwise the seal pushes back.
     private void Update()
     {
         if (Busy || player == null) return;
@@ -169,7 +189,11 @@ public class RegionManager : MonoBehaviour
         enabled = false;
     }
 
-    // Used by scripted exits such as the volcano rift.
+    /// <summary>
+    /// Starts the transition into a region. Used by scripted exits (the waystone, the rift), which are themselves gated
+    /// on story flags. Ignored while another transition is running.
+    /// </summary>
+    /// <param name="scene">Region scene name, e.g. "FinalArena".</param>
     public void EnterRegion(string scene)
     {
         if (Busy) return;
@@ -178,6 +202,8 @@ public class RegionManager : MonoBehaviour
         Debug.LogError($"RegionManager: no region named {scene}", this);
     }
 
+    // The transition itself: flight or fade, chapter card with recap, async load with progress, unload the previous
+    // region, place the player, checkpoint, then hold the card long enough to read (Space skips).
     private IEnumerator Enter(Region region, bool walked = false)
     {
         Busy = true;
@@ -253,7 +279,8 @@ public class RegionManager : MonoBehaviour
         Busy = false;
     }
 
-    // Pause menu "Restart Region": reload the current region scene from its start.
+    /// <summary>Pause menu "Restart Region": reloads the current region scene from its start with full health.
+    /// Story flags are kept, so finished beats stay finished.</summary>
     public void RestartRegion()
     {
         if (!Busy && !string.IsNullOrEmpty(Current)) StartCoroutine(Reload());
@@ -285,9 +312,10 @@ public class RegionManager : MonoBehaviour
         RegionEntered?.Invoke(Current);
     }
 
-    // The chapter recap (StoryScript writes it).
+    // The chapter recap (written from the Story Text asset).
     private static string RecapFor(Region region) => region.recap;
 
+    /// <summary>Where the player starts in the current region (its <c>RegionStart</c>), or null.</summary>
     public Transform CurrentSpawn
     {
         get
@@ -297,6 +325,7 @@ public class RegionManager : MonoBehaviour
         }
     }
 
+    /// <summary>Moves the player to a region's start point.</summary>
     public void MoveToSpawn(string scene)
     {
         var start = RegionStart.Find(scene);
@@ -304,13 +333,16 @@ public class RegionManager : MonoBehaviour
         Teleport(start.Spawn.position, start.Spawn.rotation);
     }
 
+    /// <summary>Moves the player instantly, keeping only the yaw of <paramref name="rotation"/>.</summary>
     public void Teleport(Vector3 position, Quaternion rotation)
     {
+        // The CharacterController overrides transform changes while enabled.
         body.enabled = false;
         player.SetPositionAndRotation(position, Quaternion.Euler(0f, rotation.eulerAngles.y, 0f));
         body.enabled = true;
     }
 
+    /// <summary>Returns to the main menu (pause menu and end cards), freeing the cursor.</summary>
     public static void LoadMenu()
     {
         PlayerLock.Reset();

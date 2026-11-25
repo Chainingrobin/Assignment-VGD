@@ -66477,6 +66477,7 @@ MonoBehaviour:
   - {fileID: 0}
   blockState: Block
   changeDuration: 1.6
+  phaseLine: "Ganfaul takes up {0}."
 --- !u!1 &5404435345404610466
 GameObject:
   m_ObjectHideFlags: 0

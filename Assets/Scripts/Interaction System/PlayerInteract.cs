@@ -2,12 +2,31 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 
+/// <summary>
+/// The player's interact control (F): finds what Wulang is looking at, highlights it, shows a "[F] Talk to Abe"
+/// style prompt, and uses it when F is pressed.
+/// </summary>
+/// <remarks>
+/// <para><b>How it targets.</b> Every frame a ray is cast from the camera, up to <c>range</c> metres. The first
+/// <see cref="Interactable"/> it hits (on the collider or a parent) that can currently be used becomes the target:
+/// it gets an outline and its prompt is shown under the crosshair. Interactables switched off by a
+/// <c>FlagGate</c> report that they can't be used, so locked story objects never show a prompt.</para>
+/// <para><b>Story role.</b> F is how the player reaches most narrative content: talking to and trading with Abe,
+/// reading notes and plaques (<c>NarrativeTrigger</c> in Interact mode), waking the ice statue, and using the
+/// waystone and rift exits (<c>RegionTravel</c>). Each of those sets story flags.</para>
+/// <para>Input comes from the Input System's Interact action (F), so it can be rebound without code.</para>
+/// </remarks>
 public class PlayerInteract : MonoBehaviour
 {
+    [Tooltip("Camera the targeting ray starts from; defaults to the main camera.")]
     [SerializeField] Camera cam;
+    [Tooltip("Input System action that interacts (bound to F).")]
     [SerializeField] InputActionReference interactAction;
+    [Tooltip("HUD text that shows the current prompt.")]
     [SerializeField] TMP_Text promptText;
+    [Tooltip("How far away, in metres, something can be used.")]
     [SerializeField] float range = 3f;
+    [Tooltip("Landmarks that offer an optional fly-over when looked at from afar.")]
     [SerializeField] BiomePreview[] biomePreviews;
 
     Interactable current;
@@ -15,6 +34,7 @@ public class PlayerInteract : MonoBehaviour
     RectTransform promptKey;
     string shownPrompt;
 
+    // Checks its references (logging what is missing) and styles the prompt: parchment text with an F keycap.
     void Awake()
     {
         if (cam == null) cam = Camera.main;
@@ -62,6 +82,7 @@ public class PlayerInteract : MonoBehaviour
         if (promptText != null) promptText.gameObject.SetActive(false);
     }
 
+    // Picks the target under the crosshair, moves the highlight to it, and updates the prompt.
     void Update()
     {
         if (cam == null) return;
@@ -70,6 +91,7 @@ public class PlayerInteract : MonoBehaviour
         Vector3 dir = cam.transform.forward;
         Debug.DrawRay(origin, dir * range, Color.red);
 
+        // Trigger volumes (zones, hazards) are ignored so they never block the view of a real object.
         if (Physics.Raycast(origin, dir, out RaycastHit hit, range, ~0,
                             QueryTriggerInteraction.Ignore))
         {
@@ -85,6 +107,7 @@ public class PlayerInteract : MonoBehaviour
         }
 
         if (promptText == null) return;
+        // With nothing close at hand, a distant landmark in view can offer its fly-over instead.
         currentPreview = null;
         if (current == null && biomePreviews != null)
             foreach (var preview in biomePreviews)
@@ -105,6 +128,7 @@ public class PlayerInteract : MonoBehaviour
         promptKey.anchoredPosition = new Vector2(-promptText.GetPreferredValues(promptText.text).x * 0.5f - promptKey.sizeDelta.x * 0.5f - 10f, 0f);
     }
 
+    // F pressed: use the target (Interactable.Interact raises its OnInteract event), or start the landmark fly-over.
     void OnInteract(InputAction.CallbackContext ctx)
     {
         if (current != null) current.Interact();

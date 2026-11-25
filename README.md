@@ -10,7 +10,7 @@ Wulang explores a world damaged by elemental corruption. Collectible books unloc
 
 This is the **Assignment 3** prototype: the open world is split into a persistent World scene plus streamed story regions, with boss fights, a dialogue/objective/memory story layer, an intro cutscene, a final choice and two endings.
 
-**The story.** The Vale's four elemental guardians went mad when someone began to put a price on what they gave freely. The Storm escaped and hid in an ordinary girl walking home in the rain. Wulang wakes at an old armory with lightning in her hands and no memory; Abe, the kindly armorer, says he raised her and sends her to put the guardians to rest, one element at a time. Every element she claims "returns" a memory, and every memory puts Abe at its centre, with one small thing wrong in it. In the Sanctum Abe asks for the elements, freely given, in exchange for a past worth having: kneel (the Gilded Past ending) or refuse, and Abe becomes Ganfaul, the Tallyman (the Freely Given ending, and her true, ordinary memory). Every line of the script lives in `Assets/Editor/StoryScript.cs`.
+**The story.** The Vale's four elemental guardians went mad when someone began to put a price on what they gave freely. The Storm escaped and hid in an ordinary girl walking home in the rain. Wulang wakes at an old armory with lightning in her hands and no memory; Abe, the kindly armorer, says he raised her and sends her to put the guardians to rest, one element at a time. Every element she claims "returns" a memory, and every memory puts Abe at its centre, with one small thing wrong in it. In the Sanctum Abe asks for the elements, freely given, in exchange for a past worth having: kneel (the Gilded Past ending) or refuse, and Abe becomes Ganfaul, the Tallyman (the Freely Given ending, and her true, ordinary memory). Every line of the story is data in `Assets/Story`, edited in the Inspector (see **Editing the story** below); no dialogue is written in C#.
 
 ## Quick start
 
@@ -79,13 +79,25 @@ Abe's horned shadow only appears at the last camp, by the volcano. Each element 
 | Dialogue | `Story/DialogueData` (ScriptableObject per conversation), `DialogueManager` (logic, typewriter, choices), `DialogueUI` (view) |
 | Objectives | `Story/ObjectiveManager` (HUD tracker), `RegionObjectives` (per-region list derived from flags) |
 | Narrative beats | `Story/NarrativeTrigger` (zone / interact / start / flag, fires once), `MemoryEcho`, `IntroCutscene`, `EndingController`, the reveal in `BossEncounter` |
-| Story script | `Editor/StoryScript` (every line of dialogue, journal page, boss line, recap and objective; **Wulang > Story > Apply story script** writes it into the assets and scenes) |
+| Story text (data) | `Story/StoryText` (one asset: guardian lines, chapter cards and recaps, objectives, barks, ending cards); `Editor/StoryScript` copies it onto the scenes (**Wulang > Story > Apply story text**) |
 | Audio | `World/GameAudio` (one-shots by name; music and ambience that crossfade per region, boss fight, memory and ending), `World/Footsteps` |
 | Bosses | `Bosses/BossBrain` (attack lists: melee, element projectiles, element ground attacks with warnings), `BossEncounter`, `BossProjectile`, `ElementPhases`, `UI/BossHealthBar` |
 | Combat additions | `Combat/StormQuake` (Earth + Lightning combo), `CombatTarget` death event, stagger, status scaling, resistance |
 | Player | `PlayerHealth` (HP, death and respawn), `Items/PlayerInventory` (potions on H, tomes), `ItemData`, `LootDrop`, `Merchant`, `World/HazardZone` |
 | UI | `UI/MainMenu`, `PauseMenu`, `InventoryUI`, `ShopUI`, `Subtitle`, `UIKit` |
 | Exploration | `World/TreasureChest` (chest rewards; vitality relics raise `PlayerHealth`'s maximum), `World/Spin` (the Sanctum's drifting rocks) |
+
+### Editing the story
+
+All story text is ScriptableObject data, edited in the Inspector without touching code:
+
+| What | Where | When the change shows |
+|---|---|---|
+| Conversations (speaker, portrait, lines, choices and the flag each sets) | One `DialogueData` asset per conversation in `Assets/Story/Dialogue` | Next time it plays, even in Play mode |
+| Journal pages, memories, item lore and titles | `ItemData` assets in `Assets/Story/Journal` and `Assets/Items` | Immediately |
+| Guardian lines, chapter titles and recaps, objectives, arrival lines, Abe's greetings, potion barks, Ganfaul's phase line, ending cards | `Assets/Story/Story Text.asset` | After **Wulang > Story > Apply story text** (Edit mode) |
+
+Which flags show and complete each objective, and what each trigger requires, are set on the scene objects (`RegionObjectives`, `NarrativeTrigger`).
 
 ### Rebuilding content (Editor menus)
 
@@ -100,7 +112,7 @@ Abe's horned shadow only appears at the last camp, by the volcano. Each element 
 | **Wulang > Scenes > Populate regions** | Guardian arenas, Abe camps, field vampires, waystone and rift, lava hazards |
 | **Wulang > Scenes > Build final arena** | The floating sanctum, element pillars and final encounter |
 | **Wulang > Story > Lay story onto regions** | Dialogue, portraits, objectives, triggers, lore notes, memory echoes, endings (run after the arena builder) |
-| **Wulang > Story > Apply story script** | Rewrites every line from `StoryScript` into the existing dialogue and journal assets and the five scenes without rebuilding anything; also the intro narration and footsteps |
+| **Wulang > Story > Apply story text** | Copies the `Story Text` asset's lines onto the five scenes (chapter cards, objectives, guardian lines, barks, greetings, endings) without rebuilding anything; also the intro narration and footsteps |
 | **Wulang > Bosses > Fix animation roots** | Bakes boss and Abe clip roots (no floating or body sliding) and grounds each rig's idle pose |
 | **Wulang > Bosses > Abe sitting and gestures** | Abe's sitting idle and an additive upper-body Gestures Pack layer (the standing gestures add onto his seated arms instead of replacing them, so his hands stay off the ground); the standing variant for the Sanctum |
 | **Wulang > Characters > Tune skin materials** | Per-element skin smoothness, specular maps where models have them, Maw's glow map |

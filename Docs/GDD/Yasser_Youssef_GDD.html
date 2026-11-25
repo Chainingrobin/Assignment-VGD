@@ -8,30 +8,29 @@
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 2; color: #111; margin: 0; }
   h1 { font-size: 20pt; line-height: 1.3; margin: 0 0 4pt; }
-  h2 { font-size: 15pt; line-height: 1.3; margin: 18pt 0 4pt; border-bottom: 1px solid #999; padding-bottom: 2pt; break-after: avoid; }
-  h3 { font-size: 12.5pt; line-height: 1.3; margin: 10pt 0 2pt; break-after: avoid; }
-  p { margin: 0 0 6pt; text-align: left; }
-  ul { margin: 0 0 6pt 18pt; padding: 0; }
-  .meta { line-height: 1.5; margin-bottom: 10pt; }
-  .links { line-height: 1.6; border: 1px solid #999; padding: 6pt 10pt; margin: 8pt 0 10pt; }
+  h2 { font-size: 15pt; line-height: 1.3; margin: 14pt 0 4pt; border-bottom: 1px solid #999; padding-bottom: 2pt; break-after: avoid; }
+  h3 { font-size: 12.5pt; line-height: 1.3; margin: 8pt 0 2pt; break-after: avoid; }
+  p { margin: 0 0 4pt; text-align: left; }
+  .meta { line-height: 1.5; margin-bottom: 8pt; }
+  .links { line-height: 1.6; border: 1px solid #999; padding: 6pt 10pt; margin: 6pt 0 8pt; }
   a { color: #0645ad; }
-  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; line-height: 1.25; margin: 4pt 0 8pt; break-inside: auto; }
-  th, td { border: 1px solid #888; padding: 2.5pt 4pt; vertical-align: top; text-align: left; }
+  table { border-collapse: collapse; width: 100%; font-size: 9pt; line-height: 1.22; margin: 3pt 0 6pt; break-inside: auto; }
+  th, td { border: 1px solid #888; padding: 2pt 3.5pt; vertical-align: top; text-align: left; }
   th { background: #e9e4da; }
   tr { break-inside: avoid; }
-  code { font-family: Consolas, monospace; font-size: 9pt; }
-  figure { margin: 4pt 0 8pt; break-inside: avoid; }
-  figcaption { font-size: 9.5pt; line-height: 1.3; color: #333; margin-top: 2pt; }
-  .row { display: flex; gap: 8pt; }
+  td.k { background: #f4f1ea; font-weight: bold; width: 16%; }
+  code { font-family: Consolas, monospace; font-size: 8.5pt; }
+  figure { margin: 3pt 0 6pt; break-inside: avoid; }
+  figcaption { font-size: 9pt; line-height: 1.25; color: #333; margin-top: 2pt; }
+  .row { display: flex; gap: 6pt; }
   .row img { width: 100%; display: block; border: 1px solid #aaa; }
   .row > div { flex: 1; }
-  .portraits img { width: 1.05in; height: 1.05in; object-fit: cover; border: 1px solid #aaa; border-radius: 50%; background: #2a211b; }
-  .char { display: flex; gap: 10pt; align-items: flex-start; }
-  .char .who { flex: 0 0 1.1in; text-align: center; font-size: 9.5pt; line-height: 1.3; }
-  .small { }
-  .note { font-size: 9.5pt; line-height: 1.3; color: #444; }
-  .wc { font-size: 9pt; color: #666; }
+  .portrait { width: 0.8in; height: 0.8in; object-fit: cover; border: 1px solid #aaa; border-radius: 50%; background: #2a211b; display: block; margin: 0 auto 2pt; }
+  .note { font-size: 9pt; line-height: 1.3; color: #444; }
   .pb { break-before: page; }
+  .split { display: flex; gap: 8pt; align-items: flex-start; }
+  .split > .map { flex: 0 0 44%; }
+  .split > .side { flex: 1; }
   svg text { font-family: "Times New Roman", serif; }
 </style>
 </head>
@@ -41,10 +40,24 @@
 <div class="meta">Game Design Document: Storyline, Narrative Level Design and UI (Assignment 3)<br>
 Youssef Yasser &middot; 58-3187 &middot; Video Game Design (DMET 909), German University in Cairo &middot; November 2026</div>
 <div class="links">
-<b>Repository:</b> <a href="https://github.com/Chainingrobin/Assignment-VGD">https://github.com/Chainingrobin/Assignment-VGD</a><br>
+<b>Repository:</b> <a href="https://github.com/Chainingrobin/Assignment-VGD">https://github.com/Chainingrobin/Assignment-VGD</a> (branch <code>main</code>)<br>
 <b>Prototype Video:</b> <a id="video" href="https://github.com/Chainingrobin/Assignment-VGD">VIDEO LINK: add after recording</a><br>
-<span class="note">Engine: Unity 6000.3.24f1 (URP 17.3, Cinemachine 3.1, Timeline 1.8, Input System 1.20). Open <code>Assets/Scenes/MainMenu.unity</code> and press Play. All story text: <code>Assets/Editor/StoryScript.cs</code>.</span>
+<span class="note"><b>Tool and version:</b> Unity 6000.3.24f1 with URP 17.3, Cinemachine 3.1, Timeline 1.8, Input System 1.20 and Starter Assets. Open <code>Assets/Scenes/MainMenu.unity</code> and press Play. Build order: MainMenu, World, Forest, Ice, Volcano, FinalArena. All story text is data: <code>Assets/Story</code> (Section 7.4).</span>
 </div>
+
+<h2>0. Game at a Glance</h2>
+<table>
+<tr><td class="k">High concept</td><td>A first-person elemental action-adventure in which an amnesiac woman frees four sick guardians and claims their gifts, while the kindly mentor who "returns" her memories is the one who wants the gifts for himself. Her real past is small, and it is hers.</td></tr>
+<tr><td class="k">Genre (hybrid)</td><td>Action-adventure (Lecture 2: genre = type of challenge): physical coordination and conflict challenges (real-time spell combat) with exploration and conceptual-reasoning challenges (finding and reading clues), held together by an authored story.</td></tr>
+<tr><td class="k">Player role and verbs</td><td>The player is <b>Wulang</b>, a character with her own voice, not a blank avatar (Lecture 5). Verbs: explore, cast (projectile and area), switch element, combine elements, talk, read, trade, drink potions, choose.</td></tr>
+<tr><td class="k">Platform, players, length</td><td>Windows PC, keyboard and mouse; single player. A first run takes about 45 minutes (estimate); the least meaningful unit of play is one chapter (10 to 15 minutes), ended by a checkpoint (Lecture 1, play length).</td></tr>
+<tr><td class="k">Target audience</td><td>Teen and adult players (expected rating T: fantasy violence) who enjoy story-driven action-adventures such as <i>Breath of the Wild</i> and <i>God of War Ragnar&ouml;k</i>. Player types (Lecture 2): <b>Explorers</b> (nine off-path points of interest, journal clues) and <b>Achievers</b> (four guardians, six vitality relics, New Game+). Story Mode serves players who mainly want the story (Lecture 4).</td></tr>
+<tr><td class="k">The dream (Adams)</td><td>"I wish I could carry the elements, and find out who I really was." Goals: free the guardians, recover the past. Actions: fight, explore, read. Setting: a valley of soured guardians. Interface: first person, minimal HUD.</td></tr>
+<tr><td class="k">Kinds of fun (Lecture 5)</td><td><b>Narrative</b> (the mystery of Abe), <b>Discovery</b> (clues off the path), <b>Fantasy</b> (wielding four elements), <b>Challenge</b> (weakness-based bosses), <b>Sensation</b> (regional colour grades, music, spell effects).</td></tr>
+<tr><td class="k">MDA and Elemental Tetrad (Lecture 2)</td><td><b>Mechanics:</b> elemental weaknesses, combos, story flags, choices. <b>Dynamics:</b> switching elements to answer each foe; exploring for clues; trusting, then doubting, Abe. <b>Aesthetics:</b> wonder, unease, defiance. <b>Story</b> and <b>technology</b> (Unity streamed scenes, data-driven dialogue) complete the tetrad.</td></tr>
+<tr><td class="k">Narrative and ludic balance</td><td>The story <i>motivates</i> (who am I, and who is Abe?); the mechanics <i>empower</i> (every element earned is both a weapon and a piece of the plot). The one branch is a player choice, not an author's cutscene (Lecture 2: balance the two philosophies).</td></tr>
+<tr><td class="k">Formal elements (Lecture 1)</td><td><b>Player:</b> one. <b>Objectives:</b> put the guardians to rest, then decide. <b>Procedures:</b> move, cast, switch, interact. <b>Rules:</b> elements can only be given; weakness hits &times;1.5, same element &times;0.5; regions open only on story flags. <b>Resources:</b> health, potions, Wubucks, spell charges, elements. <b>Conflict:</b> guardians, vampires, Ganfaul and the offer. <b>Boundaries:</b> mountains, seals, lake, lava. <b>Outcome:</b> two endings.</td></tr>
+</table>
 
 <h2>1. Storyline Summary</h2>
 <p><i>Wulang: Elements of the Past</i> is a first-person action-adventure about a woman who is told who she was, and has to decide whether to believe it.</p>
@@ -53,109 +66,205 @@ Youssef Yasser &middot; 58-3187 &middot; Video Game Design (DMET 909), German Un
 <p>Each element Wulang claims returns a memory, and every memory puts Abe at its centre: Abe teaching her to hear the soil, Abe pulling her from a frozen lake, Abe making her swear that what is given freely cannot be taken, and that one day she will give the elements to the one who raised her. The memories are warm and convincing, but each has something wrong in it. Young Wulang says the soil is telling her the soup is boiling over, and Abe corrects her. The ice water is warm. She hums a song Abe has never heard. Off the main path, notes, plaques and ledgers fill in what Abe leaves out: a patron who paid in old silver for every tome and never touched one, a children's rhyme about a Tallyman who wears a friend's face, and a memorial in Lowmere to a baker's granddaughter who went out for bread and never came home.</p>
 <p>When all four gifts burn in her hands, a rift opens on a sanctum in the sky, and Abe is there ahead of her, as always. He makes his offer: give him the elements, freely, and he will give her back a past worth having, a great name and a life that mattered. Every memory so far was a down payment. If she kneels, she receives exactly that: a perfect past that is not hers, and the Vale's rain stops falling for free. If she refuses, Abe stops pretending. The disguise burns away and Ganfaul, the Tallyman, takes up the stolen elements one at a time; only answering each one with its weakness brings him down.</p>
 <p>Beating him releases Wulang's real memory, and it is small: a wet evening, her grandmother's rain song, bread under her coat. No destiny and no debt. The tone moves from warm and curious, to uneasy, to defiant. The core conflict is between a past that is sold to you and a life you own: Wulang wins not by becoming a legend but by refusing to be priced, and by giving the gifts back to the land that gave them.</p>
-<p class="wc">(Summary: 560 words.)</p>
+<p class="note">(Summary: 553 words. Premise: paragraphs 2 and 3. Tone: warm and curious, then uneasy, then defiant. Core conflict: a bought past against an owned life.)</p>
+<p><b>Story spine</b> (Lecture 5): Once, the Vale's guardians gave freely, until someone started counting what they were worth and the Storm hid in a girl on the hill road. Because of that, she woke with no past and an old armorer ready to sell her one, one memory per freed guardian. Until finally, he asked for the gifts in return; she refused to be priced, and her past turned out to be small, and hers.</p>
 
-<h2>2. Characters</h2>
-<p class="small">Each profile follows the lecture's character background paper and story-driven character design: role, values, personality and behaviour, characterization and status attributes, growth, and audio design (vocabulary, speed and tone). Portraits are rendered in-engine from the game's own models and appear in the dialogue box.</p>
-
-<div class="char"><div class="who portraits"><img src="img/p_wulang.png" alt="Wulang"><br><b>Wulang</b><br>protagonist</div><div>
-<p class="small"><b>Background:</b> a baker's granddaughter from the hill village of Lowmere; her real life is bread at dawn, rain walks and her Nan's song. The fleeing Storm struck her on the hill road and took her memory. <b>Role:</b> the player character and the one person the elements accept. <b>Motivation:</b> to find out who she was, and then to decide who she is. <b>Personality:</b> dry, wary humour ("And you're sending me, because...?"), polite, quick to notice small wrong details. In every memory she says yes to Abe; her growth (character dimension) is learning to say no. <b>Status attributes:</b> health, potions, Wubucks, the elements she carries (the element ring), her journal. <b>Audio:</b> short plain sentences, understatement, never speeches. <b>Relation to the player:</b> in first person, player and Wulang start with the same blank; her journal fills as the player explores, so her doubts become the player's.</p></div></div>
-
-<div class="char"><div class="who portraits"><img src="img/p_abe.png" alt="Abe"><br><b>Abe</b><br>mentor, merchant</div><div>
-<p class="small"><b>Background:</b> claims to be the armorer who raised her; is Ganfaul in disguise, a false mentor in the vein of the disguised god in <i>God of War Ragnar&ouml;k</i>. <b>Role:</b> the Hero's Journey mentor and helper: advice on each guardian's weakness, potions for Wubucks, safe camps where enemies give up the chase. <b>Motivation:</b> says he wants the guardians at rest; needs the elements, which can only be given. <b>Personality and behaviour:</b> warm, gruff, funny, sits by the fire gesturing as he talks, haggles ("Nothing's free, spark. Not even me."), never touches a tome, and is always at the next camp first with dry boots. <b>Audio:</b> unhurried and folksy; calls her "spark"; talks in prices, debts and down payments, which sounds like a merchant's habit until the Sanctum. <b>Relation to the player:</b> the tracker's first objective points at him; the player's trust in him is the material the climax turns over.</p></div></div>
-
-<div class="char"><div class="who portraits"><img src="img/p_ganfaul.png" alt="Ganfaul"><br><b>Ganfaul</b><br>antagonist</div><div>
-<p class="small"><b>Background:</b> "the Tallyman" of a children's rhyme, who weighs the rain and counts the sand. He sent the book-bearers whose ledgers soured the guardians, but cannot take what can only be given. <b>Role:</b> the final boss and the voice behind the offer; his horned shadow falls from Abe's body at the last camp. <b>Motivation:</b> to own what was never for sale. <b>Personality:</b> patient, transactional, contemptuous of free gifts. <b>Mechanic as character:</b> he fights with every stolen element in turn, and only the current element's weakness hurts him. <b>Last words:</b> "Freely... given. I never could afford that."</p></div></div>
-
-<p class="small"><b>The Guardians</b> (supporting characters and bosses): the Earth Guardian (Blossom Glade), the Ice Guardian (Frozen Amphitheater) and the Fire Guardian (the caldera) are corrupted, not evil. Each speaks once when the fight begins and once dying, and the dying words are requests that become clues: "give it back when you are done", "ask who paid for the books", "when they offer you a past, ask what it costs". <b>Nan</b> never appears on screen: she lives in the rain-song melody of the score, the shrine plaque and a child's line carved in the ice.</p>
-<figure><img src="img/lineup.jpg" alt="Character line-up" style="width:100%;border:1px solid #aaa"><figcaption>Figure 1. Visual reference: the in-game models (vampires of each element, the three guardians, Ganfaul and Abe).</figcaption></figure>
-
-<h2>3. Narrative Structure</h2>
-<p>The story follows the lecture's story phases (intro, complication, body, climax, resolution, point) inside a three-act structure, with the Hero's Journey's mentor turned inside out.</p>
+<h2>2. Game World and Setting</h2>
+<p>The Vale is one 1 km &times; 1 km terrain (1 unit = 1 m, 600 m of height) whose four regions are the four chapters. The <b>bond between world and story</b> (Lecture 3) is literal: each region is a guardian's domain, and world state is story state (the lake freezes only when the Earth guardian rests). The setting gives premise and geography; the story gives direction and progression (Lecture 5: setting vs. story).</p>
 <table>
-<tr><th style="width:15%">Act / phase</th><th style="width:18%">Level</th><th>Key plot points and player objectives</th><th style="width:20%">Emotional beat</th></tr>
-<tr><td><b>Act 1: hook</b><br>Intro</td><td>Forest (Ch. I, <i>The Spark</i>)</td><td>Intro cutscene; Wulang wakes; Abe explains the elements (<i>Speak with the old man</i>). Call to adventure: put the Earth guardian to rest (<i>Put the Earth guardian to rest</i>, <i>Take up the Earth tome</i>).</td><td>Wonder, warmth, trust</td></tr>
-<tr><td>Complication</td><td>Forest</td><td>The first memory has a slip (the soup); the guardian's last words ask her to give the gift back. The statue freezes the lake (<i>Wake the ice statue</i>, <i>Cross the frozen lake</i>).</td><td>A first flicker of doubt</td></tr>
-<tr><td><b>Act 2: hold</b><br>Body, rising action</td><td>Frozen Reach (Ch. II), Burning Peak (Ch. III)</td><td>Abe always arrives first; the Storm Quake combo; memory II (the warm water) and III (the oath, the song); journal pages about the patron, the Tallyman rhyme, the forty chains; Abe's horned shadow by the volcano fire.</td><td>Unease, then suspicion and dread</td></tr>
-<tr><td><b>Act 3: payoff</b><br>Climax</td><td>Sanctum (Ch. IV)</td><td>The offer and the meaningful choice. Refusing plays the reveal cutscene and the phase-shifting fight; dying twice repeats the offer (temptation).</td><td>Betrayal, then defiance</td></tr>
-<tr><td>Resolution and point</td><td>Sanctum</td><td>The true memory; the gifts go back to the land (Truth ending) or a borrowed past (Submission ending).</td><td>Quiet relief: a small life that is hers</td></tr>
+<thead><tr><th style="width:16%">Dimension (Lecture 3)</th><th>Wulang's world</th></tr></thead>
+<tr><td class="k">Physical: spatial</td><td>Continuous 3D, first-person camera (Cinemachine). Grounded movement (walk 4 m/s, sprint 7 m/s, jump), airborne spells. Space is essential to play: range, cover in arenas, routes and hazards.</td></tr>
+<tr><td class="k">Physical: scale</td><td><b>Realistic</b> for people and props (2 m player capsule, life-size armory and camps); <b>exaggerated</b> for the guardians, which tower over Wulang to create awe; the Sanctum is a floating island. One scale indoors and out.</td></tr>
+<tr><td class="k">Physical: boundaries</td><td>Mountain ranges enclose the Vale (containment). A locked region is sealed by its element: the seal pushes Wulang back with a short line ("The lake won't hold me. Not yet."), so no invisible-wall text is needed. The unfrozen lake drowns (damage, then back to shore) and lava burns. Boundaries open as the story does (exploration, Lecture 3).</td></tr>
+<tr><td class="k">Temporal</td><td>A full day and night takes 8 real minutes (sun, moon, stars, ambient light). Time is atmosphere, not pressure: no time limits, hunger or seasons, and enemies and shops behave the same at night. Time is skipped during chapter flights. <b>Anomalous time:</b> the memory echoes are flashbacks played in place (colour drains, ghosts act the scene). The player cannot adjust time; the pause menu stops it.</td></tr>
+<tr><td class="k">Environmental and cultural</td><td>An invented, pre-industrial valley. People live in hill villages such as Lowmere (bakers, millers); book-bearers carried tomes for a patron who "paid in old silver". <b>Values:</b> what is given freely (rain, harvest, warmth) against what is priced (ledgers, debts, down payments). <b>Surroundings:</b> a green forest and armory compound, a glacier reach with a frozen caravan, a burning peak with a chain forge, a sanctum in the sky. <b>Detail:</b> dense around landmarks, quiet along trails (areas of rest vs. detail). <b>Inspiration:</b> <i>Breath of the Wild</i> (regions and landmarks), <i>God of War Ragnar&ouml;k</i> (a god disguised as a mentor).</td></tr>
+<tr><td class="k">Emotional</td><td>Wonder and warmth (Forest), unease and loneliness (Frozen Reach), suspicion and dread (Burning Peak), betrayal, defiance and quiet relief (Sanctum). Relayed by colour grades, lighting, music (the rain song) and Abe's warmth. <b>At stake:</b> Wulang's identity, and whether the Vale's rain stays free.</td></tr>
+<tr><td class="k">Ethical</td><td>Right is giving freely; wrong is pricing what was given. Conflict is stylised elemental magic against corrupted creatures; the guardians are <i>put to rest</i>, and their last words are warnings, not curses. The player never harms a person. Kneeling is never a game over, only a hollow ending; the "good" outcome requires refusing, and Ganfaul can only be beaten by using each weakness in turn (not every means wins).</td></tr>
+</table>
+<div class="split">
+<div class="map">
+<svg viewBox="0 0 300 372" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="m" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#7a3b9a"/></marker></defs>
+  <rect x="10" y="10" width="149" height="216" rx="8" fill="#dcebd2" stroke="#6b8f5a"/>
+  <rect x="159" y="20" width="125" height="187" rx="8" fill="#f1d2c2" stroke="#a2543b"/>
+  <rect x="53" y="250" width="226" height="110" rx="8" fill="#dbe8f2" stroke="#5c87a8"/>
+  <ellipse cx="154" cy="244" rx="56" ry="14" fill="#a9cbe4" stroke="#5c87a8"/>
+  <ellipse cx="258" cy="38" rx="22" ry="9" fill="#e3d6ef" stroke="#7a5aa0"/>
+  <g font-size="10" font-weight="bold" fill="#333">
+    <text x="16" y="125">I Forest</text><text x="214" y="200">III Burning Peak</text><text x="58" y="355">II Frozen Reach</text>
+    <text x="234" y="41" font-size="8.5" text-anchor="end">IV Sanctum (sky)</text><text x="120" y="248" font-size="8" font-weight="normal">frozen lake</text>
+  </g>
+  <path d="M120,151 L86,207 L160,231 L164,262 L164,302" fill="none" stroke="#7a3b9a" stroke-width="2" marker-end="url(#m)"/>
+  <path d="M166,262 C200,200 175,120 157,96" fill="none" stroke="#7a3b9a" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#m)"/>
+  <path d="M157,93 L230,113" fill="none" stroke="#7a3b9a" stroke-width="2" marker-end="url(#m)"/>
+  <path d="M236,108 L254,47" fill="none" stroke="#7a3b9a" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#m)"/>
+  <g fill="#222" font-size="8">
+    <circle cx="120" cy="151" r="3.5" fill="#c08a2a"/><text x="114" y="148" text-anchor="end">armory, Abe I</text>
+    <circle cx="84" cy="211" r="3.5" fill="#b0302a"/><text x="79" y="223" text-anchor="end">Blossom Glade</text>
+    <circle cx="162" cy="233" r="3" fill="#5c87a8"/><text x="157" y="228" text-anchor="end">statue</text>
+    <circle cx="165" cy="263" r="3.5" fill="#c08a2a"/><text x="172" y="268">Abe II, waystone</text>
+    <circle cx="164" cy="305" r="3.5" fill="#b0302a"/><text x="171" y="309">Amphitheater</text>
+    <circle cx="155" cy="93" r="3.5" fill="#c08a2a"/><text x="112" y="88">Abe III</text>
+    <circle cx="233" cy="115" r="3.5" fill="#b0302a"/><text x="240" y="125">caldera, rift</text>
+    <g fill="#2f6b3a"><circle cx="48" cy="195" r="2.5"/><circle cx="43" cy="84" r="2.5"/><circle cx="21" cy="33" r="2.5"/>
+      <circle cx="94" cy="305" r="2.5"/><circle cx="238" cy="310" r="2.5"/><circle cx="164" cy="339" r="2.5"/>
+      <circle cx="164" cy="135" r="2.5"/><circle cx="172" cy="78" r="2.5"/><circle cx="204" cy="67" r="2.5"/></g>
+    <text x="30" y="80">runestone crown</text><text x="26" y="30">book-bearer camp</text><text x="18" y="190">shrine</text>
+    <text x="72" y="300">caravan</text><text x="215" y="322">crystal crown</text><text x="171" y="342">glacier gate</text>
+    <text x="160" y="140" text-anchor="end">watch post</text><text x="176" y="78">ember shrine</text><text x="210" y="62">chain forge</text>
+  </g>
+</svg>
+</div>
+<div class="side">
+<table>
+<thead><tr><th>Map key (Lecture 3: game world mission details)</th></tr></thead>
+<tr><td><b>Spaces (scenes):</b> I Forest, II Frozen Reach, III Burning Peak, IV Sanctum, all streamed over one World scene.</td></tr>
+<tr><td><b>Path and mission points</b> (purple; dashed = flight or rift): armory and Abe &rarr; Blossom Glade (Earth Guardian) &rarr; ice statue &rarr; across the frozen lake &rarr; Abe's camp &rarr; Frozen Amphitheater (Ice Guardian) &rarr; waystone flight &rarr; Abe's last camp &rarr; lava tube &rarr; caldera (Fire Guardian) &rarr; rift &rarr; Sanctum (Abe, Ganfaul).</td></tr>
+<tr><td><b>Characters:</b> Abe at each orange camp; guardians at red arenas; vampire packs of the region's element along the routes; Ganfaul in the Sanctum.</td></tr>
+<tr><td><b>Items:</b> nine green points of interest, each a landmark with a guarded chest: six vitality relics (+10 max health), Wubucks and potions, and one journal page each. Tomes drop from guardians; notes lie at Abe's camps.</td></tr>
+</table>
+</div>
+</div>
+<p class="note" style="margin-top:-2pt">Figure 1. World sketch, north up, drawn from the level builders' coordinates (positions approximate).</p>
+
+<h2>3. Characters</h2>
+<p>Characters are designed from behaviour first (Lecture 5: story-driven character design), using the character background paper, characterization and status attributes, character dimensions and character audio design. The portraits are rendered in-engine from the game's own models and appear in the dialogue box; Figure 2 is the visual reference (model line-up).</p>
+<table>
+<thead><tr><th style="width:14%"></th><th><img class="portrait" src="img/p_wulang.png" alt="Wulang">Wulang (protagonist)</th><th><img class="portrait" src="img/p_abe.png" alt="Abe">Abe (mentor, merchant)</th><th><img class="portrait" src="img/p_ganfaul.png" alt="Ganfaul">Ganfaul (antagonist)</th><th style="width:19%">The Guardians (supporting)</th></tr></thead>
+<tr><td class="k">Role, archetype</td><td>Player character; a <b>character</b>, not an avatar. Archetype: the Warrior, growing out of the innocent who always said yes.</td><td>Hero's Journey mentor and helper, turned inside out. Archetype: the wise old Magician, whose shadow is the Tyrant.</td><td>Final boss and the voice behind the offer. Archetype: the Tyrant; "the Tallyman" of a children's rhyme.</td><td>Earth, Frost and Flame: bosses and the land's corrupted keepers (nurturing Mother archetype, soured).</td></tr>
+<tr><td class="k">Background paper</td><td>Born in Lowmere, a hill village; a baker's granddaughter raised by her Nan. Possession: bread under her coat. Favourite: Nan's rain song. Trauma: the Storm on the hill road. Triumph: refusing to be priced.</td><td>Claims to be the old armory's armorer and to have raised her. Job: armorer, potion seller. Possessions: a kettle, a neat ledger. Quirk: terrible tea; never touches a tome.</td><td>Sent the book-bearers whose ledgers soured the guardians; paid "in old silver". Cannot take what can only be given.</td><td>Gave harvest, long winters and warm hearths to the Vale for nothing, until the tomes came.</td></tr>
+<tr><td class="k">Motivation</td><td>Find out who she was; then decide who she is.</td><td>Says: the guardians at rest. Needs: the elements, freely given.</td><td>To own what was never for sale.</td><td>To be free of the ink in the tomes.</td></tr>
+<tr><td class="k">Relation to player and world</td><td>Player and Wulang start with the same blank; her journal fills as the player explores, so her doubts become the player's.</td><td>The first objective points at him; his camps are safe ground. The player's trust is what the climax turns over.</td><td>Hidden in plain sight; every clue in the world points at him.</td><td>Their dying words become clues: "give it back", "ask who paid for the books", "ask what it costs".</td></tr>
+<tr><td class="k">Personality, behaviour, values</td><td>Dry, wary humour ("And you're sending me, because...?"), polite, notices small wrong details.</td><td>Warm, gruff, funny; gestures by the fire; haggles ("Nothing's free, spark. Not even me."); always at the next camp first.</td><td>Patient, transactional, contemptuous of free gifts.</td><td>Proud, wounded, finally grateful.</td></tr>
+<tr><td class="k">Characterization attributes</td><td>Appearance: young woman, dark hair in a bun with a red ribbon, navy scarf, red tunic. Nature: curious. Activity: explores. Temper: even.</td><td>Appearance: bald old man, long grey beard, red face markings, pale eyes, navy robe. Nature: kindly (outwardly). Activity: sits, talks, trades. Temper: unhurried.</td><td>Appearance: horned, pale violet skin, armoured. Nature: cold. Activity: takes. Temper: contemptuous.</td><td>Giant elemental beasts; temper: enraged.</td></tr>
+<tr><td class="k">Status attributes</td><td>Location: current region. Health 100 (+10 per relic). Inventory: potions, tomes, journal, Wubucks. Emotion and relationships: trust in Abe, falling.</td><td>Location: the next camp. Inventory: potion stock. Relationship: "raised" Wulang.</td><td>Location: the Sanctum. Current element (phase).</td><td>Health bar; current element.</td></tr>
+<tr><td class="k">Character dimensions</td><td>Growth: in every memory she says yes to Abe; she learns to say no. Fundamental trait: she values small, real things.</td><td>Emotional sophistication: warmth that is real and a lie at once.</td><td>Static by design: he cannot change; that is his defeat.</td><td>One beat of growth each: rage, then release.</td></tr>
+<tr><td class="k">Visual elements</td><td>Red and navy clothes; the Storm's violet lightning in her hands. Her name comes from Abe.</td><td>Navy robe and red markings; camp fire and kettle; a horned shadow at the last camp.</td><td>Horns (the shadow's shape), violet; four element auras; the arena's four pillars.</td><td>Each glows with its element (earth green, ice blue, ember red).</td></tr>
+<tr><td class="k">Audio design</td><td>Short plain sentences, understatement; never speeches.</td><td>Folksy, unhurried; calls her "spark"; talks in prices, debts and down payments.</td><td>Few words, slow; final words: "Freely... given. I never could afford that."</td><td>Two lines each, booming; roars.</td></tr>
+<tr><td class="k">Health and damage</td><td>100 HP; spell projectile 20, area 40 (&times;1.5 on a weakness, &times;0.5 on the same element). Story Mode halves damage taken.</td><td>None: Abe never fights.</td><td>1,600 HP; attacks 14 to 26; only the current phase's weakness does full damage.</td><td>Earth 500, Ice 1,000, Fire 1,200 HP; attacks 14 to 22. Vampires: 100 HP, 10 per swipe.</td></tr>
+<tr><td class="k">Character AI</td><td>Player controlled.</td><td>Static NPC: sits at the camp fire, talks (F) then trades; enemies give up the chase at his camps.</td><td>Boss brain with an attack list (melee, element projectiles, telegraphed ground blasts); changes element at 75, 50 and 25% health.</td><td>Same boss brain; each weak to one element (Earth to Lightning, Fire to Ice; Ice needs the Earth + Lightning combo).</td></tr>
+<tr><td class="k">Animation</td><td>First person in play; her full model acts the memories as a ghost.</td><td>Seated idle with an additive gesture layer while he talks.</td><td>Mixamo creature set with root motion and foot IK; a blocking "change" pose per phase.</td><td>Mixamo creature set, root motion, foot IK, attack blends.</td></tr>
+</table>
+<p class="note"><b>Nan</b> never appears on screen; she lives in the rain-song melody, the shrine plaque and a child's line carved in the ice. Design methods used (Lecture 5): in-engine portraits (concept art), the model line-up (model sheet) and the background paper above.</p>
+<figure><img src="img/lineup.jpg" alt="Character line-up" style="width:100%;max-height:1.6in;object-fit:cover;border:1px solid #aaa"><figcaption>Figure 2. Visual reference: the in-game models (vampires of each element, the three guardians, Ganfaul and Abe).</figcaption></figure>
+
+<h2>4. Narrative Structure</h2>
+<p>The <b>story phases</b> (intro, complication, body, climax, resolution, point) sit in three acts (<b>hook, hold, payoff</b>) split into <b>story units</b>: act, sequence, scene and beat. The <b>Hero's Journey</b> gives the shape, with the mentor as the temptation. Content is revealed as a <b>journey</b> and a <b>limited episodic series</b> of four chapters; the story is authored, while fights and exploration order emerge (Lecture 2).</p>
+<table>
+<thead><tr><th style="width:13%">Act, phase</th><th style="width:20%">Sequence (level) and Hero's Journey</th><th>Scenes and key plot points (beats in Section 7)</th><th style="width:20%">Player objectives</th><th style="width:13%">Emotional beat</th></tr></thead>
+<tr><td><b>Act 1, hook.</b> Intro</td><td>1.1 Forest. Known world; call to adventure</td><td>Intro cutscene (the Storm, the girl, the armory). Wulang wakes; Abe explains that elements are only given.</td><td>Speak with the old man</td><td>Wonder, warmth</td></tr>
+<tr><td>Complication</td><td>1.2 Forest. Meeting the mentor; first threshold</td><td>Blossom Glade: Earth Guardian's last words ("give it back"). Memory I with its slip (the soup). Statue freezes the lake.</td><td>Put the Earth guardian to rest; take the tome; wake the statue; cross the lake</td><td>First flicker of doubt</td></tr>
+<tr><td><b>Act 2, hold.</b> Body</td><td>2.1 Frozen Reach. Road of trials</td><td>Abe already there, boots dry. Traveller's journal (the patron). Ice Guardian beaten with the Storm Quake combo. Memory II (warm water, the debt).</td><td>Find the Ice guardian; take the tome; cross the pass</td><td>Unease</td></tr>
+<tr><td>Body (rising action)</td><td>2.2 Burning Peak. Approach to the abyss</td><td>Horned shadow by Abe's fire. Tallyman rhyme, forty chains "in case of a refusal". Fire Guardian. Memory III (the oath, the unknown song).</td><td>Face the Fire guardian; take the tome; step into the rift</td><td>Suspicion, dread</td></tr>
+<tr><td><b>Act 3, payoff.</b> Climax</td><td>3.1 Sanctum. Abyss and revelation</td><td>The offer and the choice. Refuse: Abe becomes Ganfaul; phase fight; dying twice repeats the offer.</td><td>Find Abe; defeat Ganfaul</td><td>Betrayal, defiance</td></tr>
+<tr><td>Resolution and point</td><td>3.2 Sanctum. Atonement and return</td><td>True memory (Nan's song); the gifts go back to the land. Or kneel: a borrowed past.</td><td>(ending)</td><td>Quiet relief</td></tr>
 </table>
 <figure>
-<svg viewBox="0 0 660 190" width="100%" height="190" xmlns="http://www.w3.org/2000/svg">
-  <line x1="40" y1="160" x2="640" y2="160" stroke="#333"/><line x1="40" y1="160" x2="40" y2="15" stroke="#333"/>
-  <text x="12" y="90" font-size="11" transform="rotate(-90 12 90)">tension</text><text x="590" y="178" font-size="11">time</text>
-  <path d="M40,150 C90,148 110,128 150,124 C210,118 230,104 280,98 C340,90 370,78 420,66 C470,52 500,22 530,20 C555,22 565,80 590,118 C605,135 620,142 640,146" fill="none" stroke="#7a3b9a" stroke-width="3"/>
+<svg viewBox="0 0 660 150" width="100%" height="150" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="128" x2="640" y2="128" stroke="#333"/><line x1="40" y1="128" x2="40" y2="10" stroke="#333"/>
+  <text x="12" y="80" font-size="11" transform="rotate(-90 12 80)">tension</text><text x="600" y="143" font-size="11">time</text>
+  <path d="M40,120 C90,118 110,102 150,99 C210,94 230,82 280,78 C340,72 370,62 420,52 C470,40 500,16 530,14 C555,16 565,64 590,95 C605,109 620,114 640,117" fill="none" stroke="#7a3b9a" stroke-width="3"/>
   <g font-size="10.5">
-  <circle cx="60" cy="149" r="3"/><text x="44" y="136">Intro: the Storm, waking</text>
-  <circle cx="150" cy="124" r="3"/><text x="150" y="141">Complication: memory I slip</text>
-  <circle cx="280" cy="98" r="3"/><text x="282" y="117">Body: Frozen Reach</text>
-  <circle cx="420" cy="66" r="3"/><text x="425" y="86">Burning Peak: the shadow</text>
-  <circle cx="530" cy="20" r="3"/><text x="470" y="13">Climax: offer, reveal</text>
-  <circle cx="590" cy="118" r="3"/><text x="598" y="104" text-anchor="start">Resolution</text>
+  <circle cx="60" cy="119" r="3"/><text x="46" y="110">Intro: waking</text>
+  <circle cx="150" cy="99" r="3"/><text x="150" y="115">Complication: Memory I</text>
+  <circle cx="280" cy="78" r="3"/><text x="282" y="94">Body: Frozen Reach</text>
+  <circle cx="420" cy="52" r="3"/><text x="425" y="69">Burning Peak: the shadow</text>
+  <circle cx="530" cy="14" r="3"/><text x="440" y="12">Climax: offer, reveal</text>
+  <circle cx="590" cy="95" r="3"/><text x="598" y="85">Resolution</text>
   </g>
-  <g font-size="10" fill="#555"><text x="70" y="176">Act 1: hook</text><text x="290" y="176">Act 2: hold</text><text x="500" y="176">Act 3: payoff</text></g>
+  <g font-size="10" fill="#555"><text x="70" y="143">Act 1: hook</text><text x="290" y="143">Act 2: hold</text><text x="500" y="143">Act 3: payoff</text></g>
 </svg>
-<figcaption>Figure 2. Pacing: dramatic flow across the four chapters (lecture: story phases and goals and pacing).</figcaption>
+<figcaption>Figure 3. Pacing and dramatic flow (Lecture 5): rising action across chapters, each with its own small rise and release (guardian fight, then memory).</figcaption>
 </figure>
-<p><b>Foreshadowing (the twist is never stated before the Sanctum).</b> The Hero's Journey gives the hero a mentor who supplies aid at the threshold; here the mentor is the temptation. Clues are layered so a first-time player feels uneasy and a second playthrough reads everything differently:</p>
+<p><b>Foreshadowing and imperfect information.</b> The twist is never stated before the Sanctum. The player has imperfect information (Lecture 4): the clues are hidden in plain sight, so a first-time player feels uneasy and a second playthrough reads everything differently.</p>
 <table>
-<tr><th>Clue</th><th>Where</th><th>Payoff</th></tr>
+<thead><tr><th>Clue</th><th style="width:25%">Where</th><th style="width:30%">Payoff</th></tr></thead>
 <tr><td>Abe is always at the next camp first ("Old men know the long way round")</td><td>Ice and Volcano camps</td><td>He crossed by the rift; the Sanctum is his</td></tr>
 <tr><td>"Magic and I had a falling out"; the patron "would not touch the tome"</td><td>Abe's dialogue; frozen traveller's journal</td><td>The elements refuse Ganfaul; he needs them given</td></tr>
 <tr><td>Ledger page: "Rain on the hill road: not for sale" struck out, "yet"</td><td>Forest camp table</td><td>He priced the Storm, which fled into Wulang</td></tr>
-<tr><td>The memories' slips: soup, warm water, the unknown song</td><td>Memory echoes I to III</td><td>The true memory: Nan's kitchen and her rain song</td></tr>
-<tr><td>Rhyme of the Tallyman who "wears a friend's face"; the old man with a kettle behind the burning guardian</td><td>Volcano note; watch post chest</td><td>Ganfaul, the Tallyman, is Abe</td></tr>
+<tr><td>The memories' slips: the soup, the warm water, the unknown song</td><td>Memory echoes I to III</td><td>The true memory: Nan's kitchen and her rain song</td></tr>
+<tr><td>The Tallyman who "wears a friend's face"; an old man with a kettle behind the burning guardian</td><td>Volcano note; watch post chest</td><td>Ganfaul, the Tallyman, is Abe</td></tr>
 <tr><td>Abe's shadow has horns, by the volcano fire only</td><td>Volcano camp</td><td>The reveal cutscene</td></tr>
 </table>
-
-<h2>4. Level Descriptions</h2>
-<p>Each chapter is a streamed Unity scene loaded over the persistent world, so the next level is always visible on the horizon and is entered through a story-gated transition rather than a menu.</p>
-<div class="row"><div><img src="img/forest.jpg" alt="Forest"></div><div><img src="img/ice_a.jpg" alt="Frozen Amphitheater"></div><div><img src="img/chapter.jpg" alt="Lava tube and chapter card"></div></div>
-<figcaption>Figure 3. The armory and Abe's camp (Forest); the Frozen Amphitheater; the lava tube under the Chapter III card.</figcaption>
-
-<h3>4.1 Chapter I, The Spark: the Forest (tutorial)</h3>
-<p><b>Narrative role:</b> the hook. The intro establishes the premise, Abe establishes the rules ("they only go where they're given"), and the first guardian and first memory plant the complication. <b>Environmental storytelling:</b> the Earth guardian's rampage (broken weapon racks, an overturned wagon, barrels) is strewn beside the trail and leads the player to the Blossom Glade without a marker; a crown of runestones states the old law, "let no one hand hold them all", which Abe's mission quietly breaks; an abandoned book-bearer's camp with scattered tomes; a shrine plaque for the baker's granddaughter who never came home. A warm colour grade, birdsong and the forest theme make it feel safe. <b>Mechanics that reinforce the story:</b> Wulang starts with only the Storm's gift, and the Earth guardian is weak to Lightning; claiming Earth wakes the ice statue, whose freeze reveal turns the lake into the road to Chapter II.</p>
-<h3>4.2 Chapter II, What the Cold Keeps: the Frozen Reach</h3>
-<p><b>Narrative role:</b> the hold begins. Abe is already at the frozen bank with dry boots; the second memory adds a debt ("one day I'll ask you for something"). <b>Environmental storytelling:</b> travellers frozen solid, all facing away from the Amphitheater, as if caught running; a frozen caravan whose manifest was "paid in full, in old silver"; ice-carved verse, "the cold keeps what the warm forget", with a child's line about Nan beneath it; a desaturated blue grade, howling wind and the absence of birds. <b>Mechanic:</b> the Ice guardian shrugs off single elements, so Wulang combines two gifts (Earth then Lightning, the Storm Quake) to stagger it: carrying more than one gift is what makes her valuable to Abe.</p>
-<h3>4.3 Chapter III, The Price of Fire: the Burning Peak</h3>
-<p><b>Narrative role:</b> rising dread. Abe promises to "tell you everything you were" after the last guardian; Wulang asks whether she ever said no to him. <b>Environmental storytelling:</b> the burnt watch post (an old man with a kettle walking behind the screaming guardian); the chain forge's order for forty chains "in case of a refusal"; an ember shrine's prayer ("he was kind, and he paid us well"); Abe's horned shadow beside the fire; Ganfaul's toppled idol and chains at the rift. Ember-orange contrast, lava rumble and crackle. <b>Mechanic:</b> heat and lava hazards; the route runs through a lava tube onto a causeway; Ice tames Fire, so the gift taken from the cold is what opens the mountain.</p>
-<h3>4.4 Chapter IV, The Sanctum</h3>
-<p><b>Narrative role:</b> the payoff. A floating ring of stone with four element pillars, Abe standing at its heart. <b>Environmental storytelling:</b> each pillar lights as Ganfaul takes up its element; the violet grade and a detuned version of the rain song make the familiar wrong. <b>Mechanics:</b> the meaningful choice (kneel or refuse); the reveal cutscene; a phase-shifting boss that resists everything except his current weakness, so the player must use every gift they earned; dying twice brings the offer back, so the temptation is a gameplay pressure, not only a line of dialogue.</p>
-
-<h2>5. UI Design Concept</h2>
-<p>The HUD is minimal and icon-first (lecture aesthetics: <b>clarity</b> without clutter, <b>satisfaction</b> through responsive feedback, one <b>style</b> of gilded parchment panels). It steps aside whenever the story speaks: during dialogue, memories and cutscenes the HUD is hidden and the letterbox comes in.</p>
 <table>
-<tr><th style="width:20%">Element</th><th>Story information it delivers</th><th style="width:30%">How it supports immersion</th></tr>
-<tr><td>Dialogue box (name, portrait, typewriter text, choices)</td><td>Character voice; the choice that decides the ending; portrait changes reveal who is speaking</td><td>Typewriter pacing, gestures from Abe on his lines; number keys or click for choices</td></tr>
-<tr><td>Objective tracker and compass marker</td><td>Plot progression: each objective is derived from story flags and updates itself ("New objective")</td><td>One line, top right; the marker hides once the goal is in view</td></tr>
-<tr><td>Chapter card (title, recap, loading progress)</td><td>Narrative progress marker and recap at every level transition</td><td>Shown over a landmark flight or the live view, never a black loading screen</td></tr>
-<tr><td>Memory echo</td><td>Backstory (Abe's version); the camera cuts to ghosts, the world drains of colour</td><td>Played in the world where the gift was claimed</td></tr>
-<tr><td>Satchel and journal (Tab)</td><td>Items with lore descriptions; memories and found pages (backstory and clues)</td><td>Read at the player's pace; pages persist with the story state</td></tr>
-<tr><td>Status: health, potions, element ring, boss bar</td><td>Wulang's condition and the gifts she carries; the boss's name and current element</td><td>Damage flash, element icons drain away in the Submission ending</td></tr>
-<tr><td>Subtitles and prompts</td><td>Barks, guardians' lines, arrival lines; "[F] Talk to Abe"</td><td>Keycap hints instead of labels</td></tr>
-<tr><td>Main menu and pause</td><td>Chapters in narrative order with their names; Continue, New Game+, Story Mode (half damage); Restart Region</td><td>The live world flies by behind the menu</td></tr>
+<tr><td class="k">Dialogue design (Lecture 5)</td><td>Dialogue <i>reveals information</i> (the elements' rule, each weakness) and <i>reveals character</i> (Abe's prices, Wulang's dry questions). It is integrated with gameplay (Abe's advice is how the player learns each weakness) and plays as <i>story as investigation</i>: the player weighs what Abe says against what the world shows. Lines are short and show rather than tell; barks and arrival lines are light NPC banter. Conversations greet, gain and reveal information, express emotion and propose a course of action; the offer is the one dialogue-tree branch.</td></tr>
+</table>
+
+<h2>5. Level Descriptions</h2>
+<p>Each level is a streamed scene over the persistent World, so the next chapter is always on the horizon. The table is the per-level design summary of Lecture 2 plus the level design components of Lecture 3 (environment, pacing, challenge).</p>
+<div class="row"><div><img src="img/forest.jpg" alt="Forest"></div><div><img src="img/ice_a.jpg" alt="Frozen Amphitheater"></div><div><img src="img/chapter.jpg" alt="Lava tube and chapter card"></div></div>
+<p class="note">Figure 4. Abe's armory camp (Forest); the Frozen Amphitheater; the lava tube under the Chapter III card.</p>
+<table>
+<thead><tr><th style="width:12%"></th><th>I. The Spark: Forest (<code>Forest.unity</code>)</th><th>II. What the Cold Keeps: Frozen Reach (<code>Ice.unity</code>)</th><th>III. The Price of Fire: Burning Peak (<code>Volcano.unity</code>)</th><th>IV. The Sanctum (<code>FinalArena.unity</code>)</th></tr></thead>
+<tr><td class="k">Narrative progression</td><td>The hook. The intro sets the premise, Abe sets the rule ("they only go where they're given"), and the first guardian and memory plant the complication. Tutorial level.</td><td>The hold begins: Abe is already here; Memory II adds a debt ("one day I'll ask you for something").</td><td>Rising dread: Abe promises to "tell you everything you were"; Wulang asks if she ever said no to him.</td><td>The payoff: the offer, the meaningful choice, the reveal, and one of two endings.</td></tr>
+<tr><td class="k">Environmental storytelling (clues, atmosphere, NPC dialogue)</td><td>The Earth guardian's rampage (broken racks, overturned wagon) strewn along the trail leads to the Glade without a marker; runestone crown: "let no one hand hold them all"; abandoned book-bearer's camp; shrine plaque for the baker's granddaughter. Warm grade, birdsong.</td><td>Travellers frozen solid, all facing away from the Amphitheater; a caravan "paid in full, in old silver"; ice verse with a child's line about Nan. Blue grade, howling wind, no birds.</td><td>Burnt watch post (the old man with a kettle); forge order for forty chains "in case of a refusal"; ember shrine prayer ("he was kind, and he paid us well"); Abe's horned shadow; Ganfaul's toppled idol at the rift. Ember contrast, lava rumble.</td><td>Each pillar lights as Ganfaul takes up its element; violet grade; a detuned rain song makes the familiar wrong.</td></tr>
+<tr><td class="k">Mechanics unique to the level</td><td>Starts with only the Storm's gift; the Earth guardian is weak to Lightning; claiming Earth wakes the ice statue, whose freeze turns the lake into the road on.</td><td>The Ice guardian shrugs off single elements: Earth then Lightning (the <b>Storm Quake</b> combo) staggers it. Carrying two gifts is what makes her valuable to Abe.</td><td>Heat and lava hazards; route through a lava tube onto a causeway; Ice tames Fire, so the gift from the cold opens the mountain.</td><td>Kneel or refuse; a boss that resists everything but his current weakness, so every earned gift is needed; dying twice brings the offer back.</td></tr>
+<tr><td class="k">Playfield, physical and audio look</td><td>Rolling hills, creek, pond, trails; armory compound; stone-ringed glade arena.</td><td>Glacier ridges, terraces, frozen ponds, ice spires; amphitheater with ice pillars as cover.</td><td>Lava fields, burnt forest, cinder cones; caldera island in a lava moat.</td><td>Floating stone ring, four element pillars, open sky.</td></tr>
+<tr><td class="k">Foreground objects, characters</td><td>Abe, Earth Guardian, Earth and Lightning vampires; three chests; ledger page; statue.</td><td>Abe, Ice Guardian, Ice vampires; three chests; traveller's journal; waystone.</td><td>Abe and his shadow, Fire Guardian, Fire vampires; three chests; rhyme sheet; rift.</td><td>Abe / Ganfaul; ghosts of the true memory.</td></tr>
+<tr><td class="k">Animations, music and sound</td><td>Abe's seated gestures; memory ghosts. Forest theme, birdsong.</td><td>Wind ambience, Ice theme; boss music in the fight.</td><td>Lava rumble, crackle, Volcano theme.</td><td>Sanctum air, detuned theme; Truth or Gilded ending music.</td></tr>
+<tr><td class="k">Character script</td><td>Intro; "Meet Abe" (9 lines); Memory I; guardian lines.</td><td>Arrival line; "Abe's camp" (7 lines); Memory II.</td><td>Arrival line; "Abe's camp" (5 lines); Memory III.</td><td>The offer (7 lines, 2 choices); offer again; kneeling; true memory.</td></tr>
+<tr><td class="k">Challenge, difficulty, pacing</td><td>Easiest; teaching (two single vampires, then packs); guardian 500 HP. Slow start, one fight, a memory to rest.</td><td>Harder: packs, 1,000 HP guardian needing a combo. Exploration first, fight last.</td><td>Hazards plus packs, 1,200 HP guardian. Tension high, short breathers at camps.</td><td>Hardest: 1,600 HP, four phases. Climax, then a long quiet ending.</td></tr>
+<tr><td class="k">Resources (sources and drains)</td><td colspan="4">Health drains from hits, the seal (5), drowning and lava; sources are potions (heal 40, 5 Wubucks at Abe), relics (+10 max) and region restarts. Wubucks come from vampires, coin piles and chests; Abe's shop is the drain. Spell charges: 15 projectiles (R reloads in 3 s), 5 area casts (+1 every 10 s). The ramp from easy to hard and the Story Mode option follow Lecture 4 (appropriately challenging PvE, balanced resources).</td></tr>
+<tr><td class="k">No dominant strategy</td><td colspan="4">Lecture 4: the elements form two rock-paper-scissors pairs (Fire and Ice, Earth and Lightning) and each guardian answers a different one, so no single element wins the game, and the final boss forces all four.</td></tr>
+<tr><td class="k">Transition in, out</td><td>In: New Game intro or chapter select. Out: walk over the frozen lake (<code>lakeFrozen</code>): Chapter II card over the live view.</td><td>Out: F on the waystone (<code>bossIceDefeated</code>): flight to the volcano, Chapter III card.</td><td>Out: F on the rift (<code>bossFireDefeated</code>): Chapter IV card.</td><td>Out: end card, then the main menu (New Game+ unlocked).</td></tr>
+</table>
+
+<h2>6. UI Design Concept</h2>
+<p style="break-inside: avoid">UI/UX covers <b>controls, HUD and menus</b> (Lecture 3) with <b>clarity, satisfaction and style</b> (Lecture 5). The HUD is minimal and icon-first, and hides behind a letterbox whenever the story speaks.</p>
+<table>
+<thead><tr><th style="width:19%">Element</th><th>Story information it delivers</th><th style="width:33%">How it supports immersion</th></tr></thead>
+<tr><td>Dialogue box (speaker name, portrait, typewriter text, numbered choices)</td><td><b>Character voice</b>; the choice that decides the ending; portraits show who speaks (Abe's face holds until she refuses)</td><td>Typewriter pacing, Abe gestures on his lines; a "[Space] Continue" keycap; 1-9 or click for choices</td></tr>
+<tr><td>Objective tracker and compass</td><td><b>Plot progression</b>: each objective is derived from story flags and flashes "New objective" when the story moves on</td><td>One line, top right; the compass hides once the goal is in view</td></tr>
+<tr><td>Chapter card (title, recap, loading progress)</td><td>Narrative progress marker and <b>recap</b> at every level transition</td><td>Shown over a landmark flight or the live view, never a black loading screen</td></tr>
+<tr><td>Memory echo</td><td><b>Backstory</b> (Abe's version), with a slip to notice</td><td>Played in the world where the gift was claimed; colour drains, the camera cuts to ghosts</td></tr>
+<tr><td>Satchel and journal (Tab)</td><td><b>Inventory with lore</b> (tomes, potions); the <b>journal/codex</b> of memories and found pages (backstory, clues)</td><td>Read at the player's own pace; pages persist with the story state</td></tr>
+<tr><td>Status: health, potions, element ring, boss bar</td><td>Wulang's condition and the gifts she carries; each guardian's name and current element</td><td>Damage flash; element icons drain away in the Submission ending</td></tr>
+<tr><td>Subtitles and prompts</td><td>Barks, guardian lines, arrival lines; "[F] Talk to Abe"</td><td>Keycap hints instead of labels</td></tr>
+<tr><td>Main menu and pause</td><td>Chapters in narrative order with their names; Continue; New Game+; Story Mode; Restart Region</td><td>The live world flies by behind the menu</td></tr>
+</table>
+<table>
+<thead><tr><th style="width:19%">UI principle (Lectures 1, 4, 5)</th><th>How Wulang applies it</th></tr></thead>
+<tr><td>Clarity, visual hierarchy, contrast</td><td>The most important information is largest and brightest: gold speaker names over parchment body text; the boss bar at top centre; the objective in one line. Dark translucent backings keep text readable on bright snow and lava.</td></tr>
+<tr><td>Satisfaction, feedback loops</td><td>Immediate response to every press: spell light and impact, damage flash, coin and potion sounds, a glow when the objective changes, roars and hit reactions.</td></tr>
+<tr><td>Style, systems thinking, shape language</td><td>One gilded-parchment style for every panel; each element has one colour and one icon shape used everywhere (spells, enemies, pillars, ring), so meaning is consistent across the game.</td></tr>
+<tr><td>Colour-blind friendliness</td><td>Elements are never identified by colour alone: each has its own icon shape and its name on the ring and boss bar.</td></tr>
+<tr><td>Layout and position</td><td>Health and potions bottom left, element ring bottom right, objective top right, compass and boss bar top centre, prompts under the crosshair, dialogue along the bottom: the centre of the screen stays on the world.</td></tr>
+<tr><td>Accessibility, reducing friction (HCI/UX lens)</td><td>Story Mode halves damage (an easy mode for story-focused players); every cutscene and caption can be skipped with Space; one interact key; Continue resumes at the last region.</td></tr>
+</table>
+<table>
+<thead><tr><th>Controls</th><th>Input</th><th>Controls</th><th>Input</th></tr></thead>
+<tr><td>Move, look, sprint, jump</td><td>WASD, mouse, Left Shift, Space</td><td>Interact (talk, trade, read, statue, exits)</td><td>F</td></tr>
+<tr><td>Projectile / area spell</td><td>Left / right mouse</td><td>Previous / next element; reload</td><td>Q / E; R</td></tr>
+<tr><td>Drink a potion</td><td>H</td><td>Satchel and journal; pause</td><td>Tab; Esc</td></tr>
+<tr><td>Advance dialogue; pick a choice</td><td>Space, Enter, F or click; 1-9</td><td>Skip a cutscene or caption</td><td>Space</td></tr>
 </table>
 <div class="row"><div><img src="img/dialogue.jpg" alt="Dialogue"></div><div><img src="img/hud.jpg" alt="HUD"></div><div><img src="img/journal.jpg" alt="Journal"></div></div>
-<figcaption>Figure 4. Dialogue box with portrait; the HUD with the objective tracker; the journal with a found page.</figcaption>
+<p class="note">Figure 5. Dialogue box with portrait; the HUD with the objective tracker; the journal with a found page.</p>
 
-<h2 class="pb">6. Storyline Implementation Plan</h2>
-<p class="small">Story state lives in <code>StoryStateManager</code> (a <code>DontDestroyOnLoad</code> set of string flags with an <code>OnFlagSet</code> event, saved for Continue). Triggers set flags; objectives, seals, exits, dialogue and endings read them. Every region checkpoint is saved on arrival. The full path is checked automatically by <code>StoryPathCheck</code> (Section 9).</p>
+<h2>7. Storyline Implementation Plan</h2>
+<p class="note">Story state lives in <code>StoryStateManager</code>: a <code>DontDestroyOnLoad</code> set of string flags with an <code>OnFlagSet</code> event, checkpointed on every region arrival for Continue. Triggers set flags; objectives, seals, exits, dialogue and endings read them. Every trigger fires once (its own flag) and only when its required flag is set.</p>
+<h3>7.1 Story-beat table</h3>
 <table>
-<tr><th>Beat</th><th>Level</th><th>Trigger</th><th>UI shown</th><th>State change</th></tr>
-<tr><td>Intro</td><td>Forest</td><td>New Game (cutscene)</td><td>Letterbox narration, wake, chapter card</td><td><code>introSeen</code>; objective: speak with the old man</td></tr>
-<tr><td>Meet Abe</td><td>Forest</td><td>NPC interaction (F)</td><td>Dialogue box</td><td><code>metAbe</code>; objective: Earth guardian</td></tr>
-<tr><td>Ledger page and other notes</td><td>All</td><td>Interact (F) / chest</td><td>Subtitle, journal entry</td><td>Journal item; <code>read ...</code>, chest flags</td></tr>
-<tr><td>Guardian falls</td><td>Forest, Ice, Volcano</td><td>Zone entry starts the fight; boss death</td><td>Boss bar, last words</td><td><code>boss...Defeated</code>; tome drops; objective: take the tome</td></tr>
-<tr><td>Take a tome</td><td>Forest, Ice, Volcano</td><td>Item pickup</td><td>Element ring, unlock card</td><td><code>hasEarth/Ice/Fire</code>; memory echo plays</td></tr>
-<tr><td>Memory I to III</td><td>Forest, Ice, Volcano</td><td>Flag watch (<code>has...</code>)</td><td>Camera cut, grade, dialogue</td><td>Memory in journal; next objective</td></tr>
-<tr><td>Freeze the lake</td><td>Forest to Ice</td><td>Interact with statue (gated on <code>bossEarthDefeated</code>)</td><td>Freeze reveal cutscene</td><td><code>lakeFrozen</code>; Ice seal lifts</td></tr>
-<tr><td>Chapter II, III, IV</td><td>Transitions</td><td>Walk in / waystone / rift, each gated on a flag</td><td>Flight or live view, chapter card with recap and progress</td><td>Region loads (async), previous unloads, checkpoint saved</td></tr>
-<tr><td>The offer</td><td>Sanctum</td><td>Zone entry (12 m)</td><td>Dialogue with 2 choices</td><td><code>choseSubmission</code> or <code>refusedOffer</code></td></tr>
-<tr><td>Reveal (climax)</td><td>Sanctum</td><td>Flag <code>refusedOffer</code></td><td>Cutscene, then boss bar</td><td><code>ganfaulRevealed</code>; fight starts</td></tr>
-<tr><td>Endings</td><td>Sanctum</td><td>Kneel / Ganfaul defeated</td><td>Element drain or true memory; end card</td><td><code>endingTruth</code> / <code>choseSubmission</code>; New Game+ unlocked</td></tr>
+<thead><tr><th style="width:17%">Beat</th><th style="width:9%">Level</th><th style="width:18%">Trigger</th><th style="width:21%">UI shown</th><th>State change</th></tr></thead>
+<tr><td>Intro: the Storm, the armory</td><td>Forest</td><td>New Game (cutscene)</td><td>Letterbox narration, chapter card</td><td><code>introSeen</code>; objective: speak with the old man</td></tr>
+<tr><td>Meet Abe</td><td>Forest</td><td>NPC interaction (F)</td><td>Dialogue box, portraits</td><td><code>metAbe</code>; objective: Earth guardian; shop opens</td></tr>
+<tr><td>Torn ledger page</td><td>Forest</td><td>Interact (F) on the note</td><td>Subtitle, journal entry</td><td><code>read Torn ledger page</code>; page in journal</td></tr>
+<tr><td>Earth Guardian falls</td><td>Forest</td><td>Zone entry starts fight; boss death</td><td>Boss bar, last words</td><td><code>bossEarthDefeated</code>; tome drops; objective: take the tome</td></tr>
+<tr><td>Earth tome, Memory I</td><td>Forest</td><td>Item pickup; flag watch</td><td>Element ring, memory echo, journal</td><td><code>hasEarth</code>, <code>Memory I seen</code>; objective: wake the statue</td></tr>
+<tr><td>Statue and freeze</td><td>Forest to Ice</td><td>Zone hint, then F on statue (needs <code>bossEarthDefeated</code>)</td><td>Subtitle; freeze-reveal cutscene; Chapter II card</td><td><code>statueHint</code>, <code>lakeFrozen</code>; Ice seal lifts</td></tr>
+<tr><td>Arrival; Abe's camp; journal</td><td>Ice</td><td>Region load; F on Abe; F on note</td><td>Subtitle; dialogue; journal</td><td><code>iceArrived</code>, <code>talked: Ice - Abe's camp</code>, <code>read ...</code></td></tr>
+<tr><td>Ice Guardian, tome, Memory II</td><td>Ice</td><td>Boss death; pickup; flag watch</td><td>Boss bar; memory echo</td><td><code>bossIceDefeated</code>, <code>hasIce</code>; waystone unlocks</td></tr>
+<tr><td>Waystone</td><td>Ice to Volcano</td><td>F (gated on <code>bossIceDefeated</code>)</td><td>Flight, Chapter III card with recap</td><td>Volcano loads (async), Ice unloads; checkpoint</td></tr>
+<tr><td>Arrival; Abe and shadow; rhyme</td><td>Volcano</td><td>Region load; F on Abe; F on note</td><td>Subtitle; dialogue; journal</td><td><code>volcanoArrived</code>, <code>talked: ...</code>, <code>read Scorched decree</code></td></tr>
+<tr><td>Fire Guardian, tome, Memory III</td><td>Volcano</td><td>Boss death; pickup; flag watch</td><td>Boss bar; memory echo</td><td><code>bossFireDefeated</code>, <code>hasFire</code>; rift opens</td></tr>
+<tr><td>Chests (3 per region)</td><td>Forest, Ice, Volcano</td><td>Interact (F)</td><td>Loot list, journal page</td><td><code>chest: &lt;id&gt;</code>, <code>vitality: &lt;id&gt;</code> (+10 max health)</td></tr>
+<tr><td>The offer (choice)</td><td>Sanctum</td><td>Zone entry (12 m)</td><td>Dialogue with 2 choices</td><td><code>offerHeard</code>; <code>choseSubmission</code> or <code>refusedOffer</code></td></tr>
+<tr><td>Reveal (climax)</td><td>Sanctum</td><td>Flag <code>refusedOffer</code></td><td>Cutscene, then boss bar</td><td><code>ganfaulRevealed</code>; fight; dying twice repeats the offer</td></tr>
+<tr><td>Endings</td><td>Sanctum</td><td>Kneel / Ganfaul defeated</td><td>Element drain or true memory; end card</td><td><code>choseSubmission</code> / <code>bossFinalDefeated</code>, <code>endingTruth</code>; New Game+</td></tr>
 </table>
+<h3>7.2 Story flow diagram</h3>
 <figure>
-<svg viewBox="0 0 660 250" width="100%" height="250" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 660 248" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
   <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#333"/></marker></defs>
   <g font-size="10.5" text-anchor="middle">
   <g fill="#f3efe6" stroke="#555">
@@ -181,26 +290,33 @@ Youssef Yasser &middot; 58-3187 &middot; Video Game Design (DMET 909), German Un
   <g stroke="#333" fill="none" marker-end="url(#a)">
     <path d="M95,32 L118,32"/><path d="M210,32 L233,32"/><path d="M330,32 L353,32"/><path d="M450,32 L473,32"/><path d="M522,49 L522,93"/>
     <path d="M475,114 L432,114"/><path d="M330,140 L215,168"/><path d="M365,140 L365,168"/><path d="M430,187 L473,187"/>
-    <path d="M335,204 C335,228 395,228 395,206" /><path d="M120,187 C70,187 50,160 50,135"/><path d="M535,204 C535,240 50,240 50,135"/><path d="M50,95 L50,51"/>
+    <path d="M335,204 C335,228 395,228 395,206" /><path d="M120,187 H70 V135"/><path d="M535,204 V242 H35 V135"/><path d="M50,95 L50,51"/>
   </g>
-  <text x="300" y="242" font-size="9" fill="#555">dies twice: the offer returns</text>
+  <text x="300" y="232" font-size="9" fill="#555">dies twice: the offer returns</text>
 </svg>
-<figcaption>Figure 5. Story flow: chapters in order, each exit gated on a story flag, and the branching choice (chapter select can start any chapter with its prerequisites).</figcaption>
+<figcaption>Figure 6. Story flow (Lecture 5: story mission details, story nodes and the conditions between them): each exit is gated on a flag; the offer is the branch. Chapter select starts any chapter with its prerequisites.</figcaption>
 </figure>
-<p class="small"><b>Story flags tracked</b> (<code>Flags</code> class and triggers): <code>introSeen</code>, <code>metAbe</code>, <code>hasLightning/Earth/Ice/Fire</code>, <code>bossEarthDefeated</code>, <code>bossIceDefeated</code>, <code>bossFireDefeated</code>, <code>bossFinalDefeated</code>, <code>lakeFrozen</code>, <code>statueHint</code>, <code>iceArrived</code>, <code>volcanoArrived</code>, <code>offerHeard</code>, <code>refusedOffer</code>, <code>ganfaulRevealed</code>, <code>choseSubmission</code>, <code>endingTruth</code>, <code>talked: &lt;conversation&gt;</code>, <code>read &lt;note&gt;</code>, <code>&lt;memory&gt; seen</code>, chest ids, and the New Game+ variants of the boss flags.</p>
-<p class="small"><b>Dialogue format: ScriptableObjects.</b> Each conversation is one <code>DialogueData</code> asset (lines with speaker, portrait and text; optional choices, each with a flag to set; a flag set when finished). Assets are referenced directly by triggers, NPCs and endings in the Inspector, so there is no string lookup to break, and they version cleanly in Git. Data, logic and display are separate: <code>DialogueData</code>, <code>DialogueManager</code> (queue, typewriter, choices, sets flags) and <code>DialogueUI</code>. The writing itself is kept in one authoring file, <code>StoryScript.cs</code>, whose <i>Apply story script</i> command writes it into the assets and scenes, so the whole script can be read and revised in one place while the game only reads data.</p>
-<p class="small"><b>Narrative and supporting scripts (commented):</b> <code>StoryStateManager</code>, <code>DialogueManager</code>, <code>DialogueUI</code>, <code>ObjectiveManager</code>, <code>RegionObjectives</code>, <code>NarrativeTrigger</code>, <code>MemoryEcho</code>, <code>IntroCutscene</code>, <code>EndingController</code>; level transitions: <code>RegionManager</code>, <code>RegionTravel</code>, <code>FlagGate</code>, <code>RegionStart</code>; UI: <code>MainMenu</code>, <code>PauseMenu</code>, <code>InventoryUI</code>, <code>TransitionOverlay</code>; player: <code>FirstPersonController</code>, <code>SpellCaster</code>, <code>PlayerHealth</code>; audio: <code>GameAudio</code>.</p>
+<h3>7.3 Story variables (flags)</h3>
+<p class="note"><code>introSeen</code>, <code>metAbe</code>, <code>hasLightning/Earth/Ice/Fire</code>, <code>bossEarthDefeated</code>, <code>bossIceDefeated</code>, <code>bossFireDefeated</code>, <code>bossFinalDefeated</code>, <code>lakeFrozen</code>, <code>statueHint</code>, <code>iceArrived</code>, <code>volcanoArrived</code>, <code>offerHeard</code>, <code>refusedOffer</code>, <code>ganfaulRevealed</code>, <code>choseSubmission</code>, <code>endingTruth</code>, <code>talked: &lt;conversation&gt;</code>, <code>read &lt;note&gt;</code>, <code>&lt;Memory&gt; seen</code>, <code>chest: &lt;id&gt;</code>, <code>vitality: &lt;id&gt;</code>. Flags used by code are constants in the <code>Flags</code> class; the rest are typed on the assets that set them.</p>
+<h3>7.4 Dialogue format: ScriptableObjects (data, not code)</h3>
+<p class="note">All story text is data that is edited in the Unity Inspector; no line of dialogue is written in a C# script. <b>Conversations:</b> one <code>DialogueData</code> ScriptableObject per conversation (11 in <code>Assets/Story/Dialogue</code>): lines with speaker, portrait and text, optional choices that each set a flag and can link to another conversation, and a flag set when finished. In the lecture's terms this is a <b>dialogue tree</b>: lines are nodes, choices are links, and <b>preconditions</b> (a trigger's required flag) and <b>actions</b> (set a flag, give a journal page, open the next conversation) are story flags. <b>Journal pages, memories and item lore:</b> one <code>ItemData</code> asset each (21). <b>Everything else</b> (guardian lines, chapter cards and recaps, objectives, barks, ending cards): one <code>StoryText</code> asset, <code>Assets/Story/Story Text.asset</code>, copied onto the scenes by <i>Wulang &gt; Story &gt; Apply story text</i>. <b>Why:</b> ScriptableObjects are the format the assignment guide recommends; they are edited in the Inspector without touching code (conversation and journal edits apply immediately, even in Play mode), referenced directly by triggers so no string lookup can break, and they diff cleanly in Git. Data (<code>DialogueData</code>), logic (<code>DialogueManager</code>: queue, typewriter, choices, flags) and display (<code>DialogueUI</code>) are separate.</p>
+<h3>7.5 Scripts, level transitions and testing</h3>
+<p class="note"><b>Documented scripts</b> (class and member documentation comments): narrative: <code>StoryStateManager</code>, <code>DialogueData</code>, <code>DialogueManager</code>, <code>ObjectiveManager</code>, <code>RegionObjectives</code>, <code>NarrativeTrigger</code>, <code>StoryText</code>; level transitions: <code>RegionManager</code>, <code>RegionTravel</code>, <code>FlagGate</code>; UI interaction: <code>DialogueUI</code>, <code>InventoryUI</code>; player controls: <code>PlayerInteract</code>. Also <code>MemoryEcho</code>, <code>IntroCutscene</code>, <code>EndingController</code>, <code>MainMenu</code>, <code>PauseMenu</code>, <code>TransitionOverlay</code>, <code>SpellCaster</code>, <code>PlayerHealth</code>, <code>GameAudio</code>. <b>Transitions</b> are conditioned on story state, not position: walking into a region works only when its flag is set (otherwise its seal pushes back); the waystone and rift are switched on by a <code>FlagGate</code>; each loads with <code>SceneManager.LoadSceneAsync</code> under a chapter card with a recap, and the state carries over because the story manager is never unloaded. <b>Cutscenes</b> (intro, flights, freeze reveal, memories, Ganfaul's reveal) use Cinemachine cameras and Timeline, can all be skipped with Space, and set a flag when they finish. <b>Testing the full path</b> (guide Step 11): <i>Wulang &gt; Checks &gt; Full story path</i> plays from the menu through every beat to both endings, checking that each beat fires once and in order and that the objective matches the story state at every step.</p>
 
-<h2>7. Art and Aesthetic</h2>
-<p><b>Visual style:</b> a stylized, saturated fantasy (Idyllic Fantasy Nature, Stylized Rock Pack, Stylized Fantasy Armory, Cartoon Sky) whose palette is pushed per chapter so colour carries the mood: a warm, golden forest; a cold, desaturated blue reach; an ember-black volcano; a violet sanctum. Each region scene brings its own colour-grade volume, so the world visibly changes as the chapter changes. Memories drain the colour to a blue-grey with a vignette, and ghosts of Wulang and Abe act them out. Characters are Mixamo models with root-motion animation; the portraits are rendered from the same models.</p>
-<p><b>Audio style:</b> music and ambience change with the region, a boss fight, a memory and each ending. A single melody, Nan's rain song, ties the score together: it opens the menu and the intro, plays thin and slightly out of tune under Abe's memories, returns detuned in the Sanctum, and is played whole and warm only in the Truth ending; the Gilded Past ending sets it in a hollow minor key. Ambience beds (birdsong, wind, lava rumble, sanctum air) and effects (casts, impacts, roars, chests, thunder) support the lecture's "satisfaction". The current music and ambience are synthesised placeholders, made by a script so they can be replaced file by file.</p>
+<h2>8. Art and Aesthetic</h2>
+<p><b>Visual style:</b> a stylised, saturated fantasy (Idyllic Fantasy Nature, Stylized Rock Pack, Stylized Fantasy Armory, Cartoon Sky) with one cohesive look whose palette shifts per chapter so colour carries the tone (Lecture 5, <b>style</b>): a golden forest, a cold blue reach, an ember-black volcano, a violet sanctum. <b>Audio style:</b> region music and ambience that change for fights, memories and endings, tied together by one melody, Nan's rain song: thin and out of tune under Abe's memories, detuned in the Sanctum, whole and warm only in the Truth ending.</p>
+<table>
+<tr><td class="k">Contrast (value, saturation)</td><td>Glowing lava and lit chests against dark rock; light beams over every reward; gold UI on dark backings.</td><td class="k">Lighting</td><td>Day and night, spell lights, the blue freeze front, the Sanctum's pillar lights; memories drain to blue-grey with a vignette.</td></tr>
+<tr><td class="k">Shape and size</td><td>The guardians' exaggerated silhouettes read as danger at a glance.</td><td class="k">Level of detail</td><td>Concentrated at landmarks; trails are areas of rest.</td></tr>
+<tr><td class="k">VFX (particle systems)</td><td>Each element has its own projectile, area spell and impact.</td><td class="k">Sound and satisfaction</td><td>Ambience beds (birdsong, wind, lava rumble, sanctum air); effects (casts, impacts, roars, chests, thunder); the Gilded Past ending sets the rain song in a hollow minor key. Music and ambience are synthesised placeholders, replaceable file by file.</td></tr>
+</table>
 <div class="row"><div><img src="img/memory.jpg" alt="Memory echo"></div><div><img src="img/choice.jpg" alt="The choice"></div><div><img src="img/reveal_a.jpg" alt="The reveal"></div></div>
-<figcaption>Figure 6. Art samples: a memory echo (ghosts, desaturated); the offer and its choice; the reveal cutscene.</figcaption>
+<p class="note">Figure 7. Art samples: a memory echo (ghosts, desaturated); the offer and its choice; the reveal cutscene.</p>
 
-<h2>8. Story in the Prototype</h2>
+<h2>9. Story in the Prototype</h2>
 <p class="note">Timestamps follow the recorded video. <span id="timestamps-note">(Planned route; update the times after recording.)</span></p>
 <table>
-<tr><th style="width:9%">Time</th><th>Story beat shown</th><th style="width:9%">Time</th><th>Story beat shown</th></tr>
+<thead><tr><th style="width:9%">Time</th><th>Story beat shown</th><th style="width:9%">Time</th><th>Story beat shown</th></tr></thead>
 <tr><td>00:00</td><td>Main menu: chapters, Story Mode</td><td>05:40</td><td>Ice Guardian, Storm Quake, last words; Memory II</td></tr>
 <tr><td>00:15</td><td>Intro cutscene (narration, storm, flight, waking)</td><td>06:40</td><td>Waystone: flight, Chapter III card</td></tr>
 <tr><td>01:05</td><td>Chapter I card; Abe's first conversation</td><td>07:10</td><td>Volcano camp, horned shadow, rhyme sheet</td></tr>
@@ -212,25 +328,30 @@ Youssef Yasser &middot; 58-3187 &middot; Video Game Design (DMET 909), German Un
 <tr><td>05:00</td><td>Abe's Ice camp, traveller's journal, frozen travellers</td><td>11:30</td><td>Continue from the main menu</td></tr>
 </table>
 
-<h2>9. Requirements Checklist</h2>
+<h2>10. Requirements and Lecture Checklist</h2>
 <table>
-<tr><th style="width:38%">Requirement</th><th>Where</th></tr>
-<tr><td>Storyline summary 400-600 words</td><td>Section 1 (560 words)</td></tr>
-<tr><td>3+ characters with background, motivation, role, relation</td><td>Section 2: Wulang, Abe, Ganfaul, the Guardians, Nan; portraits, Figure 1</td></tr>
-<tr><td>Narrative structure, plot points, objectives, emotional beats</td><td>Section 3: acts and phases table, pacing graph, foreshadowing table</td></tr>
-<tr><td>3+ levels: narrative role, environmental storytelling, mechanics</td><td>Section 4: four chapters</td></tr>
-<tr><td>UI design concept</td><td>Section 5: table and Figure 4</td></tr>
-<tr><td>Implementation: beat table, flow diagram, flags, dialogue format</td><td>Section 6, Figure 5</td></tr>
-<tr><td>Art and aesthetic with samples; Story in the prototype with timestamps</td><td>Sections 7 and 8</td></tr>
-<tr><td>3+ playable scenes; menu (start, chapters in order, continue, exit, restart)</td><td>Forest, Ice, Volcano, FinalArena + World and MainMenu; pause menu Restart Region</td></tr>
-<tr><td>3+ narrative moments per level; opening and closing</td><td>Per level: Abe dialogue, notes, memory echo, guardian lines, arrival lines, chest pages; intro cutscene and two endings</td></tr>
-<tr><td>Story-driven objectives; story state; flag-gated transitions</td><td><code>ObjectiveManager</code>; <code>StoryStateManager</code>; seals, waystone and rift gated on flags</td></tr>
-<tr><td>Meaningful choice</td><td>Kneel or refuse in the Sanctum: two endings</td></tr>
-<tr><td>Environmental storytelling (props, lighting, audio, layout)</td><td>Wreckage trail, frozen travellers, forge, shadow; region grades; music and ambience per region</td></tr>
-<tr><td>Cutscenes for intro, level changes and climax, skippable</td><td>Intro cutscene, landmark flights and freeze reveal, Ganfaul reveal; Space skips all</td></tr>
-<tr><td>6+ commented scripts, 2+ narrative</td><td>Section 6 list</td></tr>
-<tr><td>Full path tested (Step 11)</td><td><i>Wulang &gt; Checks &gt; Full story path</i> plays intro to both endings, chapter select and Continue, checking the objective at every step (passes)</td></tr>
-<tr><td>Repository and video links</td><td>Top of page 1</td></tr>
+<thead><tr><th style="width:44%">Assignment requirement</th><th>Where</th></tr></thead>
+<tr><td>Storyline summary, 400-600 words (premise, tone, conflict)</td><td>Section 1 (553 words) and story spine</td></tr>
+<tr><td>3+ characters: background, motivation, role, relation; visuals</td><td>Section 3: Wulang, Abe, Ganfaul, the Guardians; portraits, Figure 2</td></tr>
+<tr><td>Narrative structure: plot points, objectives, emotional beats</td><td>Section 4: acts, sequences, Hero's Journey, pacing graph, foreshadowing</td></tr>
+<tr><td>3+ levels: narrative role, environmental storytelling, mechanics</td><td>Section 5: four chapters</td></tr>
+<tr><td>UI design concept (HUD, menus, dialogue, objectives, inventory)</td><td>Section 6</td></tr>
+<tr><td>Implementation plan: beat table, flow diagram, flags, dialogue format</td><td>Section 7</td></tr>
+<tr><td>Art and aesthetic with samples; story in the prototype with timestamps</td><td>Sections 8 and 9</td></tr>
+<tr><td>3+ playable scenes; menu (start, chapters in order, continue, restart, exit)</td><td>Forest, Ice, Volcano, FinalArena over World; MainMenu; pause menu</td></tr>
+<tr><td>3+ narrative moments per level; opening and closing; meaningful choice</td><td>Section 7.1 (at least five per level); intro and two endings; kneel or refuse</td></tr>
+<tr><td>Story-driven objectives, story state, flag-gated transitions, triggers</td><td><code>ObjectiveManager</code>, <code>StoryStateManager</code>, <code>RegionManager</code>, <code>NarrativeTrigger</code></td></tr>
+<tr><td>Environmental storytelling (props, lighting, audio, layout)</td><td>Section 5 table; Section 8</td></tr>
+<tr><td>6+ commented scripts, 2+ narrative; dialogue as data</td><td>Section 7.4 and 7.5</td></tr>
+<tr><td>Repository and video links</td><td>Page 1</td></tr>
+</table>
+<table>
+<thead><tr><th style="width:44%">Lecture concept</th><th>Where</th></tr></thead>
+<tr><td>L1: formal elements, engaging the player, design decisions, play length; HCI/UX lens</td><td>Section 0; Section 6 (UI principles)</td></tr>
+<tr><td>L2: genre and hybrids, player role, target audience, player types, Adams' dream, MDA, Elemental Tetrad, narrative/ludic balance, authored vs. emergent, per-level design summary</td><td>Section 0; Section 4; Section 5 table</td></tr>
+<tr><td>L3: six components of game design (level design: environment, pacing, challenge; UI/UX: controls, HUD, menus); game world and its bond with the story; physical, temporal, environmental, emotional and ethical dimensions; world sketch</td><td>Section 2, Figure 1; Section 5; Section 6</td></tr>
+<tr><td>L4: appropriately challenging PvE, easy mode for story games, balanced resources (sources and drains), no dominant strategy, imperfect information</td><td>Section 5 (resources, challenge); Section 4 (foreshadowing); Section 6</td></tr>
+<tr><td>L5: aesthetics (clarity, satisfaction, style), kinds of fun, visual hierarchy, contrast, lighting, shape, colour-blindness; character development, avatar vs. character, archetypes, background paper, attributes, dimensions, audio design, health and damage, AI, animation; story phases, story units, Hero's Journey, pacing, episodic delivery, dialogue purposes, dialogue tree, preconditions and actions, story spine</td><td>Sections 0, 1, 3, 4, 6, 7.4 and 8</td></tr>
 </table>
 </body>
 </html>

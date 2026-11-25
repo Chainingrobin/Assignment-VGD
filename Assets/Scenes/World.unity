@@ -311292,6 +311292,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 11d9fac4d0110db44a546743d3c7995e, type: 2}
   - {fileID: 11400000, guid: 172f07868d716fb44978f3c545beae81, type: 2}
   - {fileID: 11400000, guid: 0c84590ce3af6664fabc3ee0357d75b7, type: 2}
+  noPotionsLine: "No potions left. Abe sells them for Wubucks."
+  fullHealthLine: "Wulang: I'm fine. Save it."
 --- !u!114 &1223496414
 MonoBehaviour:
   m_ObjectHideFlags: 0

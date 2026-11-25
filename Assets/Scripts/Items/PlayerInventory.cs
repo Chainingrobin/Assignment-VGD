@@ -14,6 +14,11 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private ItemData healingPotion;
     [Tooltip("One tome per element; added to the satchel when that element is unlocked.")]
     [SerializeField] private ItemData[] tomes;
+    // Written from the Story Text asset (Wulang > Story > Apply story text); empty = say nothing.
+    [Tooltip("Subtitle when H is pressed with no potions left.")]
+    [SerializeField] private string noPotionsLine;
+    [Tooltip("Wulang's line when H is pressed at full health.")]
+    [SerializeField] private string fullHealthLine;
 
     private readonly Dictionary<ItemData, int> counts = new();
     private readonly List<ItemData> order = new();
@@ -84,9 +89,9 @@ public class PlayerInventory : MonoBehaviour
     {
         if (PlayerLock.IsLocked || healingPotion == null) return;
         var health = PlayerHealth.Instance;
-        if (Count(healingPotion) == 0) Subtitle.Show("No potions left. Abe sells them for Wubucks.", 2.5f);
+        if (Count(healingPotion) == 0) { if (!string.IsNullOrEmpty(noPotionsLine)) Subtitle.Show(noPotionsLine, 2.5f); }
         else if (health != null && health.Heal(healingPotion.healAmount)) { Consume(healingPotion); GameAudio.Play("Sfx/Potion", null, 0.7f); }
-        else Subtitle.Show("Wulang: I'm fine. Save it.", 2f);
+        else if (!string.IsNullOrEmpty(fullHealthLine)) Subtitle.Show(fullHealthLine, 2f);
     }
 
     private void Refresh() => Changed?.Invoke();

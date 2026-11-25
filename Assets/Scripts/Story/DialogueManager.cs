@@ -6,15 +6,29 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 
-// Plays DialogueData conversations one line at a time with a typewriter reveal. Space, Enter,
-// F or left click finishes the line or advances; choices appear as buttons (number keys work
-// too) and set their story flag. The player is paused while anyone is talking. Data
-// (DialogueData), logic (this) and display (DialogueUI) are kept separate.
+/// <summary>
+/// Plays <see cref="DialogueData"/> conversations: the dialogue logic of the guide's Step 3.
+/// </summary>
+/// <remarks>
+/// <para><b>Flow.</b> <see cref="Play"/> queues a conversation. Each line is shown with its speaker name and portrait
+/// and revealed by a typewriter effect; Space, Enter, F or a left click first completes the line, then advances. If
+/// the conversation has choices, they appear as buttons (number keys work too) and the picked one's flag is set.
+/// When a conversation ends, its <c>flagToSetWhenFinished</c> is set in the <see cref="StoryStateManager"/>, which is
+/// how talking moves the story on (objectives update, gates open).</para>
+/// <para><b>While talking</b> the player is paused (<c>PlayerLock</c>) and the HUD is hidden so the dialogue box owns the
+/// bottom of the screen.</para>
+/// <para><b>Who calls it.</b> <c>NarrativeTrigger</c> (zones, F on notes, flag watches), <c>Merchant</c> (Abe at each
+/// camp), <c>MemoryEcho</c> (the memories' lines) and <c>EndingController</c> (the offer, the second offer, kneeling).</para>
+/// <para>Data (<see cref="DialogueData"/>), logic (this) and display (<see cref="DialogueUI"/>) are kept separate.</para>
+/// </remarks>
 public class DialogueManager : MonoBehaviour
 {
+    // Typewriter speed. A press shows the rest of the line at once.
     private const float CharactersPerSecond = 45f;
 
     private static DialogueManager instance;
+
+    /// <summary>The single dialogue player, created with its UI on first use and kept across scene loads.</summary>
     public static DialogueManager Instance
     {
         get
@@ -30,15 +44,25 @@ public class DialogueManager : MonoBehaviour
     }
 
     private DialogueUI ui;
+    // Conversations asked for while one is playing wait their turn instead of interrupting it.
     private readonly Queue<(DialogueData data, Action done)> queue = new();
     private bool advance;
     private DialogueData.Choice picked;
 
+    /// <summary>True while any conversation is on screen. Triggers and transitions wait for it to finish.</summary>
     public bool IsTalking { get; private set; }
+
+    /// <summary>Raised after each conversation (and any choice) finishes, once its flags are set.</summary>
     public event Action<DialogueData> Finished;
-    // Each line as it starts, so speakers can gesture while they talk (NpcGestures).
+
+    /// <summary>Raised as each line starts, so speakers can gesture while they talk (<c>NpcGestures</c>).</summary>
     public event Action<DialogueData.Line> LineStarted;
 
+    /// <summary>
+    /// Plays a conversation, or queues it behind the one already playing.
+    /// </summary>
+    /// <param name="dialogue">The conversation asset. Null just calls <paramref name="onComplete"/>.</param>
+    /// <param name="onComplete">Called after the conversation, its choice and any follow-up conversations finish.</param>
     public void Play(DialogueData dialogue, Action onComplete = null)
     {
         if (dialogue == null) { onComplete?.Invoke(); return; }
@@ -46,6 +70,7 @@ public class DialogueManager : MonoBehaviour
         if (!IsTalking) StartCoroutine(Run());
     }
 
+    // Drains the queue: every line, then the choice, then the flags; a choice's "next" conversation continues in place.
     private IEnumerator Run()
     {
         IsTalking = true;
@@ -66,6 +91,7 @@ public class DialogueManager : MonoBehaviour
                 if (current.choices != null && current.choices.Length > 0)
                 {
                     yield return Choose(current.choices);
+                    // The player's decision becomes story state: later beats (the endings) read this flag.
                     StoryStateManager.Instance.SetFlag(picked.setFlag);
                     next = picked.next;
                 }
@@ -81,6 +107,7 @@ public class DialogueManager : MonoBehaviour
         IsTalking = false;
     }
 
+    // One line: name and portrait, then the typewriter reveal, then wait for the player to advance.
     private IEnumerator Say(DialogueData.Line line)
     {
         ui.SetLine(line.speaker, line.portrait);
@@ -92,6 +119,7 @@ public class DialogueManager : MonoBehaviour
         ui.Body.maxVisibleCharacters = 0;
         ui.Body.ForceMeshUpdate();
         int total = ui.Body.textInfo.characterCount;
+        // Unscaled time, so the reveal still runs if the game is paused underneath.
         for (float shown = 0f; shown < total && !advance; shown += CharactersPerSecond * Time.unscaledDeltaTime)
         {
             ui.Body.maxVisibleCharacters = Mathf.FloorToInt(shown);
@@ -102,6 +130,7 @@ public class DialogueManager : MonoBehaviour
         while (!advance) yield return null;
     }
 
+    // Shows the answers with a free cursor and waits for a click or a number key; the pick is left in `picked`.
     private IEnumerator Choose(DialogueData.Choice[] choices)
     {
         picked = null;
@@ -119,6 +148,8 @@ public class DialogueManager : MonoBehaviour
         PlayerLock.Pop(showCursor: true);
     }
 
+    // Input for "next line". A click only counts while the cursor is locked, so clicking a choice button doesn't
+    // also skip the line after it.
     private void Update()
     {
         if (!IsTalking) return;
@@ -129,6 +160,7 @@ public class DialogueManager : MonoBehaviour
             advance = true;
     }
 
+    // Choice buttons need an EventSystem; a region scene played on its own may not have one yet.
     private static void EnsureEventSystem()
     {
         if (FindFirstObjectByType<EventSystem>() != null) return;

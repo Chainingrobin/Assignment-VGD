@@ -15,6 +15,8 @@ public class ElementPhases : MonoBehaviour
     [SerializeField] private Light[] pillars = new Light[4];
     [SerializeField] private string blockState = "Block";
     [SerializeField, Min(0f)] private float changeDuration = 1.6f;
+    [Tooltip("Subtitle on each change; {0} is the element. Written from the Story Text asset; empty = none.")]
+    [SerializeField] private string phaseLine;
 
     private BossBrain brain;
     private CombatTarget target;
@@ -52,6 +54,6 @@ public class ElementPhases : MonoBehaviour
         target.Invulnerable = true;
         invulnerableUntil = Time.time + changeDuration;
         brain.Interlude(blockState, changeDuration);
-        Subtitle.Show($"Ganfaul takes up {element}.", 2.5f);
+        if (!string.IsNullOrEmpty(phaseLine)) Subtitle.Show(string.Format(phaseLine, element), 2.5f);
     }
 }

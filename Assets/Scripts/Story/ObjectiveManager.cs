@@ -3,10 +3,20 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-// Each region scene lists its objectives (RegionObjectives); this tracker shows the current one
-// in the top-right of the HUD. The current objective is always derived from story flags: the
-// first one whose showWhen is set and whose doneWhen isn't. So it always matches the story
-// state, even if the player explores out of order (assignment guide Step 6).
+/// <summary>
+/// The objective tracker: shows the current story objective in the top-right of the HUD and points a compass marker
+/// at it (assignment guide, Step 6; GDD section 5, "objective tracker = plot progression").
+/// </summary>
+/// <remarks>
+/// <para><b>Always derived, never stored.</b> Each region scene lists its objectives (<see cref="RegionObjectives"/>).
+/// The current one is recomputed from story flags whenever a flag is set or a region is entered: the first objective
+/// whose <c>showWhen</c> flag is set and whose <c>doneWhen</c> flag isn't. Nothing can get out of step, so the tracker
+/// always matches the story state, even if the player explores out of order (Step 11).</para>
+/// <para><b>Feedback.</b> When the objective changes, a gold "New objective" header and a glow appear for a few seconds,
+/// so the player notices the story has moved on. The compass icon slides along the top edge toward the goal and hides
+/// once the goal is within <see cref="ArrivedDistance"/> or the player is in a cutscene.</para>
+/// <para>Minimal and icon-first: the scroll icon already says "objective", so only the goal itself is written.</para>
+/// </remarks>
 public class ObjectiveManager : MonoBehaviour
 {
     private TMP_Text text, header;
@@ -56,9 +66,11 @@ public class ObjectiveManager : MonoBehaviour
         if (RegionManager.Instance != null) RegionManager.Instance.RegionEntered -= OnRegion;
     }
 
+    // Any new flag or region can change which objective is current.
     private void OnFlag(string flag) => Refresh();
     private void OnRegion(string region) => Refresh();
 
+    // Fades the "updated" glow and keeps the compass marker pointing at the current goal.
     private void Update()
     {
         if (flash != null && flash.alpha > 0f) flash.alpha = Mathf.MoveTowards(flash.alpha, 0f, Time.deltaTime * 0.8f);
@@ -73,6 +85,10 @@ public class ObjectiveManager : MonoBehaviour
         compass.anchoredPosition = new Vector2(Mathf.Clamp(angle / 90f, -1f, 1f) * 320f, compass.anchoredPosition.y);
     }
 
+    /// <summary>
+    /// Recomputes the current objective from the story flags and updates the tracker. Announces "New objective" when
+    /// it changes (but not for the first objective of a session). Safe to call at any time.
+    /// </summary>
     public void Refresh()
     {
         if (text == null) return;
@@ -96,6 +112,7 @@ public class ObjectiveManager : MonoBehaviour
         }
     }
 
+    // Shows the "New objective" header for three seconds.
     private IEnumerator AnnounceNew()
     {
         header.gameObject.SetActive(true);
@@ -103,6 +120,8 @@ public class ObjectiveManager : MonoBehaviour
         header.gameObject.SetActive(false);
     }
 
+    // The current region's first objective that is revealed and not yet completed, or null when there is none.
+    // Only the region the player is in counts, so a still-unloading region's list never leaks into the tracker.
     private static RegionObjectives.Objective Current()
     {
         var story = StoryStateManager.Instance;

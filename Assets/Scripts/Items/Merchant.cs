@@ -12,7 +12,8 @@ public class Merchant : MonoBehaviour
     [Tooltip("Played on the first F in this region; empty = straight to the shop.")]
     [SerializeField] private DialogueData conversation;
     [Tooltip("Line Abe says the first time the shop opens in this region.")]
-    [SerializeField] private string greeting = "Abe: Potions, fresh this morning. Prices are fair. Mostly.";
+    // Each camp's greeting is written from the Story Text asset (Wulang > Story > Apply story text).
+    [SerializeField] private string greeting;
 
     private Interactable interactable;
     private bool greeted;

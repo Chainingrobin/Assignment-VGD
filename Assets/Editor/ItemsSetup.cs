@@ -18,8 +18,7 @@ public static class ItemsSetup
         if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Stop Play mode first.");
         if (!AssetDatabase.IsValidFolder(ItemFolder)) AssetDatabase.CreateFolder("Assets", "Items");
 
-        var potion = Item(PotionPath, "Healing Potion", ItemCategory.Consumable,
-            StoryScript.Lore["Healing Potion"], 5, 40f, ElementType.None);
+        var potion = Item(PotionPath, "Healing Potion", ItemCategory.Consumable, 5, 40f, ElementType.None);
         var tomes = new[]
         {
             Tome(ElementType.Lightning),
@@ -65,9 +64,10 @@ public static class ItemsSetup
     }
 
     private static ItemData Tome(ElementType element) =>
-        Item($"{ItemFolder}/{element} Tome.asset", $"Tome of {element}", ItemCategory.Tome, StoryScript.Lore[$"{element} Tome"], 0, 0f, element);
+        Item($"{ItemFolder}/{element} Tome.asset", $"Tome of {element}", ItemCategory.Tome, 0, 0f, element);
 
-    private static ItemData Item(string path, string name, ItemCategory category, string lore, int price, float heal, ElementType element)
+    // Game values only: an item's lore text is written on its asset in the Inspector and never overwritten here.
+    private static ItemData Item(string path, string name, ItemCategory category, int price, float heal, ElementType element)
     {
         var item = AssetDatabase.LoadAssetAtPath<ItemData>(path);
         if (item == null)
@@ -77,7 +77,6 @@ public static class ItemsSetup
         }
         item.displayName = name;
         item.category = category;
-        item.description = lore;
         item.price = price;
         item.healAmount = heal;
         item.element = element;
