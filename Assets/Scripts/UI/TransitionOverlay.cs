@@ -98,6 +98,7 @@ public class TransitionOverlay : MonoBehaviour
     public IEnumerator ShowCaption(string chapterTitle, string recapLine, float duration = 0.6f, bool card = false)
     {
         Layout(card);
+        HudVisible(false);
         title.text = chapterTitle;
         recap.text = recapLine;
         progress.text = "";
@@ -115,10 +116,15 @@ public class TransitionOverlay : MonoBehaviour
     private void Layout(bool card)
     {
         var anchor = card ? new Vector2(0.5f, 0.5f) : new Vector2(0.5f, 0f);
-        Place(title.rectTransform, anchor, card ? new Vector2(0f, 170f) : new Vector2(0f, 150f), new Vector2(1400f, 70f));
-        Place(recap.rectTransform, anchor, card ? new Vector2(0f, -40f) : new Vector2(0f, 90f), card ? new Vector2(1100f, 340f) : new Vector2(1300f, 70f));
+        // Chapter captions sit just above the 110 px letterbox, so a two-line recap never runs onto the bar's edge.
+        Place(title.rectTransform, anchor, card ? new Vector2(0f, 170f) : new Vector2(0f, 175f), new Vector2(1400f, 70f));
+        Place(recap.rectTransform, anchor, card ? new Vector2(0f, -40f) : new Vector2(0f, 115f), card ? new Vector2(1100f, 340f) : new Vector2(1300f, 70f));
         recap.fontSize = card ? 30f : 26f;
         recap.lineSpacing = card ? 12f : 0f;
+        // An ending card on a white fade (The Gilded Past) needs dark ink; cream on white can't be read.
+        bool onWhite = card && fade.color.grayscale > 0.5f;
+        title.color = onWhite ? new Color(0.5f, 0.36f, 0.12f) : FantasyUI.Gold;
+        recap.color = onWhite ? new Color(0.24f, 0.17f, 0.1f) : FantasyUI.Parchment;
     }
 
     private static void Place(RectTransform rect, Vector2 anchor, Vector2 position, Vector2 size)
@@ -139,6 +145,18 @@ public class TransitionOverlay : MonoBehaviour
         }
         captionGroup.alpha = 0f;
         SetBars(0f);
+        HudVisible(true);
+    }
+
+    // The HUD steps aside under the letterbox, as it does for dialogue. A CanvasGroup (not Canvas.enabled,
+    // which DialogueManager saves and restores) so the two never fight over it.
+    private static void HudVisible(bool visible)
+    {
+        var root = UIKit.HUDRoot();
+        if (root == null) return;
+        var canvas = root.GetComponentInParent<Canvas>();
+        if (!canvas.TryGetComponent(out CanvasGroup group)) group = canvas.gameObject.AddComponent<CanvasGroup>();
+        group.alpha = visible ? 1f : 0f;
     }
 
     // Changes the caption's lines in place, the letterbox staying up: the text fades out and back in.

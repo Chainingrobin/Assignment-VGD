@@ -37,6 +37,8 @@ public class BossHealthBar : MonoBehaviour
         instance.target = target;
         instance.title.text = name;
         instance.gameObject.SetActive(true);
+        instance.Update(); // fill and colour now, so the first frame never shows the previous boss's bar
+
     }
 
     public static void Hide()
