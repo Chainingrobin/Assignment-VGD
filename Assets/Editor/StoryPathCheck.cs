@@ -211,7 +211,7 @@ public static class StoryPathCheck
         abe.GetComponent<Interactable>().Interact();
     }
 
-    // The objective on screen must be the region's objective at this index (StoryScript's wording).
+    // The objective on screen must be the region's objective at this index (wording from the Story Text asset).
     private static void Expect(int index)
     {
         var region = RegionManager.Instance.Current;
