@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -6,12 +7,17 @@ using UnityEngine;
 // yard so it reads as a working outpost instead of a tower on an empty square:
 //  - a fence around the yard, open to the north path (towards where Wulang wakes) and to the
 //    south-west trail to the Blossom Glade;
-//  - a training ground on the west side (dummies, targets, a bow and a weapon rack);
-//  - a smithy on the east side (forge oven, anvil on a crate, bellows, crafting bench, racks);
-//  - a supply corner behind the tower (wagon, chests, crates, barrels);
-//  - braziers with firelight at the gate, the arches on the path and the yard's corners.
-// It replaces the loose props that stood in the yard. Abe's camp beside the path belongs to the
-// Forest region (RegionContentSetup). Re-runnable: "Armory/Compound" is rebuilt from scratch.
+//  - a quartermaster's corner at the front left (shelves of books and bottles, a desk, a chest);
+//  - an armourer's table and racks of finished weapons at the front right;
+//  - a training ground on the west side by the trail out (dummies, targets, a bow and a weapon rack);
+//  - a smithy on the east side (forge oven, anvil on a crate, bellows, cook fire, crafting bench, racks);
+//  - a supply corner behind the tower (wagons, chests, crates, barrels);
+//  - braziers with firelight at the gate, the arches on the path and the yard's corners, and lamps.
+// The tower stands at its natural size and the yard is sized to it (26 x 30 m): it was scaled up 1.36
+// times in a 34 x 32 m square, which made the compound huge and empty. The paving outside the new
+// fence is painted back to grass. It replaces the loose props that stood in the yard. Abe's camp
+// beside the path belongs to the Forest region (RegionContentSetup). Re-runnable: "Armory/Compound"
+// is rebuilt from scratch.
 public static class ArmorySetup
 {
     private const string Pack = "Assets/Stylized Fantasy Armory/Prefabs/";
@@ -20,6 +26,10 @@ public static class ArmorySetup
         "Wagon.002", "CombatDummy.001", "CombatDummy.002", "CombatDummy.003", "ChestS.001", "ChestL.001 1", "CauldronandCampfire",
         "Bucket.001 1", "Barrel.001 1", "Barrel.001", "Chair", "WeaponRack.002", "WeaponRack.001 1", "WeaponRack.003",
     };
+    // The yard inside the fence, around the tower at (565.2, 547.1).
+    public static readonly Rect Yard = new(552.5f, 535.5f, 26f, 30.5f);
+    // Where the yard used to reach: its paving is painted back to grass outside Yard.
+    private static readonly Rect OldYard = new(546f, 533f, 40f, 37f);
 
     [MenuItem("Wulang/Forest/Dress the armory compound")]
     public static void Build()
@@ -36,59 +46,123 @@ public static class ArmorySetup
         if (old != null) Object.DestroyImmediate(old.gameObject);
         var root = new GameObject("Compound").transform;
         root.SetParent(armory, false);
+        var tower = armory.Find("Armory (1)");
+        if (tower != null) tower.localScale = Vector3.one;
+        Repave();
 
-        // Fence: the yard is about x 549-583, z 536-568 around the tower at (565, 547).
+        float west = Yard.xMin, east = Yard.xMax, south = Yard.yMin, north = Yard.yMax;
         var fences = Group(root, "Fence");
-        Fence(fences, new Vector2(549f, 556f), new Vector2(549f, 568f));
-        Fence(fences, new Vector2(549f, 568f), new Vector2(560f, 568f));
-        Fence(fences, new Vector2(572f, 568f), new Vector2(583f, 568f));
-        Fence(fences, new Vector2(583f, 568f), new Vector2(583f, 536f));
-        Fence(fences, new Vector2(583f, 536f), new Vector2(560f, 536f));
+        Fence(fences, new Vector2(west, 554f), new Vector2(west, north));
+        Fence(fences, new Vector2(west, north), new Vector2(560f, north));
+        Fence(fences, new Vector2(571f, north), new Vector2(east, north));
+        Fence(fences, new Vector2(east, north), new Vector2(east, south));
+        Fence(fences, new Vector2(east, south), new Vector2(560f, south));
 
         var fire = Group(root, "Braziers");
-        foreach (var p in new[] { new Vector2(559.3f, 569.6f), new Vector2(572.7f, 569.6f), new Vector2(561.3f, 581.5f), new Vector2(570.3f, 581.5f),
-                     new Vector2(561.5f, 599f), new Vector2(570.2f, 599f), new Vector2(583.8f, 568.8f), new Vector2(583.8f, 535.2f), new Vector2(548.2f, 554.5f) })
+        foreach (var p in new[] { new Vector2(559.3f, north + 1.6f), new Vector2(571.7f, north + 1.6f), new Vector2(561.3f, 581.5f), new Vector2(570.3f, 581.5f),
+                     new Vector2(561.5f, 599f), new Vector2(570.2f, 599f), new Vector2(east + 1f, north + 1f), new Vector2(east + 1f, south - 1f), new Vector2(west - 1f, 553f) })
         {
             var brazier = Prop(fire, "Decorative Props/Torch/Torch.prefab", p, 0f);
             Glow(brazier.transform, Vector3.up * 1.3f, new Color(1f, 0.58f, 0.25f), 11f, 2.2f);
         }
 
-        // Training ground, west: dummies face the yard, targets with a bow and arrows beside them.
+        // Quartermaster, front left: shelves against the fence, a desk with a book, a chest by the gate.
+        var stores = Group(root, "Quartermaster");
+        foreach (var (z, shelf) in new[] { (556.6f, 1), (560.1f, 2), (563.6f, 3) })
+            Prop(stores, $"Combinations/Shelve.00{shelf}.prefab", new Vector2(west + 0.7f, z), 90f);
+        var desk = Prop(stores, "Decorative Props/Table/Table.prefab", new Vector2(556.4f, 560f), 90f);
+        OnTop(stores, "Decorative Props/Books/Book.003.prefab", desk, 20f);
+        Prop(stores, "Decorative Props/Chair/Chair.prefab", new Vector2(557.9f, 559.8f), -90f);
+        Prop(stores, "Decorative Props/Chest/Chest Parts/ChestL.001.prefab", new Vector2(556.2f, 565f), 180f);
+        Prop(stores, "Decorative Props/Barrel/Barrel.002.prefab", new Vector2(553.6f, 565.2f), 0f);
+        Prop(stores, "Decorative Props/Lamp/Lamp.002.prefab", new Vector2(559.4f, north - 0.6f), 0f);
+
+        // Armourer, front right: a table of work in hand, weapon racks and a crate of helmets.
+        var front = Group(root, "Armourer");
+        Prop(front, "Combinations/Table 1.prefab", new Vector2(575.2f, 562.6f), 180f);
+        Prop(front, "Combinations/WeaponRack.001.prefab", new Vector2(east - 0.8f, 558.8f), -90f);
+        Prop(front, "Combinations/WeaponRack.002.prefab", new Vector2(east - 0.8f, 562.6f), -90f);
+        Prop(front, "Combinations/WeaponRack.003.prefab", new Vector2(574.2f, north - 0.8f), 180f);
+        var helmets = Prop(front, "Decorative Props/Box/Box.001 1.prefab", new Vector2(572.6f, 559.2f), 10f);
+        OnTop(front, "Decorative Props/Helmet/Helmet.001.prefab", helmets, 160f);
+        Prop(front, "Decorative Props/Lamp/Lamp.002.prefab", new Vector2(571.6f, north - 0.6f), 0f);
+
+        // Training ground, west by the trail out: dummies face the yard, targets with a bow and arrows beside them.
         var training = Group(root, "Training ground");
         for (int i = 0; i < 3; i++)
-            Prop(training, $"Decorative Props/Combat Dummy/CombatDummy.00{i + 1}.prefab", new Vector2(552.3f, 558f + i * 3f), 90f);
-        Prop(training, "Decorative Props/Target/Target.prefab", new Vector2(551.8f, 566.4f), 120f);
-        Prop(training, "Decorative Props/Target/Target.prefab", new Vector2(554.3f, 566.9f), 160f);
-        Prop(training, "Decorative Props/Weapon Racks/WeaponRack.004.prefab", new Vector2(557.5f, 566.9f), 180f);
-        var stand = Prop(training, "Decorative Props/Box/Box.001.prefab", new Vector2(551.7f, 555.2f), 15f);
+            Prop(training, $"Decorative Props/Combat Dummy/CombatDummy.00{i + 1}.prefab", new Vector2(west + 1.2f, 543.5f + i * 3f), 90f);
+        Prop(training, "Decorative Props/Target/Target.prefab", new Vector2(554f, 539.6f), 40f);
+        Prop(training, "Decorative Props/Target/Target.prefab", new Vector2(556.8f, 538.6f), 10f);
+        Prop(training, "Decorative Props/Weapon Racks/WeaponRack.004.prefab", new Vector2(556.4f, 552.6f), 0f);
+        var stand = Prop(training, "Decorative Props/Box/Box.001.prefab", new Vector2(554.1f, 552.4f), 15f);
         OnTop(training, "Weapons and Shields/Arrows and Bow/Bow.prefab", stand, 30f);
-        Prop(training, "Weapons and Shields/Arrows and Bow/ArrowBag.001.prefab", new Vector2(552.8f, 554.6f), 70f);
+        Prop(training, "Weapons and Shields/Arrows and Bow/ArrowBag.001.prefab", new Vector2(555.1f, 551.7f), 70f);
 
-        // Smithy, east: the forge oven and crafting bench against the fence, the anvil on a crate.
+        // Smithy, east: the forge oven and crafting bench against the fence, the anvil on a crate, the cook fire.
         var smithy = Group(root, "Smithy");
-        Prop(smithy, "Decorative Props/Oven/Oven Parts/Oven.prefab", new Vector2(581.4f, 552f), -90f);
-        Prop(smithy, "Extra Content/Fantasy Workshops and Crafting Vol2/SFWC2_Crafting_Table.prefab", new Vector2(581.2f, 545f), -90f);
-        var anvilStand = Prop(smithy, "Decorative Props/Box/Box.001.prefab", new Vector2(577.6f, 550.4f), 10f);
+        Prop(smithy, "Decorative Props/Oven/Oven Parts/Oven.prefab", new Vector2(east - 1.2f, 550.6f), -90f);
+        Prop(smithy, "Extra Content/Fantasy Workshops and Crafting Vol2/SFWC2_Crafting_Table.prefab", new Vector2(east - 1.2f, 544.6f), -90f);
+        var anvilStand = Prop(smithy, "Decorative Props/Box/Box.001.prefab", new Vector2(574.4f, 549.4f), 10f);
         OnTop(smithy, "Decorative Props/Anvil and Airblower/Anvil.prefab", anvilStand, 100f);
-        Prop(smithy, "Decorative Props/Anvil and Airblower/Airblower.prefab", new Vector2(579.2f, 549.6f), -60f, lift: 0.14f);
-        Prop(smithy, "Decorative Props/Weapon Racks/WeaponRack.004.prefab", new Vector2(575.6f, 557.4f), 0f);
-        Prop(smithy, "Decorative Props/Weapon Racks/WeaponRack.005.prefab", new Vector2(578.4f, 557.4f), 0f);
-        Prop(smithy, "Decorative Props/Barrel/Barrel.002.prefab", new Vector2(581.9f, 557.9f), 0f);
-        Prop(smithy, "Decorative Props/Bucket/Bucket Parts/Bucket.001.prefab", new Vector2(580.7f, 558.6f), 30f);
+        Prop(smithy, "Decorative Props/Anvil and Airblower/Airblower.prefab", new Vector2(575.9f, 548.4f), -60f, lift: 0.14f);
+        Prop(smithy, "Decorative Props/Cauldron and Campfire/CauldronandCampfire.prefab", new Vector2(574.6f, 541.4f), 0f);
+        Prop(smithy, "Decorative Props/Weapon Racks/WeaponRack.004.prefab", new Vector2(573.4f, 555.6f), 0f);
+        Prop(smithy, "Decorative Props/Weapon Racks/WeaponRack.005.prefab", new Vector2(576.2f, 555.6f), 0f);
+        Prop(smithy, "Decorative Props/Barrel/Barrel.002.prefab", new Vector2(east - 0.8f, 556.4f), 0f);
+        Prop(smithy, "Decorative Props/Bucket/Bucket Parts/Bucket.001.prefab", new Vector2(576.9f, 553.6f), 30f);
+        Prop(smithy, "Decorative Props/Lamp/Lamp.002.prefab", new Vector2(east - 0.5f, 553.4f), -90f);
+        // The log pile sits just outside the fence, by the forge.
+        Prop(smithy, "Nature/Wooden Logs/WoodenLog.001.prefab", new Vector2(east + 2.2f, 546f), 0f);
+        Prop(smithy, "Nature/Wooden Logs/WoodenLog.002.prefab", new Vector2(east + 3.4f, 548.4f), 15f);
 
         // Supply corner, behind the tower: Abe's suppliers unload here.
         var supply = Group(root, "Supply");
-        Prop(supply, "Wagon/Wagon.001.prefab", new Vector2(576.8f, 539.4f), 90f);
-        Prop(supply, "Decorative Props/Chest/Chest Parts/ChestL.001.prefab", new Vector2(571.2f, 537.9f), 0f);
-        var crate = Prop(supply, "Decorative Props/Box/Box.001 2.prefab", new Vector2(568.2f, 538.3f), 8f);
+        Prop(supply, "Wagon/Wagon.001.prefab", new Vector2(574.6f, 537.6f), 90f);
+        Prop(supply, "Combinations/Wagon.003.prefab", new Vector2(560.2f, 537.7f), 80f);
+        Prop(supply, "Decorative Props/Chest/Chest Parts/ChestL.001.prefab", new Vector2(569.6f, 536.6f), 0f);
+        var crate = Prop(supply, "Decorative Props/Box/Box.001 2.prefab", new Vector2(567.1f, 536.9f), 8f);
         OnTop(supply, "Decorative Props/Box/Box.001.prefab", crate, 40f);
-        Prop(supply, "Decorative Props/Barrel/Barrel.001.prefab", new Vector2(565.6f, 537.8f), 0f);
-        Prop(supply, "Decorative Props/Barrel/Barrel.002.prefab", new Vector2(564.6f, 538.9f), 0f);
-        Prop(supply, "Decorative Props/Vases/Vase.003.prefab", new Vector2(562.8f, 537.9f), 0f);
+        var bagStand = Prop(supply, "Decorative Props/Box/Box.002.prefab", new Vector2(565f, 536.7f), -12f);
+        OnTop(supply, "Decorative Props/Coin and Bag/MoneyBag.prefab", bagStand, 30f);
+        Prop(supply, "Decorative Props/Barrel/Barrel.001.prefab", new Vector2(563.4f, 537.1f), 0f);
+        Prop(supply, "Decorative Props/Barrel/Barrel.001 1.prefab", new Vector2(563.6f, 538.5f), 0f);
+        Prop(supply, "Decorative Props/Vases/Vase.003.prefab", new Vector2(571.6f, 537f), 0f);
+        Prop(supply, "Decorative Props/Chest/ChestS.001.prefab", new Vector2(577.2f, 540.2f), -80f);
 
         EditorSceneManager.MarkSceneDirty(world);
         EditorSceneManager.SaveScene(world);
-        Debug.Log("ArmorySetup: compound dressed (fence, braziers, training ground, smithy, supply corner).");
+        Debug.Log("ArmorySetup: compound dressed (fence, braziers, quartermaster, armourer, training ground, smithy, supply corner).");
+    }
+
+    // Paints the old yard's paving outside the new fence back to grass (softly, over a metre and a half),
+    // keeping the path in from the north gate and the trail out to the south-west.
+    private static void Repave()
+    {
+        var terrain = Terrain.activeTerrain;
+        var data = terrain.terrainData;
+        int grass = System.Array.FindIndex(data.terrainLayers, l => l != null && l.name == "Grass_Layer");
+        if (grass < 0) return;
+        float cell = data.size.x / data.alphamapResolution;
+        var origin = terrain.transform.position;
+        int x0 = Mathf.FloorToInt((OldYard.xMin - origin.x) / cell), z0 = Mathf.FloorToInt((OldYard.yMin - origin.z) / cell);
+        int w = Mathf.CeilToInt(OldYard.width / cell), h = Mathf.CeilToInt(OldYard.height / cell);
+        var maps = data.GetAlphamaps(x0, z0, w, h);
+        int layers = data.alphamapLayers;
+        for (int z = 0; z < h; z++)
+            for (int x = 0; x < w; x++)
+            {
+                var p = new Vector2(origin.x + (x0 + x + 0.5f) * cell, origin.z + (z0 + z + 0.5f) * cell);
+                bool gate = p.x > 559.5f && p.x < 571.5f && p.y > Yard.yMax - 1f;
+                bool trail = p.x < 561f && p.y < 546f;
+                if (gate || trail) continue;
+                float dx = Mathf.Max(Yard.xMin - p.x, p.x - Yard.xMax), dz = Mathf.Max(Yard.yMin - p.y, p.y - Yard.yMax);
+                float outside = Mathf.Max(dx, dz);
+                float amount = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 1.5f, outside));
+                if (amount <= 0f) continue;
+                for (int l = 0; l < layers; l++) maps[z, x, l] = Mathf.Lerp(maps[z, x, l], l == grass ? 1f : 0f, amount);
+            }
+        data.SetAlphamaps(x0, z0, maps);
+        EditorUtility.SetDirty(data);
     }
 
     private static Transform Group(Transform parent, string name)

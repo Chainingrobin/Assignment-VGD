@@ -19,7 +19,7 @@ public class AoESpellHitbox : MonoBehaviour
         hitbox.owner = owner;
         hitbox.radius = radius;
         hitbox.impulse = impulse;
-        hitbox.hit = new SpellHit(damage, element, effect.transform.position, chainMaterial);
+        hitbox.hit = new SpellHit(damage, element, effect.transform.position, chainMaterial, area: true);
         var sphere = go.AddComponent<SphereCollider>();
         sphere.radius = radius;
         sphere.isTrigger = true;

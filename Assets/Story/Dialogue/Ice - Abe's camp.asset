@@ -15,26 +15,30 @@ MonoBehaviour:
   lines:
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: You're here already. And your boots are dry.
+    text: "Abe! You beat me here?"
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: Old men know the long way round. Tea? It's terrible, but it's hot.
+    text: "Old men know the long way round. Sit, warm your hands. The tea's terrible, but it's hot."
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: Something came back to me at the glade. A memory. You were in it.
+    text: "Something came back to me at the clearing. A memory. You were in it!"
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: Was I? Good. They'll keep coming, one for every gift you carry. Don't rush
-      them.
-  - speaker: Abe
-    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: The Ice guardian laughs at one element at a time. Pin it with Earth, then
-      bring the storm down on it. Together they'll shake it apart.
+    text: "Was I? Good. They'll keep coming, one for every gift you carry. Let them come slowly."
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: How do you know all their weaknesses?
+    text: "The Ice guardian is next. Any advice?"
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: I've had a long life and very little else to do with it.
+    text: "It shrugs off one element at a time. Pin it with Earth, then bring the storm down on it. Together they'll shake it apart."
+  - speaker: Wulang
+    portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
+    text: "How do you know all their weaknesses?"
+  - speaker: Abe
+    portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
+    text: "I've watched the guardians a long time, Wu. Longer than you'd believe."
+  - speaker: Wulang
+    portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
+    text: "Then watch this one fall."
   choices: []
   flagToSetWhenFinished: 

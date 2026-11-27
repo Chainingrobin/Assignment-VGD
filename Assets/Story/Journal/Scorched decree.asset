@@ -12,11 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Scorched decree
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Scorched rhyme sheet
-  description: A children's rhyme, half burnt. 'The Tallyman, the Tallyman, he weighs
-    the rain, he counts the sand. He'll buy your coat, he'll buy your name, he'll
-    wear a friend's face when he came. But gifts are gifts and can't be bought, so
-    give him nothing. Give him naught.'
+  displayName: "Skipping Rhyme"
+  description: "\"The Tallyman, the Tallyman, he weighs the rain, he counts the sand...\" We sang it skipping rope. I never asked who he was."
   icon: {fileID: 0}
   category: 3
   price: 0

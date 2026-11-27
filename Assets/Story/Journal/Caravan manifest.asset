@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Caravan manifest
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Caravan manifest
-  description: 'Cargo: one tome, sealed, for the Amphitheater. Paid in full, in old
-    silver. Do not open it. Do not read it. Do not stop for anything in the snow
-    that calls you by name.'
+  displayName: "Cold Hands"
+  description: "Nan rubbing my hands by the stove after I fell in the duck pond. She scolded me the whole time, and never once let go."
   icon: {fileID: 0}
   category: 3
   price: 0

@@ -132,9 +132,16 @@ public class CombatTarget : MonoBehaviour, IDamageable
         ReceiveSpell(amount, sourceElement, transform.position - transform.forward);
     }
 
-    public void ReceiveSpell(float amount, ElementType element, Vector3 origin)
+    // Area spells leave their marks (burn, freeze, grounded, charged) about twice as long as a bolt does,
+    // which leaves time to switch element and land the follow-up that chains them.
+    public const float AreaStatusScale = 2f;
+
+    public void ReceiveSpell(float amount, ElementType element, Vector3 origin) => ReceiveSpell(amount, element, origin, false);
+
+    public void ReceiveSpell(float amount, ElementType element, Vector3 origin, bool area)
     {
         if (IsDead || Invulnerable || !float.IsFinite(amount) || amount <= 0f) return;
+        float hold = area ? AreaStatusScale : 1f;
         float multiplier = Multiplier(element, affinity);
         float damage = amount * multiplier;
         bool resisted = multiplier < 1.5f && nonWeaknessMultiplier < 1f;
@@ -158,12 +165,12 @@ public class CombatTarget : MonoBehaviour, IDamageable
         else if (slippery) reaction = "SLIPPERY IMPACT";
         if (element == ElementType.Earth)
         {
-            groundedRemaining = 4.5f;
+            groundedRemaining = Mathf.Max(groundedRemaining, 4.5f * hold);
             stunRemaining = Mathf.Max(stunRemaining, 0.65f * statusScale);
         }
         if (element == ElementType.Lightning)
         {
-            chargedRemaining = 4.5f;
+            chargedRemaining = Mathf.Max(chargedRemaining, 4.5f * hold);
             stunRemaining = Mathf.Max(stunRemaining, 1.25f * statusScale);
         }
         if (seismic)
@@ -173,8 +180,9 @@ public class CombatTarget : MonoBehaviour, IDamageable
             if (seismicPrefab != null) Instantiate(seismicPrefab, AimPoint, Quaternion.identity);
             StormQuake.Spawn(this, AimPoint);
         }
-        if (element == ElementType.Ice) frozenRemaining = 3f * statusScale;
-        if (element == ElementType.Fire) burnRemaining = 4f;
+        if (element == ElementType.Ice) frozenRemaining = 3f * statusScale * hold;
+        if (element == ElementType.Fire) burnRemaining = Mathf.Max(burnRemaining, 4f * hold);
+
 
         if (resisted && string.IsNullOrEmpty(reaction)) reaction = $"RESISTED {damage:0.#}";
         LastFeedback = string.IsNullOrEmpty(reaction) ? $"{damage:0.#}" : reaction;

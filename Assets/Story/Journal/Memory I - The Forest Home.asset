@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Memory I - The Forest Home
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: 'Memory I: The Apprentice'
-  description: A summer evening at the armory. Abe teaches a young Wulang to hear
-    the ground speak. She remembers it exactly the way he tells it, down to the words.
+  displayName: "Memory: The Apprentice"
+  description: "Abe teaching me to hear the ground speak, at the armory. I remember every word exactly the way he says it."
   icon: {fileID: 0}
   category: 2
   price: 0

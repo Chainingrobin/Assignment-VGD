@@ -12,11 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Frozen traveller's journal
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Frozen traveller's journal
-  description: A book-bearer's journal, frozen shut at the last page. 'Our patron
-    met us at the armory and paid in old silver. He would not touch the tome, not
-    even to count the pages. Said he and books had an understanding. Cold tonight.
-    The tome is heavier than it looks.'
+  displayName: "Old Silver"
+  description: "A frozen traveller's last page: \"Our patron paid in old silver for every book, and would never touch one.\""
   icon: {fileID: 0}
   category: 3
   price: 0

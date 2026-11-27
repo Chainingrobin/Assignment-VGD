@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CoinCollect
   amount: 1
+  standUpright: 1
 --- !u!65 &7189777241603390667
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -10,6 +10,10 @@ public class FloatingPickup : MonoBehaviour
     [SerializeField, Min(0f)] private float lightIntensity = 2f;
     [SerializeField, Min(0f)] private float lightRange = 3f;
 
+    // Every coin, bag and potion carries a glow; dozens of them lit at once across a region cost frames for
+    // no benefit, so each one only shines while the camera is near enough to see it.
+    private const float GlowDistance = 35f;
+    private Light glowLight;
     private Rigidbody body;
     private Vector3 restPosition;
     private Quaternion restRotation;
@@ -36,11 +40,15 @@ public class FloatingPickup : MonoBehaviour
         light.range = lightRange;
         light.shadows = LightShadows.None;
         light.renderMode = LightRenderMode.ForcePixel;
+        glowLight = light;
     }
 
     private void FixedUpdate()
     {
         elapsed += Time.fixedDeltaTime;
+        var view = Camera.main;
+        if (glowLight != null && view != null)
+            glowLight.enabled = (view.transform.position - restPosition).sqrMagnitude < GlowDistance * GlowDistance;
         body.MovePosition(restPosition + Vector3.up * (Mathf.Sin(elapsed * hoverSpeed * Mathf.PI * 2f) * hoverHeight));
         if (rotationSpeed != 0f)
             body.MoveRotation(Quaternion.AngleAxis(elapsed * rotationSpeed, Vector3.up) * restRotation);

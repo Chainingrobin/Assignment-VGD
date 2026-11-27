@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Forge ledger
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Forge ledger
-  description: 'Order, paid in old silver: forty chains, black iron, extra long.
-    Purpose, in the buyer''s words: ''in case of a refusal.'' The smith has added
-    underneath: ''Refusal of WHAT? He only smiled.'''
+  displayName: "The Kettle"
+  description: "Nan's kettle, black from a hundred fires. \"The Flame guardian keeps every hearth lit,\" she said, \"and never sends a bill.\""
   icon: {fileID: 0}
   category: 3
   price: 0

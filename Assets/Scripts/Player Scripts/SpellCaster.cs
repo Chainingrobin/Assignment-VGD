@@ -67,7 +67,7 @@ public class SpellCaster : MonoBehaviour
         if (Vector3.Dot(dir, camT.forward) < 0.1f) dir = camT.forward; // wall right in your face
 
         var go = Instantiate(spell.projectilePrefab, projectileCastPoint.position, Quaternion.LookRotation(dir));
-        GameAudio.Play("Sfx/Cast", null, 0.45f, spell.element == ElementType.Earth ? 0.7f : spell.element == ElementType.Ice ? 1.25f : 1f);
+        GameAudio.Play("Sfx/Cast", null, 0.7f, spell.element == ElementType.Earth ? 0.7f : spell.element == ElementType.Ice ? 1.25f : 1f);
 
         var projectileColliders = go.GetComponentsInChildren<Collider>();
         

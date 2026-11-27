@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Watchman's last note
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Watchman's last note
-  description: The guardian came down the mountain screaming, all fire. Behind it,
-    in no hurry at all, came an old man carrying a kettle.
+  displayName: "The Storm"
+  description: "Thunder right overhead. Light everywhere. Then a voice, very old and very tired, asking if it could stay."
   icon: {fileID: 0}
   category: 3
   price: 0

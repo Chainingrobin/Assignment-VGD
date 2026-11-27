@@ -322,7 +322,7 @@ public static class LandmarksBuilder
             float a = -90f + (i - 2.5f) * 32f;
             Place(root, Nature + $"Branch_0{1 + i % 6}.prefab", Floor(heart + Polar(a, 4.5f)) - Vector3.up * 0.25f, Quaternion.Euler(0f, -a + 90f, 0f), Vector3.one * 4.2f);
         }
-        Place(root, Nature + "GodRays.prefab", new Vector3(heart.x, floor + 22f, heart.y), 0f, 1.6f, solid: false);
+        // No god rays over the heart tree: from afar they read as a beacon marking something to do there.
         Motes(root, new Vector3(Glade.x, floor + 3f, Glade.y), "Spore", new Color(1f, 0.85f, 0.55f), 24f, 10f);
     }
 
@@ -416,7 +416,8 @@ public static class LandmarksBuilder
         // Ganfaul's gilded throne at the north edge, just outside the fighting floor.
         var gold = AssetDatabase.LoadAssetAtPath<Material>(Statues + "Statue_God/Materials/Statue_God_Bronze1.mat");
         var seat = center + new Vector2(0f, 24.8f);
-        var dais = Slab(root, Rocks + "Plate_fancy.prefab", seat, floor + 1f, new Vector2(10f, 4.5f));
+        // A dais on the floating platform, not a column reaching down to the terrain 700 m below.
+        var dais = Slab(root, Rocks + "Plate_fancy.prefab", seat, floor + 1f, new Vector2(10f, 4.5f), maxDepth: 2.5f);
         var throne = Place(root, Props + "Chair/Chair.prefab", new Vector3(seat.x, Top(dais), seat.y + 0.6f), Look(Vector3.back), Vector3.one * 6f);
         throne.name = "Gilded throne";
         foreach (var r in throne.GetComponentsInChildren<Renderer>()) r.sharedMaterials = Enumerable.Repeat(gold, r.sharedMaterials.Length).ToArray();
@@ -644,11 +645,12 @@ public static class LandmarksBuilder
     }
 
     // A flat rock slab whose top sits at `top`, `size` metres across, reaching down into the ground.
-    private static GameObject Slab(Transform parent, string path, Vector2 at, float top, Vector2 size)
+    private static GameObject Slab(Transform parent, string path, Vector2 at, float top, Vector2 size, float maxDepth = float.MaxValue)
     {
         var slab = Place(parent, path, new Vector3(at.x, top, at.y), 0f, 1f);
         var b = Bounds(slab);
-        float depth = top - Floor(at).y + 1.2f;
+        float depth = Mathf.Min(maxDepth, top - Floor(at).y + 1.2f);
+
         slab.transform.localScale = new Vector3(size.x / b.size.x, depth / b.size.y, size.y / b.size.z);
         slab.transform.position += Vector3.up * (top - Bounds(slab).max.y);
         return slab;

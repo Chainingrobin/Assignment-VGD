@@ -12,11 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: The True Memory
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: The True Memory
-  description: No armory and no Abe. A wet evening on the hill road above Lowmere,
-    bread under her coat, her grandmother's rain song in her mouth. The Storm came
-    down because it needed somewhere to hide, and she was the only one out walking.
-    It was a small life. It was hers.
+  displayName: "The True Memory"
+  description: "No armory and no Abe. The hill road above Lowmere, bread under my coat, Nan's rain song. The Storm needed somewhere to hide. It was a small life. It was mine."
   icon: {fileID: 0}
   category: 2
   price: 0

@@ -12,7 +12,7 @@ public class MainMenu : MonoBehaviour
 {
     private static readonly (string scene, string number, string name)[] Chapters =
     {
-        ("Forest", "I", "The Spark"),
+        ("Forest", "I", "The Waking Storm"),
         ("Ice", "II", "What the Cold Keeps"),
         ("Volcano", "III", "The Price of Fire"),
         ("FinalArena", "IV", "The Sanctum"),
@@ -137,14 +137,18 @@ public class MainMenu : MonoBehaviour
         Button(mainPanel, "New Game", ref y, () => StartAt("Forest", false));
         Button(mainPanel, "Chapters", ref y, () => ShowChapters(true));
         if (StoryStateManager.NewGamePlusUnlocked) Button(mainPanel, "New Game+", ref y, () => StartAt("Forest", true));
-        // Story mode halves the damage Wulang takes; the choice is remembered.
+        // Story mode is a player option (not a debug switch): enemies hit half as hard, for players who are here
+        // for the story more than the fights. The choice is remembered, and a line under it says what it does.
         TMP_Text storyMode = null;
         storyMode = UIKit.Button(mainPanel, StoryModeLabel(), new Vector2(400f, 62f), new Vector2(0f, y), new Vector2(0.5f, 1f), () =>
         {
             PlayerHealth.StoryMode = !PlayerHealth.StoryMode;
             storyMode.text = StoryModeLabel();
         }).GetComponentInChildren<TMP_Text>();
-        y -= 76f;
+        UIKit.Text(mainPanel, "Story mode help", "Easier fights: enemies deal half damage.", 18f, new Vector2(400f, 24f),
+            new Vector2(0f, y - 64f), new Vector2(0.5f, 1f), FantasyUI.Muted, TextAlignmentOptions.Center);
+        y -= 104f;
+
         Button(mainPanel, "Quit", ref y, Quit);
 
         chapterPanel = UIKit.Rect(column, "Chapters", new Vector2(520f, 460f), new Vector2(0f, -380f), center);

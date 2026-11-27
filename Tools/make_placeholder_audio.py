@@ -273,45 +273,50 @@ def lfo(n, rate, depth, phase=0.0):
     return 1 - depth + depth * (0.5 + 0.5 * np.sin(2 * np.pi * rate * np.arange(n) / SR + phase))
 
 
+# The beds sit quietly under the music: soft, low-passed air with slow swells and nothing sharp in it.
+# (The first versions had a resonant wind howl in the Frozen Reach and a hiss of lava crackle that grated.)
+
 def ambience_forest():
     n = int(40 * SR)
-    wind = lowpass(loop_noise(40), 500) * lfo(n, 0.05, 0.6) * 0.6
-    leaves = bandpass(loop_noise(40), 2000, 6000) * lfo(n, 0.11, 0.8, 1.0) * 0.08
+    wind = lowpass(loop_noise(40), 350, 3) * lfo(n, 0.05, 0.5) * 0.6
+    leaves = bandpass(loop_noise(40), 1500, 3500) * lfo(n, 0.1, 0.8, 1.0) * 0.03
     buf = wind + leaves
-    for _ in range(26):  # birdsong: quick chirp pairs
-        f0 = rng.uniform(2500, 4200)
-        start = int(rng.uniform(0, 40) * SR)
-        for c in range(rng.integers(2, 5)):
-            m = int(0.09 * SR)
+    for _ in range(14):  # distant birdsong: a few soft chirps
+        f0 = rng.uniform(2200, 3400)
+        start = int(rng.uniform(0, 39) * SR)
+        for c in range(rng.integers(2, 4)):
+            m = int(0.11 * SR)
             t = np.arange(m) / SR
-            f = f0 * (1 + 0.25 * np.sin(np.pi * t / 0.09))
-            add(buf, start + c * int(0.13 * SR), np.sin(2 * np.pi * np.cumsum(f) / SR) * np.hanning(m) * 0.25)
-    write("Ambience/Forest", buf, 0.5)
+            f = f0 * (1 + 0.18 * np.sin(np.pi * t / 0.11))
+            add(buf, start + c * int(0.16 * SR), np.sin(2 * np.pi * np.cumsum(f) / SR) * np.hanning(m) * 0.07)
+    write("Ambience/Forest", lowpass(buf, 5000), 0.3)
 
 
 def ambience_ice():
     n = int(40 * SR)
-    howl = sum(bandpass(loop_noise(40), f, f * 1.15, 2) * lfo(n, r, 0.9, p) for f, r, p in [(380, 0.07, 0), (520, 0.05, 2), (700, 0.09, 4)])
-    gust = lowpass(loop_noise(40), 900) * lfo(n, 0.025, 0.7) * 0.5
-    write("Ambience/Ice", howl * 2 + gust, 0.5)
+    # A hush of snow wind: broad, low and slowly breathing, no whistle.
+    breath = lowpass(loop_noise(40), 420, 3) * lfo(n, 0.025, 0.6) * 0.7
+    air = bandpass(loop_noise(40), 600, 1800) * lfo(n, 0.05, 0.8, 2.0) * 0.08
+    write("Ambience/Ice", lowpass(breath + air, 2500), 0.3)
 
 
 def ambience_volcano():
     n = int(40 * SR)
-    rumble = lowpass(loop_noise(40), 90, 4) * 6 * lfo(n, 0.03, 0.5)
-    buf = rumble + lowpass(loop_noise(40), 400) * 0.15
-    for _ in range(220):  # crackle and spit
-        m = int(rng.uniform(0.005, 0.03) * SR)
-        add(buf, int(rng.uniform(0, 40) * SR), highpass(rng.standard_normal(m), 1500) * np.exp(-np.arange(m) / m * 5) * rng.uniform(0.1, 0.5))
-    write("Ambience/Volcano", buf, 0.55)
+    # A deep, slow rumble with an occasional soft pop: heat felt more than heard.
+    rumble = lowpass(loop_noise(40), 80, 4) * 6 * lfo(n, 0.025, 0.4)
+    buf = rumble + lowpass(loop_noise(40), 250) * 0.12
+    for _ in range(30):
+        m = int(rng.uniform(0.02, 0.06) * SR)
+        add(buf, int(rng.uniform(0, 39.5) * SR), lowpass(rng.standard_normal(m), 900) * np.exp(-np.arange(m) / m * 4) * rng.uniform(0.05, 0.15))
+    write("Ambience/Volcano", buf, 0.32)
 
 
 def ambience_sanctum():
     n = int(40 * SR)
-    air = bandpass(loop_noise(40), 1500, 5000) * lfo(n, 0.06, 0.7) * 0.25
+    air = bandpass(loop_noise(40), 700, 2200) * lfo(n, 0.05, 0.7) * 0.12
     t = np.arange(n) / SR
     hum = sum(np.sin(2 * np.pi * f * t) * lfo(n, 0.1 + 0.02 * i, 0.5, i) for i, f in enumerate([55, 82.5, 110.25]))  # loops: whole cycles in 40 s
-    write("Ambience/FinalArena", air + hum * 0.08, 0.45)
+    write("Ambience/FinalArena", air + hum * 0.06, 0.28)
 
 
 # ---------- effects ----------
@@ -391,6 +396,11 @@ def sfx():
 
 
 if __name__ == "__main__":
-    for make in (music_menu, music_forest, music_ice, music_volcano, music_sanctum, music_boss, music_memory, music_truth, music_gilded,
-                 ambience_forest, ambience_ice, ambience_volcano, ambience_sanctum, sfx):
-        make()
+    import sys
+    makers = (music_menu, music_forest, music_ice, music_volcano, music_sanctum, music_boss, music_memory, music_truth, music_gilded,
+              ambience_forest, ambience_ice, ambience_volcano, ambience_sanctum, sfx)
+    # Optional names pick a subset, e.g.  python Tools/make_placeholder_audio.py ambience
+    for make in makers:
+        if len(sys.argv) < 2 or any(arg in make.__name__ for arg in sys.argv[1:]):
+            make()
+

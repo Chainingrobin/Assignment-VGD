@@ -12,11 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Book-bearer's diary
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Book-bearer's diary
-  description: 'Third trip this month. The patron pays in old silver for every tome
-    we carry into a guardian''s glade, and he never asks for one back. Marta says
-    the tomes are ledgers: he writes down what the land is worth, and the land hates
-    being counted. Marta talks too much. Tomorrow the Earth tome goes north.'
+  displayName: "Men on the Road"
+  description: "Men in grey passed our door with sealed books on their backs. Nan barred the shutters and wouldn't say why."
   icon: {fileID: 0}
   category: 3
   price: 0

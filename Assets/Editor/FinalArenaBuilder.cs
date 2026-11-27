@@ -38,6 +38,7 @@ public static class FinalArenaBuilder
         // The capsule-shaped default collider is wrong for a flat disc; use a mesh collider.
         Object.DestroyImmediate(floor.GetComponent<Collider>());
         floor.AddComponent<MeshCollider>();
+        floor.layer = LayerMask.NameToLayer("Ground"); // area spells only land on the Ground layer
 
         var rocks = new GameObject("Rim rocks").transform;
         rocks.SetParent(root.transform, false);

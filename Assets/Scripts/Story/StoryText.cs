@@ -71,6 +71,12 @@ public class StoryText : ScriptableObject
     public string lakeLine;
     public string lavaLine;
 
+    [Header("The rift")]
+    [Tooltip("The rift's prompt, by Abe's last camp.")]
+    public string riftPrompt;
+    [Tooltip("Shown once when Wulang first comes near the open rift: there is no way back.")]
+    [TextArea(1, 3)] public string riftWarning;
+
     [Header("Barks")]
     [Tooltip("Subtitle when H is pressed with no potions left.")]
     public string noPotionsLine;

@@ -37,6 +37,6 @@ MonoBehaviour:
     text: ...and it found a girl walking home in the rain.
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: Easy. Easy, spark. Open your eyes.
+    text: Easy. Easy, Wu. Open your eyes.
   choices: []
   flagToSetWhenFinished: 

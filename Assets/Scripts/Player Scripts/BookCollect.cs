@@ -10,6 +10,7 @@ public class BookCollect : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
+        ElementUnlockNotification.Claimed(element);
         PlayerMagicAffinity.Instance.UnlockElement(element);
 
         if (pickupSound != null)

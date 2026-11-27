@@ -6,17 +6,19 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 // Abe's trade window, one tidy panel: the trader's portrait and name on the left, the player's
-// purse (a coin and a number) on the right, then his wares as cards: icon, name and price. Click a
-// card to buy it; hovering one shows its lore on a single line underneath. Esc leaves. Not enough
-// Wubucks makes the purse flash red instead of a message. Opening it pauses the player and frees
-// the cursor.
+// purse (a coin and a number) on the right, then his wares. He sells one thing (healing potions),
+// so a single ware is one large display: the item's picture with how many Wulang carries, its name
+// and lore, and one Buy button showing the price. Several wares fall back to a row of cards. Esc
+// leaves. Not enough Wubucks makes the purse flash red instead of a message. Opening it pauses the
+// player and frees the cursor.
 public class ShopUI : MonoBehaviour
 {
     private static ShopUI instance;
     private Canvas canvas;
     private RectTransform cards;
     private Image portrait;
-    private TMP_Text wallet, header, lore;
+    private TMP_Text wallet, header, lore, owned;
+    private ItemData single;
     private ItemData[] stock;
     private System.Action onClose;
 
@@ -77,13 +79,44 @@ public class ShopUI : MonoBehaviour
         return shop;
     }
 
+    // One ware: a large picture, the count carried, its name and lore, and the Buy button with its price.
+    private void Single(ItemData item)
+    {
+        single = item;
+        var left = new Vector2(0f, 1f);
+        var frame = UIKit.Rect(cards, "Picture", new Vector2(150f, 150f), new Vector2(20f, -6f), left);
+        frame.gameObject.AddComponent<Image>().sprite = FantasyUI.Socket;
+        frame.GetComponent<Image>().raycastTarget = false;
+        UIKit.ItemGlyph(frame, item, 92f);
+        owned = UIKit.Text(frame, "Owned", "", 26f, new Vector2(70f, 30f), new Vector2(-4f, 4f), Vector2.right,
+            FantasyUI.Parchment, TextAlignmentOptions.BottomRight);
+        owned.fontStyle = FontStyles.Bold;
+        UIKit.Text(cards, "Name", item.displayName, 30f, new Vector2(420f, 38f), new Vector2(200f, -10f), left, FantasyUI.Gold)
+            .fontStyle = FontStyles.SmallCaps | FontStyles.Bold;
+        var about = UIKit.Text(cards, "Lore", item.description, 19f, new Vector2(420f, 56f), new Vector2(200f, -52f), left, FantasyUI.Muted);
+        about.textWrappingMode = TextWrappingModes.Normal;
+        var buy = UIKit.Button(cards, "Buy", new Vector2(240f, 58f), new Vector2(200f, -112f), left, () => Buy(item));
+        var label = buy.GetComponentInChildren<TMP_Text>();
+        label.alignment = TextAlignmentOptions.MidlineLeft;
+        label.margin = new Vector4(26f, 0f, 0f, 0f);
+        var price = UIKit.Rect(buy.transform, "Price", new Vector2(100f, 32f), new Vector2(-18f, 0f), new Vector2(1f, 0.5f));
+        UIKit.Rect(price, "Coin", new Vector2(26f, 26f), Vector2.zero, new Vector2(0f, 0.5f)).gameObject.AddComponent<CoinIcon>().raycastTarget = false;
+        UIKit.Text(price, "Amount", item.price.ToString(), 26f, new Vector2(66f, 32f), new Vector2(34f, 0f), new Vector2(0f, 0.5f), FantasyUI.Gold,
+            TextAlignmentOptions.MidlineLeft).fontStyle = FontStyles.Bold;
+        lore.text = "";
+        RefreshWallet();
+    }
+
     // One card per item, centred in a row.
     private void Populate()
     {
         foreach (Transform child in cards) Destroy(child.gameObject);
+        single = null;
+        owned = null;
         const float width = 150f, gap = 16f;
         int count = 0;
         foreach (var item in stock) if (item != null) count++;
+        if (count == 1) { foreach (var item in stock) if (item != null) Single(item); return; }
         float x = -(count * width + (count - 1) * gap) * 0.5f + width * 0.5f;
         var top = new Vector2(0.5f, 1f);
         foreach (var item in stock)
@@ -115,7 +148,8 @@ public class ShopUI : MonoBehaviour
         if (coins == null || inventory == null) return;
         if (!coins.Spend(item.price)) { StopAllCoroutines(); StartCoroutine(FlashPurse()); return; }
         inventory.Add(item);
-        Subtitle.Show($"{item.displayName} +1", 1.2f);
+        GameAudio.Play("Sfx/Coin", null, 0.6f);
+        if (single == null) Subtitle.Show($"{item.displayName} +1", 1.2f);
         RefreshWallet();
     }
 
@@ -134,7 +168,9 @@ public class ShopUI : MonoBehaviour
     {
         var coins = FindFirstObjectByType<PlayerCoins>();
         wallet.text = (coins != null ? coins.Count : 0).ToString();
+        if (owned != null && single != null && PlayerInventory.Instance != null) owned.text = "x" + PlayerInventory.Instance.Count(single);
     }
+
 
     private void Update()
     {

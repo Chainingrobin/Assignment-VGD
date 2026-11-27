@@ -15,37 +15,30 @@ MonoBehaviour:
   lines:
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: There she is. Sit, sit. You took a storm to the head, spark. Most people
-      don't get up from that.
+    text: "There she is. Sit, sit. You took a storm to the head, Wu. Most people don't get up from that."
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: You know me?
+    text: "You know me?"
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: Abe. I keep this old armory, and I've kept an eye on you since you were
-      knee-high. ...You don't remember. That's all right. It'll come back.
+    text: "Abe. I keep this old armory, and I've kept an eye on you since you were knee-high. You don't remember? That's all right. It'll come back, I promise."
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: There's lightning in my hands. Is that normal?
+    text: "There's lightning in my hands. Real lightning!"
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: 'Not in the least. The Storm chose you. The elements are proud: they only
-      go where they''re given. You can''t steal them, and you can''t buy them.'
+    text: "The Storm chose you. The elements are proud: they only go where they're given. Nobody can steal them, and nobody can buy them."
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: That's why the other guardians went sour. The Earth guardian has been tearing
-      up the Blossom Glade for a month. Put it to rest, and its gift goes to whoever
-      freed it.
+    text: "That's what's gone wrong with the guardians. Something has them raving. The Earth guardian is tearing up the clearing south-west of here. Put it to rest, and its gift goes to whoever freed it."
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: And you're sending me, because...?
+    text: "Then I'll free it. All of them, if that's what it takes."
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: Because I'm old, and magic and I had a falling out years ago. Earth hates
-      the storm. Hit it with what you've got.
+    text: "Ha! That's my girl. Earth hates the storm, so hit it with everything you've got. I'm too old to fight, but I can keep you patched up."
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: Bring me Wubucks off those vampires and I'll keep you in potions. Nothing's
-      free, spark. Not even me.
+    text: "Bring me Wubucks off those vampires and I'll keep you in potions. Go on, Wu. The Vale's waiting."
   choices: []
   flagToSetWhenFinished: metAbe

@@ -3787,9 +3787,9 @@ MonoBehaviour:
     the rain stopped falling for free.'
   truthTitle: 'Ending: Freely Given'
   truthText: 'Wulang walked back down through the Vale and gave the gifts back where
-    she had found them: the earth to the glade, the cold to the reach, the fire to
-    the mountain. She kept only the Storm, because it asked to stay. Then she went
-    looking for a hill village, a kettle, and a woman who sang about the rain.'
+    she had found them: the earth to the glade, the cold to the snowfields, the fire
+    to the mountain. She kept only the Storm, because it asked to stay. Then she
+    went looking for a hill village, a kettle, and a woman who sang about the rain.'
   fallFloor: 670
 --- !u!114 &861582763
 MonoBehaviour:
@@ -11575,6 +11575,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1279318041}
+  - component: {fileID: 1279318042}
   m_Layer: 0
   m_Name: Arena
   m_TagString: Untagged
@@ -11602,6 +11603,26 @@ Transform:
   - {fileID: 861582761}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1279318042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279318040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6416d840f26b64542a48d62ef3b4be73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArenaAtmosphere
+  skybox: {fileID: 2100000, guid: 7c4462599fa390a4b87556fc4d2e8f5f, type: 2}
+  shaftMaterial: {fileID: 2100000, guid: d3c902c7e93116543b9461519f4114a9, type: 2}
+  sunEuler: {x: 22, y: 210, z: 0}
+  sunColor: {r: 0.9, g: 0.82, b: 1, a: 1}
+  sunIntensity: 1.6
+  ambient: {r: 0.36, g: 0.33, b: 0.48, a: 1}
+  fogColor: {r: 0.32, g: 0.27, b: 0.45, a: 1}
+  fogDensity: 0.0045
 --- !u!1 &1285574676
 GameObject:
   m_ObjectHideFlags: 0
@@ -13745,7 +13766,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8458342792176807065, guid: 46b60189ea038fe4292f66083e364762, type: 3}
       propertyPath: m_LocalScale.y
-      value: 586.7926
+      value: 2.0952666
       objectReference: {fileID: 0}
     - target: {fileID: 8458342792176807065, guid: 46b60189ea038fe4292f66083e364762, type: 3}
       propertyPath: m_LocalScale.z
@@ -13757,7 +13778,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8458342792176807065, guid: 46b60189ea038fe4292f66083e364762, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 394.5475
+      value: 699.9057
       objectReference: {fileID: 0}
     - target: {fileID: 8458342792176807065, guid: 46b60189ea038fe4292f66083e364762, type: 3}
       propertyPath: m_LocalPosition.z
@@ -14617,11 +14638,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RegionObjectives
   objectives:
-  - text: Find Abe at the heart of the Sanctum
+  - text: Find Abe in the middle of the sanctum
     showWhen: 
     doneWhen: choseSubmission|refusedOffer
     marker: {x: 500, y: 700, z: 500}
-  - text: 'Defeat Ganfaul: answer each element he takes up with its weakness'
+  - text: 'Defeat Ganfaul: hit each element he takes with its weakness'
     showWhen: refusedOffer
     doneWhen: bossFinalDefeated
     marker: {x: 0, y: 0, z: 0}
@@ -14961,7 +14982,7 @@ GameObject:
   - component: {fileID: 1840465012}
   - component: {fileID: 1840465011}
   - component: {fileID: 1840465010}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Floating platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}

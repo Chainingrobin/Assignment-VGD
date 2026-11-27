@@ -41,26 +41,16 @@ public class TreasureChest : MonoBehaviour
         GetComponent<Interactable>().enabled = false;
         var story = StoryStateManager.Instance;
         story.SetFlag(Flag);
-        var found = new List<string>();
-        if (vitality)
-        {
-            story.SetFlag(PlayerHealth.VitalityPrefix + id); // PlayerHealth raises its maximum
-            found.Add($"Vitality relic: max health +{PlayerHealth.VitalityPerRelic:0}");
-        }
+        if (vitality) story.SetFlag(PlayerHealth.VitalityPrefix + id); // PlayerHealth raises its maximum
         var wallet = FindFirstObjectByType<PlayerCoins>();
-        if (wubucks > 0 && wallet != null)
-        {
-            wallet.Add(wubucks);
-            found.Add($"+{wubucks} Wubucks");
-        }
+        if (wubucks > 0 && wallet != null) wallet.Add(wubucks);
+        var given = new List<ItemData>();
         if (PlayerInventory.Instance != null)
             foreach (var item in items)
-                if (item != null)
-                {
-                    PlayerInventory.Instance.Add(item);
-                    found.Add(item.category == ItemCategory.Lore ? "Journal: " + item.displayName : item.displayName + " +1");
-                }
-        if (found.Count > 0) Subtitle.Show(string.Join("   ", found), 4f);
+                if (item != null) { PlayerInventory.Instance.Add(item); given.Add(item); }
+        // What was inside, as icons: heart, coins, flask, scroll.
+        LootToast.Show(wallet != null ? wubucks : 0, vitality ? PlayerHealth.VitalityPerRelic : 0f, given);
+
         if (openEffect != null) Destroy(Instantiate(openEffect, transform.position + Vector3.up * 0.6f, Quaternion.identity), 4f);
         GameAudio.Play("Sfx/Chest", transform.position, 0.9f);
     }

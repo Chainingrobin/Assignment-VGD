@@ -9,14 +9,16 @@ public sealed class SpellHit
     private readonly ElementType element;
     private readonly Vector3 origin;
     private readonly Material arcMaterial;
+    private readonly bool area;
     private int arcsRemaining = 2;
 
-    public SpellHit(float damage, ElementType element, Vector3 origin, Material arcMaterial = null)
+    public SpellHit(float damage, ElementType element, Vector3 origin, Material arcMaterial = null, bool area = false)
     {
         this.damage = damage;
         this.element = element;
         this.origin = origin;
         this.arcMaterial = arcMaterial;
+        this.area = area;
     }
 
     public void Apply(Collider collider) => Apply(new[] { collider });
@@ -37,7 +39,8 @@ public sealed class SpellHit
         // Reserve every direct area hit before chains, so an arc cannot replace a full hit.
         foreach (var target in primary)
         {
-            if (target is CombatTarget enemy) enemy.ReceiveSpell(damage, element, origin);
+            if (target is CombatTarget enemy) enemy.ReceiveSpell(damage, element, origin, area);
+
             else target.TakeDamage(damage, element);
         }
         if (element != ElementType.Lightning) return;

@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Shrine plaque
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Shrine plaque
-  description: 'Raised by the people of Lowmere for those the Storm took on the hill
-    road: the miller''s boy, the Fenn sisters, and the baker''s granddaughter, who
-    went out for bread and was never found.'
+  displayName: "Lowmere"
+  description: "A mill, a well, and a bakery that smelled of burnt sugar. Lowmere. I lived there. I'm sure of it now."
   icon: {fileID: 0}
   category: 3
   price: 0

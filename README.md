@@ -35,9 +35,9 @@ Pressing Play always starts at the main menu, as a build does. To play a region 
 |---|---|---|
 | 0 | `Scenes/MainMenu.unity` | Continue (back to the start of the region last entered), New Game, chapter select in story order, New Game+ (after an ending), Quit |
 | 1 | `Scenes/World.unity` | The whole terrain, sky, day/night, player, HUD, statue/lake freeze and landmark cinematics |
-| 2 | `Scenes/Regions/Forest.unity` | Chapter I, *The Spark*: Abe's armory camp, training and field vampires, Earth Guardian (Maw J Laygo) |
+| 2 | `Scenes/Regions/Forest.unity` | Chapter I, *The Waking Storm*: Abe's armory camp, training and field vampires, Earth Guardian (Maw J Laygo) |
 | 3 | `Scenes/Regions/Ice.unity` | Chapter II, *What the Cold Keeps*: Ice Guardian (Mutant), Ice vampires, mountain-pass waystone |
-| 4 | `Scenes/Regions/Volcano.unity` | Chapter III, *The Price of Fire*: Fire Guardian (Warrok) in the caldera, Fire vampires, rift |
+| 4 | `Scenes/Regions/Volcano.unity` | Chapter III, *The Price of Fire*: Fire Guardian (Warrok) in the caldera, Fire vampires, the rift beside Abe's camp |
 | 5 | `Scenes/Regions/FinalArena.unity` | Chapter IV, *The Sanctum*: floating sanctum, Abe/Ganfaul, the offer and both endings |
 
 The World stays loaded, so every region remains visible on the horizon. `RegionManager` streams region scenes additively: walking into the next region (only once its story flag is set) plays a landmark flight with the chapter title and recap while the region really loads and the previous one unloads. Locked regions push the player back with an elemental seal instead of a UI border; the unfrozen lake drowns (damage, then back to shore) and lava burns.
@@ -47,10 +47,10 @@ The World stays loaded, so every region remains visible on the horizon. `RegionM
 0. **Intro (New Game):** a narrated cutscene: drifting shots of the forest, the volcano and the Frozen Reach, a storm sky, the flight down to the armory, then black, Abe's voice and Wulang opening her eyes, then the chapter card. Space skips it.
 1. **Forest:** wake with Lightning, meet Abe, follow the trail past two vampires to the **Blossom Glade**, defeat the **Earth Guardian** (weak to Lightning) and claim Earth. The ice statue then freezes the lake.
 2. **Ice:** cross the frozen lake to the **Frozen Reach**, defeat the **Ice Guardian** in the **Frozen Amphitheater** with the Earth + Lightning **Storm Quake** combo, claim Ice, take the mountain-pass waystone.
-3. **Volcano:** enter the caldera through the lava tube, defeat the **Fire Guardian** (weak to Ice), claim Fire, step into the rift.
+3. **Volcano:** enter the caldera through the lava tube, defeat the **Fire Guardian** (weak to Ice), claim Fire, then return to Abe's camp, where the rift into the Sanctum has opened under a violet beacon seen from anywhere in the Vale. Coming near it warns that there is no way back, so the player can buy potions and finish exploring first.
 4. **Final arena:** Abe offers Wulang her past in exchange for the elements. **Kneel** for the Submission ending, or **refuse**: a short reveal cutscene (the camera holds on Abe, the disguise burns away, Ganfaul roars) and the fight with **Ganfaul**, whose element changes every quarter of his health (only the current weakness hurts him), for the Truth ending.
 
-Each region hides three **points of interest** off the main path, each with its own landmark, a small story told by its props, usually a guard pack, and a chest under a light beam (rose for a vitality relic, gold for supplies). Six reliquaries each raise maximum health by 10, and every chest adds a journal page that hints at who Abe really is. Forest: the runestone crown on the knoll, the book-bearer's camp, the blossom shrine by the pond. Frozen Reach: the frozen caravan, the crystal crown, the glacier gate. Volcano: the chain forge on the plateau (jump up the slabs on its west side), the ember shrine, the burnt watch post. Opened chests are story flags, so they stay looted after a restart or Continue.
+Each region hides three **points of interest** off the main path, each with its own landmark, a small story told by its props, usually a guard pack, and a chest under a light beam (rose for a vitality relic, gold for supplies). Six reliquaries each raise maximum health by 10, and every chest adds a journal page: a short fragment of Wulang's own memories (her grandmother Nan, the village of Lowmere, the rain song) that quietly contradicts the past Abe is giving her. Forest: the runestone crown on the knoll, the book-bearer's camp, the blossom shrine by the pond. Frozen Reach: the frozen caravan, the crystal crown, the glacier gate. Volcano: the chain forge on the plateau (jump up the slabs on its west side), the ember shrine, the burnt watch post. Opened chests are story flags, so they stay looted after a restart or Continue.
 
 Abe's horned shadow only appears at the last camp, by the volcano. Each element claim replays a **memory echo** (the world desaturates, the camera cuts to a framed shot of ghosts of Wulang and Abe acting it out). Abe sits by a camp fire in every region: F talks to him (that region's conversation, with gestures), then F trades. His camps are safe ground: vampires give up the chase there. Vampires of each biome's element roam in packs and drop Wubucks; coin piles, Wubucks bags and potions are scattered off the paths.
 
@@ -64,9 +64,9 @@ Abe's horned shadow only appears at the last camp, by the volcano. Each element 
 | R | Reload projectile charges |
 | F | Interact: talk to or trade with Abe, statue, waystone, rift, lore notes |
 | H | Drink a healing potion |
-| Tab | Satchel and journal (items, memories and lore) |
+| Tab | Satchel, journal (memories and found pages) and Guide (every how-to tip, to read again) |
 | Esc | Pause: Resume, Restart Region, Main Menu, Quit |
-| Story Mode (main menu) | Halves the damage Wulang takes; remembered between sessions |
+| Story Mode (main menu) | A player option, explained under the button: enemies deal half damage, for players here for the story; remembered between sessions |
 | Space / Enter / F / click | Advance dialogue; 1-9 or click to pick a choice |
 | Space (during cutscenes) | Skip the intro, Ganfaul's reveal, a flight, the freeze reveal, a chapter caption or an ending card |
 
@@ -82,10 +82,12 @@ Abe's horned shadow only appears at the last camp, by the volcano. Each element 
 | Story text (data) | `Story/StoryText` (one asset: guardian lines, chapter cards and recaps, objectives, barks, ending cards); `Editor/StoryScript` copies it onto the scenes (**Wulang > Story > Apply story text**) |
 | Audio | `World/GameAudio` (one-shots by name; music and ambience that crossfade per region, boss fight, memory and ending), `World/Footsteps` |
 | Bosses | `Bosses/BossBrain` (attack lists: melee, element projectiles, element ground attacks with warnings), `BossEncounter`, `BossProjectile`, `ElementPhases`, `UI/BossHealthBar` |
-| Combat additions | `Combat/StormQuake` (Earth + Lightning combo), `CombatTarget` death event, stagger, status scaling, resistance |
+| Combat additions | `Combat/StormQuake` (Earth + Lightning combo), `CombatTarget` death event, stagger, status scaling (area casts leave marks twice as long), resistance; guardians' stagger meter (`BossBrain`, shown under the boss bar: hits fill it, bursts and weaknesses fastest; full = 4 s stunned with extra damage) |
 | Player | `PlayerHealth` (HP, death and respawn), `Items/PlayerInventory` (potions on H, tomes), `ItemData`, `LootDrop`, `Merchant`, `World/HazardZone` |
 | UI | `UI/MainMenu`, `PauseMenu`, `InventoryUI`, `ShopUI`, `Subtitle`, `UIKit` |
-| Exploration | `World/TreasureChest` (chest rewards; vitality relics raise `PlayerHealth`'s maximum), `World/Spin` (the Sanctum's drifting rocks) |
+| Exploration | `World/TreasureChest` (chest rewards, shown as icons by `UI/LootToast`; vitality relics raise `PlayerHealth`'s maximum), `World/Spin` (the Sanctum's drifting rocks), `Story/ObjectiveManager`'s light beam over the current goal (no HUD compass) |
+| Tips | `UI/Tutorials`: one-time how-to cards (casting, charges, switching, chaining, stagger, potions, journal), also listed on the satchel's Guide page |
+| Sanctum | `World/ArenaAtmosphere`: the day/night cycle pauses in the Sanctum; a storm sky, fixed light, fog and light shafts instead |
 
 ### Editing the story
 
@@ -116,7 +118,9 @@ Which flags show and complete each objective, and what each trigger requires, ar
 | **Wulang > Bosses > Fix animation roots** | Bakes boss and Abe clip roots (no floating or body sliding) and grounds each rig's idle pose |
 | **Wulang > Bosses > Abe sitting and gestures** | Abe's sitting idle and an additive upper-body Gestures Pack layer (the standing gestures add onto his seated arms instead of replacing them, so his hands stay off the ground); the standing variant for the Sanctum |
 | **Wulang > Characters > Tune skin materials** | Per-element skin smoothness, specular maps where models have them, Maw's glow map |
-| **Wulang > Forest > Dress the armory compound** | Fence, braziers, training ground, smithy and supply corner around the armory tower |
+| **Wulang > Forest > Dress the armory compound** | The tower at natural size in a yard sized to it (outer paving painted back to grass): quartermaster, armourer, training ground, smithy and supply corner, braziers and lamps |
+| **Wulang > Polish > Run every step** | The feedback pass: interaction reach, brighter nights, objective beacon, lake shore and frozen ponds seated in the snow, Ice field vampires, the rift by Abe's camp with its beacon, the framed lava-tube entrance, the Sanctum's floor layer, dais and atmosphere, boss move lists (also **Wulang > Bosses > Update move lists**). Each step is its own menu item and can be re-run |
+
 | **Wulang > Terrain > Add gentle ground variation** | Small undulation on open ground only (run after the biome builders, before Populate regions) |
 | **Wulang > Cinematics > Build intro flight and tidy cutscenes** | The New Game intro flight (a slow descent onto the armory); no Ice fly-over (the freeze reveal shows it); no "view area" previews. Flights are timed by distance (`BiomeCinematicSetup.Paced`): a steady speed, eased at both ends, and the transitions dip to black around them instead of swinging the camera across the map |
 | **Wulang > Story > Re-render portraits** | The three dialogue portraits only |

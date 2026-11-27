@@ -24,7 +24,8 @@ public class InventoryUI : MonoBehaviour
     private RectTransform list;
     private TMP_Text title, detailName, detailText, purseCount;
     private RectTransform purse;
-    private bool journal;
+    private enum Page { Satchel, Journal, Guide }
+    private Page page;
 
     // Builds the screen in code (title, page tabs, icon list, lore panel, purse), hidden until Tab.
     private void Start()
@@ -37,8 +38,9 @@ public class InventoryUI : MonoBehaviour
         FantasyUI.Panel(panel);
         var top = new Vector2(0.5f, 1f);
         title = UIKit.Text(panel, "Title", "", 38f, new Vector2(1000f, 50f), new Vector2(0f, -22f), top, FantasyUI.Gold, TextAlignmentOptions.Center);
-        UIKit.Button(panel, "Satchel", new Vector2(200f, 50f), new Vector2(-110f, -80f), top, () => Show(false));
-        UIKit.Button(panel, "Journal", new Vector2(200f, 50f), new Vector2(110f, -80f), top, () => Show(true));
+        UIKit.Button(panel, "Satchel", new Vector2(200f, 50f), new Vector2(-220f, -80f), top, () => Show(Page.Satchel));
+        UIKit.Button(panel, "Journal", new Vector2(200f, 50f), new Vector2(0f, -80f), top, () => Show(Page.Journal));
+        UIKit.Button(panel, "Guide", new Vector2(200f, 50f), new Vector2(220f, -80f), top, () => Show(Page.Guide));
         list = UIKit.Rect(panel, "List", new Vector2(420f, 500f), new Vector2(40f, -150f), new Vector2(0f, 1f));
         var detail = UIKit.Rect(panel, "Detail", new Vector2(560f, 500f), new Vector2(-40f, -150f), Vector2.one);
         UIKit.Fill(detail, new Color(0.08f, 0.055f, 0.04f, 0.85f));
@@ -69,7 +71,7 @@ public class InventoryUI : MonoBehaviour
             DontDestroyOnLoad(new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule)));
         canvas.enabled = true;
         PlayerLock.Push(showCursor: true);
-        Show(journal);
+        Show(page);
     }
 
     private void Close()
@@ -80,16 +82,18 @@ public class InventoryUI : MonoBehaviour
 
     // Fills the list with the chosen page's items (journal: memories and lore; satchel: potions and tomes) and
     // selects the first one.
-    private void Show(bool journalPage)
+    private void Show(Page shown)
     {
-        journal = journalPage;
-        title.text = journal ? "Journal" : "Satchel";
+        page = shown;
+        bool journal = page == Page.Journal;
+        title.text = page.ToString();
         foreach (Transform child in list) Destroy(child.gameObject);
+        purse.gameObject.SetActive(page == Page.Satchel);
+        if (page == Page.Guide) { ShowGuide(); return; }
         var inventory = PlayerInventory.Instance;
         var items = inventory == null ? new ItemData[0] : inventory.Items.Where(i =>
             journal ? i.category is ItemCategory.Memory or ItemCategory.Lore : i.category is ItemCategory.Consumable or ItemCategory.Tome).ToArray();
         var coins = FindFirstObjectByType<PlayerCoins>();
-        purse.gameObject.SetActive(!journal);
         purseCount.text = (coins != null ? coins.Count : 0).ToString();
         detailName.text = "";
         detailText.text = items.Length == 0
@@ -110,6 +114,25 @@ public class InventoryUI : MonoBehaviour
         }
         if (items.Length > 0) Select(items[0]);
     }
+
+    // Every how-to tip (Tutorials), one per row; selecting one reads it in full.
+    private void ShowGuide()
+    {
+        for (int i = 0; i < Tutorials.All.Length; i++)
+        {
+            var tip = Tutorials.All[i];
+            var button = UIKit.Button(list, tip.title, new Vector2(420f, 54f), new Vector2(0f, -i * 64f), new Vector2(0f, 1f), () => SelectTip(tip));
+            button.GetComponentInChildren<TMP_Text>().fontSize = 22f;
+        }
+        SelectTip(Tutorials.All[0]);
+    }
+
+    private void SelectTip(Tutorials.Tip tip)
+    {
+        detailName.text = tip.title;
+        detailText.text = Tutorials.Describe(tip);
+    }
+
 
     // Shows an item's title and lore (both edited on its ItemData asset).
     private void Select(ItemData item)

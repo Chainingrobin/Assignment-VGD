@@ -15,16 +15,15 @@ MonoBehaviour:
   lines:
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: Breathe, spark. I've got you. I've always got you.
+    text: "Breathe, Wu. I've got you. I've always got you."
   - speaker: Young Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: I fell through. I'm sorry. I'm sorry.
+    text: "I fell through. I'm sorry. I'm sorry."
   - speaker: Abe
     portrait: {fileID: 21300000, guid: e5ec602c4dc523c4580b750811a63e4a, type: 3}
-    text: Don't be sorry. Be grateful. One day I'll ask you for something, and you'll
-      remember this.
+    text: "Don't be sorry. Just remember who pulled you out."
   - speaker: Wulang
     portrait: {fileID: 21300000, guid: f0fce3e3ff29277478f8abc7d81c87aa, type: 3}
-    text: The water was warm. Ice water isn't warm.
+    text: "The water was warm. Ice water isn't warm."
   choices: []
   flagToSetWhenFinished: 

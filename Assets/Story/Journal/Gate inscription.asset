@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Gate inscription
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Gate inscription
-  description: Here the Frost guardian slept through the long winters, and the travellers'
-    road ran safe beneath it. Then the book-bearers came, carrying gifts.
+  displayName: "A Cup of Snow"
+  description: "Each winter we left a cup of snow on the step for the Frost guardian. It never asked for it. We just did."
   icon: {fileID: 0}
   category: 3
   price: 0

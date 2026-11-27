@@ -55,10 +55,7 @@ public static class RegionContentSetup
             StoryScript.Bosses[Flags.BossIce].intro, StoryScript.Bosses[Flags.BossIce].dying);
         Camp(iceRoot, new Vector2(iceSpawn.x + 6f, iceSpawn.z - 4f), new Vector2(iceSpawn.x, iceSpawn.z),
             StoryScript.Greetings["Ice"]);
-        foreach (var p in new[] { new Vector2(600f, 262f), new Vector2(712f, 252f), new Vector2(770f, 300f) })
-            Pack(iceRoot, "Ice", p, 2);
-        foreach (var p in new[] { new Vector2(520f, 300f), new Vector2(800f, 232f), new Vector2(690f, 185f) })
-            Pack(iceRoot, "Ice", p, 1);
+        foreach (var (p, count) in PolishSetup.IcePacks) Pack(iceRoot, "Ice", p, count);
         Loot(iceRoot, new Rect(450f, 140f, 430f, 215f), coinPiles: 8, bags: 2, potions: 2, seed: 23, spacing: 14f);
         Travel(iceRoot, "Mountain pass waystone", iceSpawn + new Vector3(-6f, 0f, -3f), "Volcano", Flags.BossIce,
             "Press F to cross the mountain pass");
@@ -76,8 +73,11 @@ public static class RegionContentSetup
         foreach (var p in new[] { new Vector2(700f, 560f), new Vector2(660f, 805f), new Vector2(725f, 690f) })
             Pack(volcanoRoot, "Fire", p, 1);
         Loot(volcanoRoot, new Rect(650f, 470f, 240f, 360f), coinPiles: 7, bags: 2, potions: 2, seed: 37);
-        Travel(volcanoRoot, "Caldera rift", new Vector3(808f, caldera.y, 653f), "FinalArena", Flags.BossFire,
-            "Press F to step into the rift", onTerrain: false);
+        // The rift opens beside Abe's last camp, so the player can stock up before the point of no return.
+        var away = new Vector3(4f, 0f, 5f).normalized;
+        var riftAt = SceneSplitSetup.Flattest(new Vector2(volcanoSpawn.x + 4f + away.x * 9f, volcanoSpawn.z + 5f + away.z * 9f), 4f);
+        Travel(volcanoRoot, "Caldera rift", riftAt, "FinalArena", Flags.BossFire, StoryScript.Text.riftPrompt);
+        PolishSetup.RiftBeacon(volcanoRoot.Find("Caldera rift").GetComponent<RegionTravel>());
         Save(volcano);
 
         EditorSceneManager.OpenScene(SceneSplitSetup.WorldPath, OpenSceneMode.Single);
@@ -190,11 +190,14 @@ public static class RegionContentSetup
     // The armory's training vampires (one per element, from Assignment 2) stood across the gate. Only the
     // forest's own elements stay, Earth and Lightning, in the yard's training ground by the dummies, and they
     // only fight inside the yard, so the walk to Abe's fire is quiet.
+    // Beside the dummies on the yard's west side (ArmorySetup).
+    public static readonly Vector2[] TrainingSpots = { new(555.8f, 545f), new(555.8f, 549.2f) };
+
     private static void TrainingPair(Scene forest)
     {
         var training = forest.GetRootGameObjects().FirstOrDefault(go => go.name == "Combat training");
         if (training == null) return;
-        var spots = new[] { new Vector2(555.8f, 556.5f), new Vector2(555.8f, 561.5f) };
+        var spots = TrainingSpots;
         int next = 0;
         foreach (var target in training.GetComponentsInChildren<CombatTarget>(true).ToArray())
         {
@@ -262,7 +265,11 @@ public static class RegionContentSetup
         spot = SceneSplitSetup.Flattest(near, radius);
         foreach (var hit in Physics.RaycastAll(spot + Vector3.up * 30f, Vector3.down, 60f, ~0, QueryTriggerInteraction.Collide))
         {
+            // Only water or hazards at the ground count: the snow region's lake plane and its drowning
+            // zone lie under the whole region, below the snow, and used to reject every spot there.
+            if (hit.point.y < spot.y - 0.5f) continue;
             string name = hit.collider.name.ToLowerInvariant();
+
             if (hit.collider.GetComponentInParent<HazardZone>() != null || name.Contains("lava") || name.Contains("molten") || name.Contains("pond")
                 || name.Contains("water") || name.Contains("lake")) return false;
         }

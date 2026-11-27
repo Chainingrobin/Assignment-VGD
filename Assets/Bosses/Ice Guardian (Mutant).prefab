@@ -40026,7 +40026,7 @@ MonoBehaviour:
   model: {fileID: 1456431630057733761}
   steamPrefab: {fileID: 7101566516798517484, guid: d8ef4a3881d6640419f321ea825ba4e0, type: 3}
   seismicPrefab: {fileID: 1250223451436690590, guid: c7a2e3f543dff2c41a11f9cb2cbddc00, type: 3}
-  statusScale: 0.3
+  statusScale: 0.5
   nonWeaknessMultiplier: 1
 --- !u!114 &7283336770902908768
 MonoBehaviour:
@@ -40077,6 +40077,8 @@ MonoBehaviour:
     atSelf: 0
     line: 0
     lobbed: 0
+    ring: 0
+    stream: 0
     cooldown: 2.5
     phaseTwoOnly: 0
   - name: Swipe
@@ -40093,6 +40095,8 @@ MonoBehaviour:
     atSelf: 0
     line: 0
     lobbed: 0
+    ring: 0
+    stream: 0
     cooldown: 3.5
     phaseTwoOnly: 0
   - name: Glacial Slam
@@ -40109,6 +40113,8 @@ MonoBehaviour:
     atSelf: 1
     line: 0
     lobbed: 0
+    ring: 0
+    stream: 0
     cooldown: 7
     phaseTwoOnly: 0
   - name: Shard Volley
@@ -40125,6 +40131,8 @@ MonoBehaviour:
     atSelf: 0
     line: 0
     lobbed: 0
+    ring: 0
+    stream: 0
     cooldown: 5
     phaseTwoOnly: 0
   - name: Ice Rain
@@ -40141,11 +40149,49 @@ MonoBehaviour:
     atSelf: 0
     line: 0
     lobbed: 0
+    ring: 0
+    stream: 0
     cooldown: 8
     phaseTwoOnly: 1
+  - name: Frost Ring
+    kind: 2
+    element: 1
+    state: Cast
+    minRange: 4
+    maxRange: 24
+    windup: 1.3000001
+    duration: 1.95
+    damage: 16
+    radius: 2.4
+    count: 6
+    atSelf: 0
+    line: 0
+    lobbed: 0
+    ring: 1
+    stream: 0
+    cooldown: 9
+    phaseTwoOnly: 0
+  - name: Ice Line
+    kind: 2
+    element: 1
+    state: AreaCast
+    minRange: 5
+    maxRange: 22
+    windup: 1.7700001
+    duration: 2.655
+    damage: 16
+    radius: 2.2
+    count: 5
+    atSelf: 0
+    line: 1
+    lobbed: 0
+    ring: 0
+    stream: 0
+    cooldown: 8
+    phaseTwoOnly: 0
   turnSpeed: 160
   arenaRadius: 30
-  recover: 0.8
+  recover: 1.1
   roarState: Roar
   roarDuration: 2.5
   hitState: HitLarge

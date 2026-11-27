@@ -15,45 +15,45 @@ MonoBehaviour:
   chapters:
   - scene: Forest
     number: I
-    title: "The Spark"
-    recap: "Something drove the guardians of the Vale mad. The Storm alone got away, and hid in a girl on the hill road. She wakes with lightning in her hands and nothing else."
+    title: "The Waking Storm"
+    recap: "The Vale's four guardians have gone mad. The Storm hid inside a girl on the hill road, and she is waking up."
     lockedLine: ""
-    abeGreeting: "Abe: Potions, fresh this morning. Prices are fair. Mostly."
+    abeGreeting: "Abe: Fresh this morning, Wu. Bitter, but they'll keep you standing."
     objectives:
-    - "Speak with the old man by the armory fire"
-    - "Put the Earth guardian to rest in the Blossom Glade"
-    - "Take up the Earth tome"
+    - "Talk to Abe by the fire at the armory"
+    - "Follow the trail south-west to the Earth guardian"
+    - "Pick up the Earth tome"
     - "Wake the ice statue by the lake"
-    - "Cross the frozen lake into the Frozen Reach"
+    - "Cross the frozen lake into the snow"
   - scene: Ice
     number: II
     title: "What the Cold Keeps"
-    recap: "The Earth guardian rests at last, and the statue has frozen the lake. Abe says the Frozen Reach is next, and that he will meet her there."
+    recap: "The Earth guardian sleeps and the lake has frozen over. Abe has gone ahead into the snow."
     lockedLine: "Wulang: The lake won't hold me. Not yet."
-    abeGreeting: "Abe: Tea's free. Potions are not."
+    abeGreeting: "Abe: Tea's on, Wu. Potions too, if you need them."
     objectives:
-    - "Find the Ice guardian in the Frozen Amphitheater"
-    - "Take up the Ice tome"
-    - "Cross the mountain pass at the waystone by Abe's camp"
+    - "Head south to the Ice guardian's ring of stones"
+    - "Pick up the Ice tome"
+    - "Take the mountain path beside Abe's camp"
   - scene: Volcano
     number: III
     title: "The Price of Fire"
-    recap: "Frost answers to Wulang now. Past the mountain pass, the Fire guardian has sealed the Burning Peak, and Abe is already waiting at its foot."
-    lockedLine: "Wulang: The heat throws me back. The mountain is sealed."
-    abeGreeting: "Abe: Last shop before the mountain. I'd stock up, spark."
+    recap: "Frost answers to Wulang now. Over the mountain the Fire guardian burns, and Abe waits at its foot."
+    lockedLine: "Wulang: The heat throws me back. Not yet."
+    abeGreeting: "Abe: Last camp before the end, Wu. Stock up. Please."
     objectives:
-    - "Follow the lava tube into the caldera and face the Fire guardian"
-    - "Take up the Fire tome"
-    - "Step into the rift at the back of the caldera"
+    - "Go through the lava tube into the volcano and face the Fire guardian"
+    - "Pick up the Fire tome"
+    - "Step into the rift beside Abe's camp"
   - scene: FinalArena
     number: IV
     title: "The Sanctum"
-    recap: "Three guardians rest. Four gifts burn in one pair of hands. The rift opens on a sanctum in the sky, and Abe has gone ahead, the way he always does."
+    recap: "Three guardians rest. The rift opens onto a sanctum in the sky, and Abe is already there."
     lockedLine: ""
     abeGreeting: ""
     objectives:
-    - "Find Abe at the heart of the Sanctum"
-    - "Defeat Ganfaul: answer each element he takes up with its weakness"
+    - "Find Abe in the middle of the sanctum"
+    - "Defeat Ganfaul: hit each element he takes with its weakness"
   guardians:
   - defeatFlag: bossEarthDefeated
     displayName: "The Earth Guardian"
@@ -77,12 +77,14 @@ MonoBehaviour:
     text: "Wulang: The statue is humming. It wants the Earth I'm carrying. (F)"
   - scene: Ice
     trigger: "Arrival"
-    text: "Wulang: The wind has stopped. Everything here is holding its breath."
+    text: "Wulang: Everything here is holding its breath. Hang on, guardian. I'm coming."
   - scene: Volcano
     trigger: "Arrival"
-    text: "Wulang: The air itself is burning. I'll have to keep the cold close."
+    text: "Wulang: The air itself is burning. Good thing I brought the cold."
   lakeLine: "Wulang: The water's like knives. I can't swim this."
   lavaLine: "Wulang: Lava. Not my best idea."
+  riftPrompt: "Press F to enter the rift"
+  riftWarning: "There is no coming back through the rift. Buy potions from Abe and finish exploring first."
   noPotionsLine: "No potions left. Abe sells them for Wubucks."
   fullHealthLine: "Wulang: I'm fine. Save it."
   ganfaulPhaseLine: "Ganfaul takes up {0}."
@@ -91,4 +93,4 @@ MonoBehaviour:
   submissionTitle: "Ending: The Gilded Past"
   submissionText: "Wulang knelt, and the four gifts left her one by one. In return she was given a past: a great name, a grateful people, a teacher she owed everything. It was warm, and it fitted perfectly, and none of it was hers. Over the Vale, the rain stopped falling for free."
   truthTitle: "Ending: Freely Given"
-  truthText: "Wulang walked back down through the Vale and gave the gifts back where she had found them: the earth to the glade, the cold to the reach, the fire to the mountain. She kept only the Storm, because it asked to stay. Then she went looking for a hill village, a kettle, and a woman who sang about the rain."
+  truthText: "Wulang walked back down through the Vale and gave the gifts back where she had found them: the earth to the glade, the cold to the snowfields, the fire to the mountain. She kept only the Storm, because it asked to stay. Then she went looking for a hill village, a kettle, and a woman who sang about the rain."

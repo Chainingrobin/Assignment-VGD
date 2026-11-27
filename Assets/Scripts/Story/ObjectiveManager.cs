@@ -4,8 +4,8 @@ using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// The objective tracker: shows the current story objective in the top-right of the HUD and points a compass marker
-/// at it (assignment guide, Step 6; GDD section 5, "objective tracker = plot progression").
+/// The objective tracker: shows the current story objective in the top-right of the HUD and raises a pale light beam
+/// over it in the world (assignment guide, Step 6; GDD section 5, "objective tracker = plot progression").
 /// </summary>
 /// <remarks>
 /// <para><b>Always derived, never stored.</b> Each region scene lists its objectives (<see cref="RegionObjectives"/>).
@@ -13,8 +13,9 @@ using UnityEngine;
 /// whose <c>showWhen</c> flag is set and whose <c>doneWhen</c> flag isn't. Nothing can get out of step, so the tracker
 /// always matches the story state, even if the player explores out of order (Step 11).</para>
 /// <para><b>Feedback.</b> When the objective changes, a gold "New objective" header and a glow appear for a few seconds,
-/// so the player notices the story has moved on. The compass icon slides along the top edge toward the goal and hides
-/// once the goal is within <see cref="ArrivedDistance"/> or the player is in a cutscene.</para>
+/// so the player notices the story has moved on. The beam stands over the goal, visible from across the map by day or
+/// night, and fades once the goal is within <see cref="ArrivedDistance"/> or the player is in a cutscene. There is no
+/// HUD compass: the world itself shows the way.</para>
 /// <para>Minimal and icon-first: the scroll icon already says "objective", so only the goal itself is written.</para>
 /// </remarks>
 public class ObjectiveManager : MonoBehaviour
@@ -22,8 +23,10 @@ public class ObjectiveManager : MonoBehaviour
     private TMP_Text text, header;
     private CanvasGroup flash;
     private RectTransform panel;
+    [Tooltip("Unlit beam material for the light over the current goal.")]
+    [SerializeField] private Material beaconMaterial;
     private string shown;
-    private RectTransform compass;
+    private Transform beacon;
     private Vector3 marker;
     // Close enough to see the goal; also keeps the marker off the boss bar during a fight.
     private const float ArrivedDistance = 30f;
@@ -51,9 +54,19 @@ public class ObjectiveManager : MonoBehaviour
         text = UIKit.Text(panel, "Text", "", 21f, new Vector2(340f, 56f), Vector2.zero, corner,
             FantasyUI.Parchment, TextAlignmentOptions.TopRight);
         text.textWrappingMode = TextWrappingModes.Normal;
-        // Compass: the objective's scroll icon slides along the top edge toward the current goal.
-        compass = HUDIcon.Create(hud, HUDIcon.Shape.Quest, 30f, new Vector2(0f, -36f), new Vector2(0.5f, 1f)).rectTransform;
-        compass.gameObject.SetActive(false);
+        if (beaconMaterial != null)
+        {
+            var beam = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            beam.name = "Objective beacon";
+            Destroy(beam.GetComponent<Collider>());
+            beam.transform.localScale = new Vector3(2.2f, 90f, 2.2f);
+            var renderer = beam.GetComponent<MeshRenderer>();
+            renderer.sharedMaterial = beaconMaterial;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+            beacon = beam.transform;
+            beacon.gameObject.SetActive(false);
+        }
         StoryStateManager.Instance.OnFlagSet += OnFlag;
         if (RegionManager.Instance != null) RegionManager.Instance.RegionEntered += OnRegion;
         Refresh();
@@ -61,6 +74,8 @@ public class ObjectiveManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (beacon != null) Destroy(beacon.gameObject);
+
         var story = StoryStateManager.Instance;
         if (story != null) story.OnFlagSet -= OnFlag;
         if (RegionManager.Instance != null) RegionManager.Instance.RegionEntered -= OnRegion;
@@ -70,19 +85,16 @@ public class ObjectiveManager : MonoBehaviour
     private void OnFlag(string flag) => Refresh();
     private void OnRegion(string region) => Refresh();
 
-    // Fades the "updated" glow and keeps the compass marker pointing at the current goal.
+    // Fades the "updated" glow and keeps the beam standing over the current goal while it is far away.
     private void Update()
     {
         if (flash != null && flash.alpha > 0f) flash.alpha = Mathf.MoveTowards(flash.alpha, 0f, Time.deltaTime * 0.8f);
-        if (compass == null) return;
+        if (beacon == null) return;
         var view = Camera.main != null ? Camera.main.transform : null;
         var to = view != null ? Vector3.ProjectOnPlane(marker - view.position, Vector3.up) : Vector3.zero;
         bool show = marker != Vector3.zero && view != null && !PlayerLock.IsLocked && to.magnitude > ArrivedDistance;
-        if (compass.gameObject.activeSelf != show) compass.gameObject.SetActive(show);
-        if (!show) return;
-        // Straight ahead sits at the centre; 90 degrees or more off pins it to that edge.
-        float angle = Vector3.SignedAngle(Vector3.ProjectOnPlane(view.forward, Vector3.up), to, Vector3.up);
-        compass.anchoredPosition = new Vector2(Mathf.Clamp(angle / 90f, -1f, 1f) * 320f, compass.anchoredPosition.y);
+        if (beacon.gameObject.activeSelf != show) beacon.gameObject.SetActive(show);
+        if (show) beacon.position = marker + Vector3.up * (beacon.localScale.y - 2f);
     }
 
     /// <summary>

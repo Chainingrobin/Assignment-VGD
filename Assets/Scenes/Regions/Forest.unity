@@ -905,6 +905,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CoinCollect
   amount: 1
+  standUpright: 0
 --- !u!1001 &102131278
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2727,11 +2728,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 556.5
+      value: 545
       objectReference: {fileID: 0}
     - target: {fileID: 1942869936887217889, guid: 8192104e8f2f3fa46ad2114903b3b017, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9709,7 +9710,7 @@ MonoBehaviour:
   captionBody: 
   memory: {fileID: 0}
   dialogue: {fileID: 0}
-  subtitle: 'Added to your journal: Torn ledger page'
+  subtitle: 'Added to your journal: The Ledger'
   giveItem: {fileID: 11400000, guid: 692af32bd54cea441a44d16b77776dee, type: 2}
   setFlag: 
 --- !u!114 &730670469
@@ -9724,7 +9725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d67ec862283fc8741a8a58aa253da036, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
-  prompt: Press F to read the torn ledger page
+  prompt: Press F to look closer
   singleUse: 1
   onInteract:
     m_PersistentCalls:
@@ -9962,11 +9963,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 561.5
+      value: 549.2
       objectReference: {fileID: 0}
     - target: {fileID: 2795491852475211556, guid: d4e88dc228331774bbfec9048c9531fb, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10687,7 +10688,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1550390771398671439, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
       propertyPath: greeting
-      value: 'Abe: Potions, fresh this morning. Prices are fair. Mostly.'
+      value: 'Abe: Fresh this morning, Wu. Bitter, but they''ll keep you standing.'
       objectReference: {fileID: 0}
     - target: {fileID: 1550390771398671439, guid: aa4e889b7b5c1684089766b0581478f2, type: 3}
       propertyPath: portrait
@@ -24416,15 +24417,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RegionObjectives
   objectives:
-  - text: Speak with the old man by the armory fire
+  - text: Talk to Abe by the fire at the armory
     showWhen: 
     doneWhen: metAbe
     marker: {x: 556, y: 0.02, z: 586}
-  - text: Put the Earth guardian to rest in the Blossom Glade
+  - text: Follow the trail south-west to the Earth guardian
     showWhen: metAbe
     doneWhen: bossEarthDefeated
     marker: {x: 485, y: 5.117396, z: 442}
-  - text: Take up the Earth tome
+  - text: Pick up the Earth tome
     showWhen: bossEarthDefeated
     doneWhen: hasEarth
     marker: {x: 485, y: 5.117396, z: 442}
@@ -24432,7 +24433,7 @@ MonoBehaviour:
     showWhen: hasEarth
     doneWhen: lakeFrozen
     marker: {x: 646.662, y: 15.742, z: 382.137}
-  - text: Cross the frozen lake into the Frozen Reach
+  - text: Cross the frozen lake into the snow
     showWhen: lakeFrozen
     doneWhen: 
     marker: {x: 655, y: 0, z: 330}

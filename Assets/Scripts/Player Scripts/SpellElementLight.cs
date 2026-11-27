@@ -14,15 +14,22 @@ public class SpellElementLight : MonoBehaviour
     private ParticleSystem rootSystem;
     private float age;
 
-    public static void AddTo(GameObject spell, ElementType element, bool area)
+    // Switches off the effect's own lights and particle-light modules (every copy but the lead in a boss's
+    // multi-blast attack, and boss shot splashes): dozens of pixel lights at once tanked the frame rate.
+    public static void Mute(GameObject spell)
     {
-        if (element == ElementType.None) return;
         foreach (var existing in spell.GetComponentsInChildren<Light>(true)) existing.enabled = false;
         foreach (var particle in spell.GetComponentsInChildren<ParticleSystem>(true))
         {
             var module = particle.lights;
             module.enabled = false;
         }
+    }
+
+    public static void AddTo(GameObject spell, ElementType element, bool area, int maxLights = 24)
+    {
+        if (element == ElementType.None) return;
+        Mute(spell);
         var glow = new GameObject("ElementLight");
         glow.transform.SetParent(spell.transform, false);
         var controller = glow.AddComponent<SpellElementLight>();
@@ -43,7 +50,8 @@ public class SpellElementLight : MonoBehaviour
         if (controller.source == null) { Destroy(glow); return; }
         controller.particles = new ParticleSystem.Particle[controller.source.main.maxParticles];
         // shortcut: sample dense crystal trails with 24 lights; raise this only after profiling target hardware.
-        controller.limit = element == ElementType.Fire ? controller.source.main.maxParticles : 24;
+        controller.limit = Mathf.Min(maxLights, element == ElementType.Fire ? controller.source.main.maxParticles : 24);
+
         controller.height = element == ElementType.Fire ? 0f : 0.8f;
     }
 

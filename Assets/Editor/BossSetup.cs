@@ -322,15 +322,44 @@ public static class BossSetup
 
     private static BossBrain.BossAttack Move(string name, BossBrain.AttackKind kind, string state, AnimatorController controller,
         float hitAt, float minRange, float maxRange, float damage, float radius, float cooldown, ElementType element = ElementType.None,
-        int count = 1, bool atSelf = false, bool line = false, bool lobbed = false, bool phaseTwo = false)
+        int count = 1, bool atSelf = false, bool line = false, bool lobbed = false, bool phaseTwo = false, bool ring = false, bool stream = false)
     {
         var clip = controller.layers[0].stateMachine.states.First(s => s.state.name == state).state.motion as AnimationClip;
         return new BossBrain.BossAttack
         {
             name = name, kind = kind, state = state, element = element, windup = clip.length * hitAt, duration = clip.length * 0.9f,
             minRange = minRange, maxRange = maxRange, damage = damage, radius = radius, cooldown = cooldown, count = count,
-            atSelf = atSelf, line = line, lobbed = lobbed, phaseTwoOnly = phaseTwo,
+            atSelf = atSelf, line = line, lobbed = lobbed, phaseTwoOnly = phaseTwo, ring = ring, stream = stream,
         };
+    }
+
+    // Rewrites each boss prefab's move list (and its pause between attacks) from the lists below, keeping
+    // everything else on the prefabs and every scene reference to them.
+    [MenuItem("Wulang/Bosses/Update move lists")]
+    public static string UpdateMoves()
+    {
+        if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Stop Play mode first.");
+        var brute = AssetDatabase.LoadAssetAtPath<AnimatorController>(Output + "/Brute.controller");
+        var caster = AssetDatabase.LoadAssetAtPath<AnimatorController>(Output + "/Caster.controller");
+        foreach (var (path, moves) in new[] { (EarthBoss, EarthMoves(brute)), (IceBoss, IceMoves(brute)), (FireBoss, FireMoves(brute)), (FinalBoss, FinalMoves(caster)) })
+        {
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                var brain = root.GetComponent<BossBrain>();
+                var settings = new SerializedObject(brain);
+                float arena = settings.FindProperty("arenaRadius").floatValue;
+                brain.Configure(moves, arena, "Roar", "HitLarge");
+                settings = new SerializedObject(brain);
+                // More kinds of attack, the same pressure: a slightly longer breath between them.
+                settings.FindProperty("recover").floatValue = 1.1f;
+                settings.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+        AssetDatabase.SaveAssets();
+        return "BossSetup: move lists updated.";
     }
 
     // Earth Guardian, the tutorial boss: slow, long warnings, shows off Earth's spikes and boulders.
@@ -340,6 +369,8 @@ public static class BossSetup
         Move("Spike Line", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 5f, 22f, 18f, 2.2f, 6f, ElementType.Earth, count: 5, line: true),
         Move("Boulder Throw", BossBrain.AttackKind.Projectile, "Attack2H", c, 0.5f, 8f, 30f, 16f, 2.5f, 5f, ElementType.Earth, lobbed: true),
         Move("Quake Leap", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 4f, 14f, 22f, 5f, 8f, ElementType.Earth, atSelf: true, phaseTwo: true),
+        Move("Stone Ring", BossBrain.AttackKind.Ground, "Cast", c, 0.6f, 4f, 22f, 16f, 2.2f, 9f, ElementType.Earth, count: 6, ring: true),
+        Move("Rock Stream", BossBrain.AttackKind.Projectile, "Attack2H", c, 0.5f, 8f, 30f, 10f, 1.6f, 8f, ElementType.Earth, count: 3, stream: true, phaseTwo: true),
     };
 
     private static BossBrain.BossAttack[] IceMoves(AnimatorController c) => new[]
@@ -349,6 +380,8 @@ public static class BossSetup
         Move("Glacial Slam", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 3f, 12f, 24f, 5.5f, 7f, ElementType.Ice, atSelf: true),
         Move("Shard Volley", BossBrain.AttackKind.Projectile, "Attack2H", c, 0.5f, 7f, 30f, 12f, 1.5f, 5f, ElementType.Ice, count: 3),
         Move("Ice Rain", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 6f, 30f, 18f, 3f, 8f, ElementType.Ice, count: 4, phaseTwo: true),
+        Move("Frost Ring", BossBrain.AttackKind.Ground, "Cast", c, 0.6f, 4f, 24f, 16f, 2.4f, 9f, ElementType.Ice, count: 6, ring: true),
+        Move("Ice Line", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 5f, 22f, 16f, 2.2f, 8f, ElementType.Ice, count: 5, line: true),
     };
 
     private static BossBrain.BossAttack[] FireMoves(AnimatorController c) => new[]
@@ -358,6 +391,8 @@ public static class BossSetup
         Move("Fireball Volley", BossBrain.AttackKind.Projectile, "Attack2H", c, 0.5f, 7f, 30f, 15f, 2.5f, 5f, ElementType.Fire, count: 3, lobbed: true),
         Move("Meteor Rain", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 5f, 30f, 20f, 3f, 7f, ElementType.Fire, count: 5),
         Move("Eruption Slam", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 3f, 12f, 28f, 6f, 8f, ElementType.Fire, atSelf: true, phaseTwo: true),
+        Move("Fire Ring", BossBrain.AttackKind.Ground, "Cast", c, 0.6f, 4f, 24f, 18f, 2.5f, 9f, ElementType.Fire, count: 7, ring: true),
+        Move("Flame Stream", BossBrain.AttackKind.Projectile, "Attack2H", c, 0.5f, 7f, 30f, 10f, 1.8f, 8f, ElementType.Fire, count: 4, stream: true, phaseTwo: true),
     };
 
     // Ganfaul: the same three kinds of attack, always in his current phase's element.
@@ -369,7 +404,10 @@ public static class BossSetup
         Move("Element Storm", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 4f, 35f, 20f, 3.5f, 6f, count: 3),
         Move("Fault Line", BossBrain.AttackKind.Ground, "Cast", c, 0.6f, 6f, 30f, 20f, 2f, 7f, count: 6, line: true, phaseTwo: true),
         Move("Crashing Leap", BossBrain.AttackKind.Ground, "Leap", c, 0.55f, 3f, 14f, 26f, 5.5f, 8f, atSelf: true, phaseTwo: true),
+        Move("Element Ring", BossBrain.AttackKind.Ground, "AreaCast", c, 0.6f, 4f, 30f, 18f, 2.6f, 9f, count: 8, ring: true),
+        Move("Element Stream", BossBrain.AttackKind.Projectile, "Attack1H", c, 0.5f, 6f, 35f, 10f, 1.8f, 7f, count: 4, stream: true, phaseTwo: true),
     };
+
 
     private static void Boss(string path, string fbx, ElementType element, AnimatorController controller, GameObject steam,
         float scale, float health, BossBrain.BossAttack[] moves)
@@ -391,7 +429,7 @@ public static class BossSetup
             var target = new SerializedObject(root.GetComponent<CombatTarget>());
             target.FindProperty("maxHealth").floatValue = health;
             target.FindProperty("trainingRespawnDelay").floatValue = 0f;
-            target.FindProperty("statusScale").floatValue = 0.3f;
+            target.FindProperty("statusScale").floatValue = 0.5f;
             target.ApplyModifiedPropertiesWithoutUndo();
             var brain = root.GetComponent<BossBrain>() ?? root.AddComponent<BossBrain>();
             brain.Configure(moves, 30f, "Roar", "HitLarge");

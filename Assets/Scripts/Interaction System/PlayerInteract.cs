@@ -25,7 +25,10 @@ public class PlayerInteract : MonoBehaviour
     [Tooltip("HUD text that shows the current prompt.")]
     [SerializeField] TMP_Text promptText;
     [Tooltip("How far away, in metres, something can be used.")]
-    [SerializeField] float range = 3f;
+    [SerializeField] float range = 3.5f;
+    // Forgiving aim: with nothing under the crosshair, anything usable this many degrees off the view still counts.
+    const float AimCone = 30f;
+    readonly Collider[] nearby = new Collider[32];
     [Tooltip("Landmarks that offer an optional fly-over when looked at from afar.")]
     [SerializeField] BiomePreview[] biomePreviews;
 
@@ -98,6 +101,7 @@ public class PlayerInteract : MonoBehaviour
             var found = hit.collider.GetComponentInParent<Interactable>();
             if (found != null && found.CanInteract) target = found;
         }
+        if (target == null) target = NearestInView(origin, dir);
 
         if (target != current)
         {
@@ -117,7 +121,34 @@ public class PlayerInteract : MonoBehaviour
         if (prompt != null && prompt != shownPrompt) ShowPrompt(prompt);
     }
 
+    // The usable object closest to the centre of the view within reach and the aim cone, if nothing blocks the way
+    // to it. Looking roughly at Abe or a chest is enough; it no longer has to be under the exact pixel.
+    Interactable NearestInView(Vector3 origin, Vector3 dir)
+    {
+        Interactable best = null;
+        float bestAngle = AimCone;
+        int count = Physics.OverlapSphereNonAlloc(origin, range + 0.5f, nearby, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < count; i++)
+        {
+            var candidate = nearby[i].GetComponentInParent<Interactable>();
+            if (candidate == null || !candidate.CanInteract) continue;
+            var point = nearby[i].ClosestPoint(origin + dir * Mathf.Min(range, Vector3.Distance(origin, nearby[i].bounds.center)));
+            var to = point - origin;
+            float distance = to.magnitude;
+            if (distance > range + 0.5f) continue;
+            float angle = distance < 0.01f ? 0f : Vector3.Angle(dir, to);
+            if (angle >= bestAngle) continue;
+            if (distance > 0.05f && Physics.Raycast(origin, to / distance, out var block, distance - 0.05f, ~0, QueryTriggerInteraction.Ignore) &&
+                block.collider.GetComponentInParent<Interactable>() != candidate && block.collider.GetComponentInParent<CharacterController>() == null)
+                continue;
+            best = candidate;
+            bestAngle = angle;
+        }
+        return best;
+    }
+
     // "Press F to read the ledger" becomes [F] Read the ledger: the keycap carries the key, the text
+
     // only the action (and no other capital F gets mistaken for the key).
     void ShowPrompt(string prompt)
     {

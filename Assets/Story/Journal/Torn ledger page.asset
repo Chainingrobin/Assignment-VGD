@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Torn ledger page
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Torn ledger page
-  description: 'A page from the armory''s ledger, in a neat and patient hand. Iron,
-    forty bars. Lamp oil, six casks. Rain on the hill road: not for sale. Someone
-    has struck out ''not for sale'' and written beside it, very small: ''yet.'''
+  displayName: "The Ledger"
+  description: "A page in a neat, patient hand: \"Rain on the hill road: not for sale.\" Beside it, very small: \"yet.\""
   icon: {fileID: 0}
   category: 3
   price: 0

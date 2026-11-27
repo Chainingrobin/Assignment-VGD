@@ -80,7 +80,9 @@ public static class PrototypeChecks
             iceTarget.TakeDamage(20f, ElementType.Fire);
             Check(Mathf.Approximately(before - iceTarget.Health, 30f), "Fire should do 1.5x to the Ice Guardian.");
             iceTarget.TakeDamage(1f, ElementType.Ice);
-            Check(iceTarget.FreezeRemaining > 0f && iceTarget.FreezeRemaining < 1f, "Bosses should only freeze briefly (status scale 0.3).");
+            Check(iceTarget.FreezeRemaining > 0f && iceTarget.FreezeRemaining < 2f, "Bosses should only freeze briefly from a bolt (status scale 0.5).");
+            iceTarget.ReceiveSpell(1f, ElementType.Ice, iceTarget.transform.position, true);
+            Check(Mathf.Approximately(iceTarget.FreezeRemaining, 3f * 0.5f * CombatTarget.AreaStatusScale), "A burst should hold a boss's freeze twice as long as a bolt.");
 
             var a = vampireA.GetComponent<CombatTarget>();
             var b = vampireB.GetComponent<CombatTarget>();

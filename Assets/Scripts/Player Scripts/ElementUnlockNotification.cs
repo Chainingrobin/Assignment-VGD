@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ElementUnlockNotification : MonoBehaviour
 {
-    [SerializeField] private float duration = 3f;
+    [SerializeField] private float duration = 3.5f;
     private readonly Queue<ElementType> pending = new();
     private PlayerMagicAffinity affinity;
     private RectTransform card;
@@ -27,7 +27,7 @@ public class ElementUnlockNotification : MonoBehaviour
         }
         var content = responsive.Content;
         // Unlock toast, top centre (where the boss bar was: a new element only ever follows a guardian's fall).
-        card = CreateRect(content, "ElementUnlockNotification", new Vector2(250f, 72f), Vector2.zero);
+        card = CreateRect(content, "ElementUnlockNotification", new Vector2(400f, 72f), Vector2.zero);
         card.anchorMin = card.anchorMax = card.pivot = new Vector2(0.5f, 1f);
         card.anchoredPosition = new Vector2(0f, CardY);
         UIKit.Backing(card);
@@ -35,7 +35,7 @@ public class ElementUnlockNotification : MonoBehaviour
         cardGroup.blocksRaycasts = false;
         cardGroup.interactable = false;
         icon = Medallion(card, 64f, new Vector2(4f, -4f), out glow);
-        title = CreateText(card, "Title", "", 30f, new Vector2(84f, -18f), new Vector2(170f, 38f), FantasyUI.Parchment);
+        title = CreateText(card, "Title", "", 30f, new Vector2(84f, -18f), new Vector2(310f, 38f), FantasyUI.Parchment);
         title.fontStyle = FontStyles.Bold | FontStyles.SmallCaps;
         card.gameObject.SetActive(false);
         // The attuned element itself is the centre of the spell ring (CombatHUD).
@@ -86,20 +86,30 @@ public class ElementUnlockNotification : MonoBehaviour
         if (card != null) Destroy(card.gameObject);
     }
 
+    // Elements claimed from a guardian's tome (BookCollect). Only those get the card: chapter select and
+    // Continue grant earlier elements silently.
+    private static readonly HashSet<ElementType> claimed = new();
+    public static void Claimed(ElementType element) => claimed.Add(element);
+
     private void ShowUnlocked(ElementType element)
     {
-        // Starting equipment is initialized before Start; only pickups show a toast.
-        if (!ready || card == null || element == ElementType.None) return;
+        // Starting equipment is initialized before Start; only tomes picked up show a card.
+        if (!ready || card == null || element == ElementType.None || !claimed.Remove(element)) return;
         pending.Enqueue(element);
         if (notificationRoutine == null) notificationRoutine = StartCoroutine(ShowPending());
     }
 
     private IEnumerator ShowPending()
     {
+        // A claimed tome replays its memory a moment later: wait for it (and any other cutscene) to finish,
+        // so the card is seen instead of flashing by under the memory.
+        yield return new WaitForSecondsRealtime(2f);
+        while (PlayerLock.IsLocked) yield return null;
+        yield return new WaitForSecondsRealtime(0.4f);
         while (pending.Count > 0)
         {
             var element = pending.Dequeue();
-            title.text = element.ToString();
+            title.text = element.ToString().ToUpperInvariant() + " UNLOCKED";
             icon.Element = element;
             icon.color = ElementVisuals.ColorFor(element);
             glow.color = icon.color * new Color(1f, 1f, 1f, 0.55f);
@@ -112,6 +122,13 @@ public class ElementUnlockNotification : MonoBehaviour
             card.gameObject.SetActive(false);
         }
         notificationRoutine = null;
+        // Then how to use it: switching (and chaining) once there is more than one element to choose from.
+        if (affinity != null && affinity.UnlockedElements.Count >= 2)
+        {
+            Tutorials.Show("switch");
+            Tutorials.Show("combo");
+        }
+
     }
 
     private IEnumerator Animate(bool entering)

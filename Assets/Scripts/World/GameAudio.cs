@@ -8,7 +8,8 @@ using UnityEngine;
 // when a region, boss fight, memory or ending changes the mood, and they survive scene loads.
 public class GameAudio : MonoBehaviour
 {
-    private const float MusicVolume = 0.45f, AmbienceVolume = 0.7f;
+    // Music sits under the effects: hits, casts and voices must read over it (sound effects play at up to full volume).
+    private const float MusicVolume = 0.25f, AmbienceVolume = 0.35f;
 
     private static GameAudio instance;
     private static readonly Dictionary<string, AudioClip[]> clips = new();

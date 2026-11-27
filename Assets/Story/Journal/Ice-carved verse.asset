@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Ice-carved verse
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Ice-carved verse
-  description: 'Cut deep into the ice: THE COLD KEEPS WHAT THE WARM FORGET. Beneath
-    it, in a child''s scratches: ''Nan says winter is just the world remembering
-    to rest.'''
+  displayName: "Winter"
+  description: "\"Winter is just the world remembering to rest,\" Nan said, every single year, as if I'd never heard it."
   icon: {fileID: 0}
   category: 3
   price: 0

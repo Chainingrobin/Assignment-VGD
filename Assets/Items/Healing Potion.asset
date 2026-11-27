@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Healing Potion
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Healing Potion
-  description: Abe's own brew, bitter as bark. He swears by it and charges accordingly.
-    Restores 40 vitality.
+  description: Abe's own brew, bitter as bark and warm all the way down. Restores 40 health.
   icon: {fileID: 0}
   category: 0
   price: 5

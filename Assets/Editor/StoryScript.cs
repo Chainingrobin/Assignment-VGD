@@ -165,9 +165,18 @@ public static class StoryScript
             if (give != null && trigger.GetComponent<Interactable>() != null)
             {
                 Set(trigger, "subtitle", $"Added to your journal: {Title(give.name)}");
-                Set(trigger.GetComponent<Interactable>(), "prompt", $"Press F to read the {Title(give.name).ToLowerInvariant()}");
+                // Pages are titled by the memory they stir, not by what they are, so the prompt stays plain.
+                Set(trigger.GetComponent<Interactable>(), "prompt", "Press F to look closer");
             }
         }
+        // The rift into the Sanctum: its prompt, and the warning that there is no coming back.
+        foreach (var travel in Get<RegionTravel>())
+        {
+            if (new SerializedObject(travel).FindProperty("region").stringValue != "FinalArena") continue;
+            Set(travel, "warning", Text.riftWarning);
+            Set(travel.GetComponent<Interactable>(), "prompt", Text.riftPrompt);
+        }
+
         // The prologue caption is now the intro cutscene.
         foreach (var trigger in Get<NarrativeTrigger>().Where(t => t.name == "Prologue")) Object.DestroyImmediate(trigger.gameObject);
         foreach (var echo in Get<MemoryEcho>())

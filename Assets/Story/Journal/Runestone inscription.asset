@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Runestone inscription
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Runestone inscription
-  description: 'Carved in the old script: FOUR GUARDIANS, FOUR GIFTS, GIVEN FREELY
-    TO THE VALE. LET NO ONE HAND HOLD THEM ALL.'
+  displayName: "Four Gifts"
+  description: "Nan's finger tracing the old stone: \"Four gifts, given free. Nobody owns the rain, Wu.\" She said it like a promise."
   icon: {fileID: 0}
   category: 3
   price: 0

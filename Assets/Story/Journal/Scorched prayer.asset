@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fe1ebdfe0278d48ba84687a70705ff, type: 3}
   m_Name: Scorched prayer
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  displayName: Scorched prayer
-  description: 'Scratched into the bronze: Forgive us, guardian of the flame. We
-    were cold, and he was kind, and he paid us well for the road to your heart.'
+  displayName: "Market Day"
+  description: "Two loaves under my coat to keep them dry, rain coming in over the hill, and Nan's song in my head."
   icon: {fileID: 0}
   category: 3
   price: 0
